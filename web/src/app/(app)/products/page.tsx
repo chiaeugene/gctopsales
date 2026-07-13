@@ -1,11 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { FileIcon } from "@/components/ui/icons";
+
+// Real MAE product-line photography (downloaded from maeglobalofficial.com —
+// we're their agent) shown as each card's header image, keyed by series.
+const SERIES_IMAGE: Record<string, string> = {
+  "BCODE+": "/mae/product-bcode.webp",
+  "Claríty Skincare": "/mae/product-skincare.webp",
+  "Claríty Anti-Aging": "/mae/product-skincare.webp",
+  "Healthcare (Total DX+)": "/mae/product-detox.webp",
+  "BRB (Mental Wellness)": "/mae/product-brb.webp",
+  "Re.WIND Hair": "/mae/product-hair.webp",
+};
 
 type Attachment = { id: string; fileName: string; label: string | null; fileType: string; url: string };
 type Product = {
@@ -116,38 +128,54 @@ export default function ProductsPage() {
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
             {items.map((p) => {
               const saving = p.priceRetailMyr - p.priceMemberMyr;
+              const img = SERIES_IMAGE[series];
               return (
-                <Card key={p.id} className="space-y-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="font-medium text-sm">{p.name}</div>
-                    {p.code && <Badge tone="neutral">{p.code}</Badge>}
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-semibold tracking-tight text-[var(--accent-ink)] tabular-nums">
-                      RM{p.priceMemberMyr.toLocaleString()}
-                    </span>
-                    <span className="text-xs text-black/35 line-through tabular-nums">RM{p.priceRetailMyr.toLocaleString()}</span>
-                    {saving > 0 && <span className="text-xs text-emerald-600 font-medium tabular-nums">save RM{saving.toLocaleString()}</span>}
-                  </div>
-                  {p.description && <p className="text-xs text-black/60 line-clamp-2">{p.description}</p>}
-                  {p.gifts.length > 0 && <p className="text-xs text-amber-700">Gift: {p.gifts.join(" · ")}</p>}
-                  {p.attachments.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {p.attachments.map((a) => (
-                        <Badge key={a.id} tone="accent" icon={<FileIcon className="w-3 h-3" />}>
-                          {a.label || a.fileName}
-                        </Badge>
-                      ))}
+                <Card key={p.id} padding="none" interactive className="overflow-hidden">
+                  {img && (
+                    <div className="relative h-28 w-full">
+                      <Image src={img} alt="" fill className="object-cover object-top" sizes="400px" />
+                      <div
+                        className="absolute inset-0"
+                        style={{ background: "linear-gradient(0deg, #fff 0%, rgba(255,255,255,0) 55%)" }}
+                      />
+                      <div
+                        className="absolute inset-0"
+                        style={{ background: "linear-gradient(100deg, rgba(74,43,133,0.55) 0%, rgba(74,43,133,0) 55%)" }}
+                      />
                     </div>
                   )}
-                  {!p.isActive && <p className="text-xs text-red-600 font-medium">Inactive — hidden from GC</p>}
-                  <div className="flex gap-3 pt-1">
-                    <button onClick={() => setEditing(p)} className="text-xs text-[var(--accent-ink)] hover:underline">
-                      Edit
-                    </button>
-                    <button onClick={() => remove(p.id)} className="text-xs text-red-600 hover:underline">
-                      Delete
-                    </button>
+                  <div className="p-5 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="font-medium text-sm">{p.name}</div>
+                      {p.code && <Badge tone="neutral">{p.code}</Badge>}
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-lg font-semibold tracking-tight text-[var(--accent-ink)] tabular-nums">
+                        RM{p.priceMemberMyr.toLocaleString()}
+                      </span>
+                      <span className="text-xs text-black/35 line-through tabular-nums">RM{p.priceRetailMyr.toLocaleString()}</span>
+                      {saving > 0 && <span className="text-xs text-emerald-600 font-medium tabular-nums">save RM{saving.toLocaleString()}</span>}
+                    </div>
+                    {p.description && <p className="text-xs text-black/60 line-clamp-2">{p.description}</p>}
+                    {p.gifts.length > 0 && <p className="text-xs text-amber-700">Gift: {p.gifts.join(" · ")}</p>}
+                    {p.attachments.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {p.attachments.map((a) => (
+                          <Badge key={a.id} tone="accent" icon={<FileIcon className="w-3 h-3" />}>
+                            {a.label || a.fileName}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    {!p.isActive && <p className="text-xs text-red-600 font-medium">Inactive — hidden from GC</p>}
+                    <div className="flex gap-3 pt-1">
+                      <button onClick={() => setEditing(p)} className="text-xs text-[var(--accent-ink)] hover:underline">
+                        Edit
+                      </button>
+                      <button onClick={() => remove(p.id)} className="text-xs text-red-600 hover:underline">
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </Card>
               );

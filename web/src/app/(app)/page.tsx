@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { HeroBanner } from "@/components/ui/HeroBanner";
+import FeatureSection from "@/components/ui/stack-feature-section";
 import { FlameIcon, SnowflakeIcon, AlertIcon, ChartIcon } from "@/components/ui/icons";
 
 export default async function DashboardPage() {
@@ -104,6 +105,8 @@ export default async function DashboardPage() {
           { label: "Paid orders", value: paid },
         ]}
       />
+
+      <FeatureSection />
 
       {needsHuman > 0 && (
         <Link

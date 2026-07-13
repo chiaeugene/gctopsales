@@ -30,7 +30,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex">
       {/* Photo side — real MAE product photography, brand purple wash */}
       <div className="hidden lg:block relative w-1/2">
-        <Image src="/mae/hero-skincare.webp" alt="" fill priority className="object-cover" sizes="50vw" />
+        <Image src="/mae/hero-skincare.webp" alt="" fill priority className="object-cover object-top" sizes="50vw" />
         <div
           className="absolute inset-0"
           style={{

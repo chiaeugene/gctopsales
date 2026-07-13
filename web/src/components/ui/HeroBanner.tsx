@@ -20,7 +20,7 @@ export function HeroBanner({
   return (
     <div className="relative overflow-hidden rounded-3xl animate-fade-up [box-shadow:var(--shadow-purple)]">
       <div className="relative h-[280px] sm:h-[320px] w-full">
-        <Image src={image} alt="" fill priority className="object-cover object-[center_20%]" sizes="100vw" />
+        <Image src={image} alt="" fill priority className="object-cover object-top" sizes="100vw" />
         <div
           className="absolute inset-0"
           style={{

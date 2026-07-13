@@ -53,6 +53,26 @@ h1, h2, h3 {
   }
 }
 
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit-spin {
+  animation-name: orbit-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbit-spin {
+    animation: none;
+  }
+}
+
 /* SVG score-ring helper — see gym page */
 .score-ring {
   transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1);

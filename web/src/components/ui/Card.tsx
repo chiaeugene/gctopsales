@@ -8,7 +8,9 @@ type CardProps = {
 };
 
 // Base surface used across the app instead of the old
-// `rounded-xl bg-white border border-neutral-200` string.
+// `rounded-xl bg-white border border-neutral-200` string. Every card gets a
+// subtle hover lift by default — `interactive` just makes it stronger for
+// genuinely clickable cards (podium tiles, scenario rows).
 export function Card({ children, className = "", interactive = false, padding = "md" }: CardProps) {
   const pad = padding === "none" ? "" : padding === "sm" ? "p-4" : "p-5";
   return (
@@ -16,7 +18,10 @@ export function Card({ children, className = "", interactive = false, padding = 
       className={[
         "rounded-2xl bg-white border border-black/[0.06]",
         "[box-shadow:var(--shadow-sm)]",
-        interactive ? "transition-all duration-300 hover:[box-shadow:var(--shadow-md)] hover:-translate-y-0.5" : "",
+        "transition-all duration-300 ease-out",
+        interactive
+          ? "hover:[box-shadow:var(--shadow-purple)] hover:-translate-y-1 hover:border-[var(--accent-soft-2)]"
+          : "hover:[box-shadow:var(--shadow-md)] hover:-translate-y-0.5",
         pad,
         className,
       ].join(" ")}
