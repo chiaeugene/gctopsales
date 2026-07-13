@@ -1,0 +1,14 @@
+# Node/Next.js (web/ has its own more specific .gitignore too)
+node_modules/
+.next/
+*.tsbuildinfo
+
+# Env secrets — never commit
+.env
+.env.local
+*.env
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+*.log

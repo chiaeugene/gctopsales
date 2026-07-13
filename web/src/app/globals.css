@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+:root {
+  --gc-purple: #6d28d9;
+}
+
+body {
+  @apply bg-neutral-50 text-neutral-900 antialiased;
+}

@@ -1,0 +1,236 @@
+// Mandy — multi-tenant schema. Runs on Postgres (Supabase) in both dev and prod.
+// Enum-like fields stay as plain strings (portable, and Prisma string enums
+// don't require a migration to add a new status) — canonical values live in
+// src/lib/constants.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+
+  profile PhotographerProfile?
+}
+
+// The tenant. All business data hangs off this row.
+model PhotographerProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  photographerName String?
+  studioName       String?
+  city             String?
+  state            String?
+  country          String  @default("Malaysia")
+
+  // ONBOARDING: NOT_STARTED | INTERVIEW | TRAINING | COMPLETED
+  onboardingStatus String @default("NOT_STARTED")
+
+  // The four brains (JSON, zod-validated in src/lib/ai/schemas.ts).
+  // Package Brain = Package rows + packageRules.
+  brandBrain   String @default("{}")
+  salesBrain   String @default("{}")
+  bookingBrain String @default("{}")
+  packageRules String @default("{}") // travel fee rules, overtime fee rules
+
+  // Phase 2/3 stubs
+  whatsappPhoneId          String?
+  googleCalendarConnected  Boolean @default(false)
+  googleRefreshToken       String? // never returned by any API response
+  googleCalendarId         String? // which calendar to check/write, default "primary"
+  googleAccountEmail       String? // display only, e.g. "Connected as x@gmail.com"
+  maxBookingsPerDay        Int?    // photographer's same-day capacity cap; null = not enforced
+  autoConfirmPayments      Boolean @default(false) // opt-in: auto-confirm deposit + book when a payment screenshot is verified with high confidence
+  sessionDurationMinutes   Int?    // typical length of one shoot; null = full-day events (e.g. weddings)
+  workingHoursStart        String? // "09:00" (24h); code default 09:00 when unset
+  workingHoursEnd          String? // "19:00" (24h); code default 19:00 when unset
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  packages           Package[]
+  trainingExamples   TrainingExample[]
+  leads              Lead[]
+  conversations      Conversation[]
+  onboardingDocuments OnboardingDocument[]
+}
+
+model Package {
+  id        String @id @default(cuid())
+  profileId String
+  profile   PhotographerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  name          String
+  priceMyr      Int
+  hours         Int?
+  editedPhotos  Int?
+  includesAlbum Boolean @default(false)
+  includesVideo Boolean @default(false)
+  deliverables  String  @default("[]") // string[] (JSON)
+  addOns        String  @default("[]") // {name, priceMyr}[] (JSON)
+  description   String?
+  isActive      Boolean @default(true)
+  sortOrder     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attachments PackageAttachment[]
+
+  @@index([profileId])
+}
+
+// Photo/PDF files attached to a package that Mandy can choose to send during
+// a conversation (e.g. a price sheet PDF or sample gallery photo).
+model PackageAttachment {
+  id        String  @id @default(cuid())
+  profileId String
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  fileName  String
+  label     String? // short description shown to Mandy so she knows when to send it
+  fileType  String // PHOTO | PDF
+  mimeType  String
+  data      Bytes
+  sizeBytes Int
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([packageId])
+  @@index([profileId])
+}
+
+model InboundAttachment {
+  id        String @id @default(cuid())
+  profileId String
+
+  fileName  String
+  fileType  String // PHOTO (images only for now — no inbound PDFs/documents)
+  mimeType  String
+  data      Bytes
+  sizeBytes Int
+
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
+
+// Reference material (PDF, pasted text, or a fetched URL) the photographer
+// supplies during the AI-led setup interview. Supplementary only — the
+// interview prompt treats extractedText as untrusted, unverified content.
+model OnboardingDocument {
+  id        String              @id @default(cuid())
+  profileId String
+  profile   PhotographerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  fileName      String
+  sourceType    String // FILE | URL
+  sourceUrl     String?
+  mimeType      String?
+  data          Bytes?
+  extractedText String
+  sizeBytes     Int
+
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model TrainingExample {
+  id        String @id @default(cuid())
+  profileId String
+  profile   PhotographerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  scenarioKey       String
+  customerMessage   String
+  photographerReply String
+  createdAt         DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model Lead {
+  id        String @id @default(cuid())
+  profileId String
+  profile   PhotographerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  source       String  @default("PLAYGROUND") // PLAYGROUND | WHATSAPP
+  customerName String?
+  phone        String?
+  eventDate    String? // free text until parsed ("2026-11-14" or "Nov next year")
+  eventTime    String? // customer's requested start time, "HH:MM" 24h, extracted like eventDate
+  location     String?
+  eventType    String? // actual day / pre-wedding / both / ROM ...
+  budgetRange  String?
+
+  interestedPackageId  String?
+  recommendedPackageId String?
+
+  // src/lib/leads/status.ts: New Lead | Asking Price | Qualifying | Qualified |
+  // Package Recommended | Waiting Decision | Waiting Deposit |
+  // Deposit Paid | Booked | Lost | Human Takeover Needed
+  status         String  @default("New Lead")
+  depositStatus  String  @default("NONE") // NONE | INSTRUCTIONS_SENT | PENDING_CONFIRMATION | CONFIRMED
+  calendarStatus String  @default("NONE") // NONE | CREATED
+  googleEventId  String? // the created Google Calendar event's id, for later update/delete
+
+  summary        String?
+  nextAction     String?
+  needsHuman     Boolean @default(false)
+  takeoverReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversation Conversation?
+
+  @@index([profileId, status])
+}
+
+model Conversation {
+  id        String @id @default(cuid())
+  profileId String
+  profile   PhotographerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  kind   String  @default("PLAYGROUND") // ONBOARDING | TRAINING | PLAYGROUND | WHATSAPP
+  leadId String? @unique
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([profileId, kind])
+}
+
+model Message {
+  id             String @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role    String // CUSTOMER | MANDY | PHOTOGRAPHER | SYSTEM
+  content String
+  meta    String? // JSON: extracted facts, suggestedStatus, takeover verdict, detectedLanguage
+  attachmentIds String? // JSON string[] of PackageAttachment ids sent with this message
+  inboundAttachmentIds String? // JSON string[] of InboundAttachment ids the customer sent with this message
+  externalId    String? @unique // e.g. WhatsApp wamid — dedupes redelivered webhook events
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId])
+}

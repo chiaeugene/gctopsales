@@ -1,0 +1,329 @@
+// GC Top Sales — multi-tenant AI sales machine for MAE Global agents.
+// Currently on SQLite for local dev (no Postgres on this machine). For
+// production, flip provider to "postgresql", restore
+// `directUrl = env("DIRECT_URL")` under url, and point DATABASE_URL at a
+// fresh Postgres (e.g. a new Supabase project — NOT Mandy's database).
+// Enum-like fields stay as plain strings (portable, and Prisma string enums
+// don't require a migration to add a new status) — canonical values live in
+// src/lib/constants.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "sqlite"
+  url       = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  // ADMIN (platform owner: manages tenants, pushes catalog updates) | AGENT
+  role         String   @default("AGENT")
+  createdAt    DateTime @default(now())
+
+  profile StoreProfile?
+}
+
+// The tenant — one MAE agent/distributor workspace. All business data hangs
+// off this row.
+model StoreProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  agentName String?
+  storeName String?
+  city      String?
+  state     String?
+  country   String  @default("Malaysia")
+
+  // Markets this agent serves. homeMarket sets the default currency/shipping;
+  // marketsServed (JSON string[] of MY|SG|BN) lists everywhere they sell, so
+  // GC knows to detect the customer's country when it affects price/shipping.
+  homeMarket    String @default("MY") // MY | SG | BN
+  marketsServed String @default("[\"MY\"]")
+
+  // ONBOARDING: NOT_STARTED | INTERVIEW | TRAINING | COMPLETED
+  onboardingStatus String @default("NOT_STARTED")
+
+  // The four brains (JSON, zod-validated in src/lib/ai/schemas.ts).
+  // Catalog Brain = Product rows + catalogRules.
+  identityBrain    String @default("{}")
+  salesBrain       String @default("{}")
+  fulfillmentBrain String @default("{}")
+  catalogRules     String @default("{}")
+
+  // How GC sounds: professional (polished, minimal slang) | balanced (warm,
+  // light local flavour) | local (full local slang — Manglish/Singlish/Malay).
+  tone String @default("professional")
+
+  // Opt-in: auto-confirm payment when a proof screenshot is vision-verified
+  // with high confidence AND the amount exactly matches the order total.
+  autoConfirmPayments Boolean @default(false)
+
+  // Proactive follow-up machine: how long a lead can sit silent before GC
+  // drafts a follow-up nudge. null = follow-ups off.
+  followUpAfterHours Int?
+  maxFollowUps       Int  @default(3)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products         Product[]
+  trainingExamples TrainingExample[]
+  orders           Order[]
+  conversations    Conversation[]
+  channels         ChannelConnection[]
+  testimonials     Testimonial[]
+  templates        MessageTemplate[]
+}
+
+// One connected messaging channel for a tenant. Manual credentials phase:
+// the agent pastes their own Meta tokens; the Embedded Signup OAuth flow
+// later writes into these same rows. Inbound webhooks route by
+// (channel, externalId) — e.g. WhatsApp phone_number_id, FB page id,
+// IG business account id.
+model ChannelConnection {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  channel     String // WHATSAPP | MESSENGER | INSTAGRAM
+  externalId  String // phone_number_id / page_id / ig_business_account_id
+  accessToken String // never returned by any API response
+  displayName String? // e.g. the phone number or page name, for the settings UI
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // One tenant owns a given channel identity; webhook routing does a global
+  // lookup on (channel, externalId).
+  @@unique([channel, externalId])
+  @@index([profileId])
+}
+
+model Product {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  name           String
+  code           String? // MAE product code, e.g. SET2BC, B3F1SC
+  series         String? // e.g. "BCODE+", "Claríty Skincare", "iReason"
+  priceMemberMyr Float
+  priceRetailMyr Float
+  // Optional Singapore-market price overrides (SGD). When an SG customer is
+  // detected and these are set, GC quotes SGD; otherwise it confirms SG
+  // pricing with the agent rather than quoting RM to a Singaporean.
+  priceMemberSgd Float?
+  priceRetailSgd Float?
+  pointValue     Int     @default(0)
+  boxCount       Int? // number of boxes in the bundle
+  contents       String  @default("[]") // string[] (JSON) — what's inside / pick-and-mix options
+  gifts          String  @default("[]") // string[] (JSON) — first-purchase gifts / PWP notes
+  description    String?
+  sellingPoints  String? // sales-machine ammo: who it's for, mechanism story, objection answers
+  isActive       Boolean @default(true)
+  sortOrder      Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attachments  ProductImage[]
+  testimonials Testimonial[]
+
+  @@index([profileId])
+}
+
+// Photo/PDF files attached to a product that GC can choose to send during a
+// conversation (product shots, price cards, testimonial images).
+model ProductImage {
+  id        String  @id @default(cuid())
+  profileId String
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  fileName  String
+  label     String? // short description shown to GC so she knows when to send it
+  fileType  String // PHOTO | PDF
+  mimeType  String
+  data      Bytes
+  sizeBytes Int
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([profileId])
+}
+
+// Real customer results GC can cite at the deciding moment. Text social
+// proof (a quote + result) is injected into the sales prompt; visual proof
+// (before/after photos) is handled via ProductImage attachments labeled as
+// testimonials, which GC already knows how to send.
+model Testimonial {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  productId    String? // null = general/brand testimonial
+  product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  customerName String? // "Jamie L." / "a 45-year-old mum" — an attributable label
+  market       String? // MY | SG | BN — lets GC cite same-market proof
+  resultText   String // the quote / result, e.g. "lost 6kg in her first month"
+  rating       Int?    // 1-5 stars, optional
+  isActive     Boolean @default(true)
+  sortOrder    Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+  @@index([productId])
+}
+
+// A WhatsApp message template — mirrors a template registered in the tenant's
+// Meta WhatsApp Business account. Templates are the ONLY way to message a
+// customer outside the 24h customer-service window, so re-engagement
+// campaigns use them. We store the metadata + body so the agent can pick one
+// and we can fill {{1}},{{2}} variables at send time; Meta holds the approval.
+model MessageTemplate {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  name         String // exact template name as registered in Meta (e.g. "julypromo_dx")
+  language     String  @default("en") // e.g. en, zh_CN, ms
+  category     String  @default("MARKETING") // MARKETING | UTILITY
+  bodyText     String // the body with {{1}} {{2}} placeholders, for preview + var count
+  variableHint String? // what each variable means, e.g. "1=customer name, 2=offer"
+  status       String  @default("PENDING") // PENDING | APPROVED | REJECTED (mirrors Meta)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([profileId, name, language])
+  @@index([profileId])
+}
+
+model InboundAttachment {
+  id        String @id @default(cuid())
+  profileId String
+
+  fileName  String
+  fileType  String // PHOTO (images only for now)
+  mimeType  String
+  data      Bytes
+  sizeBytes Int
+
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model TrainingExample {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  scenarioKey     String
+  customerMessage String
+  agentReply      String
+  createdAt       DateTime @default(now())
+
+  @@index([profileId])
+}
+
+// A customer conversation-and-order. One row per customer contact per channel
+// — carries both the sales-pipeline state (pre-purchase) and the order state
+// (post-payment). Named Order because closing is the point.
+model Order {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  source            String  @default("PLAYGROUND") // PLAYGROUND | WHATSAPP | MESSENGER | INSTAGRAM
+  externalContactId String? // wa_id / PSID / IGSID — the channel-side identity
+  customerName      String?
+  phone             String?
+  deliveryAddress   String?
+  // Detected customer market (MY|SG|BN) — drives currency + shipping story.
+  market            String?
+  // Detected customer segment — drives which MAE pitch/mechanism story GC
+  // uses (e.g. "working mum", "postpartum", "3-high patient", "muscle gain").
+  segment           String?
+  productInterest   String? // free text of what they're eyeing
+
+  // Cart: [{productId, name, qty, unitPriceMyr}] — written by code from the
+  // model's structured order proposal, never trusted raw.
+  items    String @default("[]")
+  totalMyr Float? // exact expected payment amount — the vision amount-match target
+
+  // src/lib/constants.ts: New Inquiry | Qualifying | Recommended |
+  // Closing | Awaiting Payment | Payment Confirmed | Processing |
+  // Shipped | Delivered | Lost | Human Takeover Needed
+  status         String  @default("New Inquiry")
+  paymentStatus  String  @default("NONE") // NONE | INSTRUCTIONS_SENT | PENDING_CONFIRMATION | CONFIRMED
+  trackingNumber String?
+
+  summary        String?
+  nextAction     String?
+  needsHuman     Boolean @default(false)
+  takeoverReason String?
+
+  // Sales report card (AI post-conversation analysis) — JSON:
+  // { scores: {discovery, uspMatch, objectionHandling, closing}, outcome,
+  //   lostReason, coachingTip, gradedAt }
+  salesReport String?
+
+  // Proactive follow-up machine
+  lastCustomerMessageAt DateTime?
+  followUpCount         Int       @default(0)
+  nextFollowUpAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversation Conversation?
+
+  @@index([profileId, status])
+  @@index([profileId, nextFollowUpAt])
+}
+
+model Conversation {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  kind    String  @default("PLAYGROUND") // ONBOARDING | TRAINING | PLAYGROUND | WHATSAPP | MESSENGER | INSTAGRAM
+  orderId String? @unique
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([profileId, kind])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role                 String // CUSTOMER | GC | AGENT | SYSTEM
+  content              String
+  meta                 String? // JSON: extracted facts, suggestedStatus, takeover verdict, payment verification audits
+  attachmentIds        String? // JSON string[] of ProductImage ids sent with this message
+  inboundAttachmentIds String? // JSON string[] of InboundAttachment ids the customer sent
+  externalId           String? @unique // e.g. WhatsApp wamid — dedupes redelivered webhook events
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId])
+}
