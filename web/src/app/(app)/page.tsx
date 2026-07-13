@@ -7,6 +7,7 @@ import { scoreLead } from "@/lib/orders/lead-score";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Badge } from "@/components/ui/Badge";
+import { HeroBanner } from "@/components/ui/HeroBanner";
 import { FlameIcon, SnowflakeIcon, AlertIcon, ChartIcon } from "@/components/ui/icons";
 
 export default async function DashboardPage() {
@@ -91,16 +92,18 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero: one dominant metric, Apple product-page style */}
-      <div className="animate-fade-up">
-        <p className="text-[15px] text-black/45">Welcome back, {firstName}</p>
-        <div className="mt-2 flex items-baseline gap-4 flex-wrap">
-          <h1 className="text-[44px] leading-none font-semibold tracking-tight text-[var(--ink)]">
-            RM{revenue.toLocaleString()}
-          </h1>
-          <span className="text-[15px] text-black/40">confirmed revenue · {winRate}% win rate</span>
-        </div>
-      </div>
+      {/* Hero: real MAE product photography + brand purple, one dominant metric */}
+      <HeroBanner
+        image="/mae/hero-bcode.webp"
+        eyebrow="GC Top Sales"
+        title={`Welcome back, ${firstName}`}
+        subtitle="Your AI sales team is working the pipeline right now."
+        stats={[
+          { label: "Confirmed revenue", value: `RM${revenue.toLocaleString()}` },
+          { label: "Win rate", value: `${winRate}%` },
+          { label: "Paid orders", value: paid },
+        ]}
+      />
 
       {needsHuman > 0 && (
         <Link

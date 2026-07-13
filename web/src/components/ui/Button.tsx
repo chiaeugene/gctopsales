@@ -3,9 +3,10 @@ import type { ButtonHTMLAttributes } from "react";
 type Variant = "primary" | "secondary" | "ghost";
 
 const styles: Record<Variant, string> = {
-  primary: "bg-[var(--ink)] text-white hover:bg-[var(--accent-ink)]",
-  secondary: "bg-black/[0.04] text-[var(--ink)] hover:bg-black/[0.07]",
-  ghost: "text-black/50 hover:text-[var(--ink)] hover:bg-black/[0.04]",
+  primary:
+    "text-white bg-[linear-gradient(135deg,var(--accent)_0%,var(--accent-ink)_100%)] hover:brightness-110 [box-shadow:var(--shadow-purple)]",
+  secondary: "bg-[var(--accent-soft)] text-[var(--accent-ink)] hover:bg-[var(--accent-soft-2)]",
+  ghost: "text-black/50 hover:text-[var(--accent-ink)] hover:bg-black/[0.04]",
 };
 
 export function Button({

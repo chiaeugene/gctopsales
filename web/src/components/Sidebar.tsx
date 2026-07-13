@@ -74,9 +74,15 @@ export function Sidebar({
 
   return (
     <aside className="w-64 shrink-0 border-r border-black/[0.06] bg-white flex flex-col">
-      <div className="px-5 pt-6 pb-5">
-        <div className="text-[17px] font-semibold tracking-tight">GC Top Sales</div>
-        <div className="text-[11px] text-black/40 mt-0.5">Sales team workspace</div>
+      <div className="px-5 pt-6 pb-5 flex items-center gap-2.5">
+        <div
+          className="w-8 h-8 rounded-xl shrink-0 [box-shadow:var(--shadow-purple)]"
+          style={{ background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-ink) 100%)" }}
+        />
+        <div>
+          <div className="text-[17px] font-semibold tracking-tight">GC Top Sales</div>
+          <div className="text-[11px] text-black/40 -mt-0.5">Sales team workspace</div>
+        </div>
       </div>
 
       <nav className="flex-1 px-3 space-y-5 overflow-y-auto">
@@ -93,7 +99,9 @@ export function Sidebar({
                     href={item.href}
                     className={[
                       "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] font-medium transition-colors",
-                      active ? "bg-[var(--ink)] text-white" : "text-black/65 hover:bg-black/[0.045] hover:text-[var(--ink)]",
+                      active
+                  ? "text-white bg-[linear-gradient(135deg,var(--accent)_0%,var(--accent-ink)_100%)] [box-shadow:var(--shadow-purple)]"
+                  : "text-black/65 hover:bg-[var(--accent-soft)] hover:text-[var(--accent-ink)]",
                     ].join(" ")}
                   >
                     <Icon className={`w-[17px] h-[17px] ${active ? "text-white" : "text-black/40"}`} />
@@ -112,7 +120,9 @@ export function Sidebar({
               href="/connect"
               className={[
                 "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] font-medium transition-colors",
-                isActive("/connect") ? "bg-[var(--ink)] text-white" : "text-black/65 hover:bg-black/[0.045] hover:text-[var(--ink)]",
+                isActive("/connect")
+                  ? "text-white bg-[linear-gradient(135deg,var(--accent)_0%,var(--accent-ink)_100%)] [box-shadow:var(--shadow-purple)]"
+                  : "text-black/65 hover:bg-[var(--accent-soft)] hover:text-[var(--accent-ink)]",
               ].join(" ")}
             >
               <ConnectIcon className={`w-[17px] h-[17px] ${isActive("/connect") ? "text-white" : "text-black/40"}`} />
@@ -122,7 +132,9 @@ export function Sidebar({
               href="/settings"
               className={[
                 "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13.5px] font-medium transition-colors",
-                isActive("/settings") ? "bg-[var(--ink)] text-white" : "text-black/65 hover:bg-black/[0.045] hover:text-[var(--ink)]",
+                isActive("/settings")
+                  ? "text-white bg-[linear-gradient(135deg,var(--accent)_0%,var(--accent-ink)_100%)] [box-shadow:var(--shadow-purple)]"
+                  : "text-black/65 hover:bg-[var(--accent-soft)] hover:text-[var(--accent-ink)]",
               ].join(" ")}
             >
               <SettingsIcon className={`w-[17px] h-[17px] ${isActive("/settings") ? "text-white" : "text-black/40"}`} />
