@@ -2,24 +2,23 @@
 
 import Link from "next/link";
 import { ShadcnButton } from "@/components/ui/shadcn-button";
-import { FaWhatsapp, FaFacebookMessenger, FaInstagram, FaBolt } from "react-icons/fa";
+import { FaWhatsapp, FaFacebookMessenger, FaInstagram, FaFacebook } from "react-icons/fa";
 
 // Orbiting-channel hero — adapted from a community "stack" hero pattern
 // (icons orbiting a center node) but re-themed for GC Top Sales: the center
-// node is the brand mark and the orbiting icons are the three real channels
-// GC sells through (WhatsApp / Messenger / Instagram) plus a bolt for
-// "instant reply", not generic tech logos. Pure CSS animation, no
-// chart/animation library.
+// node is the brand mark and the orbiting icons are the real channels GC
+// sells through (WhatsApp / Messenger / Instagram / Facebook), not generic
+// tech logos. Pure CSS animation, no chart/animation library.
 const channelIcons = [
   { Icon: FaWhatsapp, color: "#25D366" },
   { Icon: FaFacebookMessenger, color: "#0084FF" },
   { Icon: FaInstagram, color: "#E1306C" },
-  { Icon: FaBolt, color: "var(--accent)" },
+  { Icon: FaFacebook, color: "#1877F2" },
 ];
 
 export default function FeatureSection() {
-  const orbitCount = 3;
-  const orbitGap = 5; // rem between orbits
+  const orbitCount = 2;
+  const orbitGap = 7.5; // rem between orbits
   const iconsPerOrbit = 4;
 
   return (
@@ -51,7 +50,7 @@ export default function FeatureSection() {
 
         {/* Right: orbit animation */}
         <div className="relative w-full md:w-1/2 h-64 md:h-full flex items-center justify-center md:justify-end overflow-hidden mt-8 md:mt-0">
-          <div className="relative w-[30rem] h-[30rem] md:translate-x-[12%] flex items-center justify-center">
+          <div className="relative w-[26rem] h-[26rem] md:translate-x-[15%] flex items-center justify-center">
             {/* Center node — brand mark */}
             <div
               className="relative w-20 h-20 rounded-full flex items-center justify-center text-white font-semibold text-lg tracking-tight [box-shadow:var(--shadow-purple)]"
