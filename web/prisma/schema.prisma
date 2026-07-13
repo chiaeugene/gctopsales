@@ -1,19 +1,16 @@
 // GC Top Sales — multi-tenant AI sales machine for MAE Global agents.
-// Currently on SQLite for local dev (no Postgres on this machine). For
-// production, flip provider to "postgresql", restore
-// `directUrl = env("DIRECT_URL")` under url, and point DATABASE_URL at a
-// fresh Postgres (e.g. a new Supabase project — NOT Mandy's database).
-// Enum-like fields stay as plain strings (portable, and Prisma string enums
-// don't require a migration to add a new status) — canonical values live in
-// src/lib/constants.ts.
+// Production: Render-managed Postgres. Enum-like fields stay as plain
+// strings (portable, and Prisma string enums don't require a migration to
+// add a new status) — canonical values live in src/lib/constants.ts.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "sqlite"
+  provider  = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
