@@ -95,7 +95,7 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* Hero: real MAE product photography + brand purple, one dominant metric */}
       <HeroBanner
-        image="/mae/hero-bcode.webp"
+        image="/mae/hero-skincare.webp"
         eyebrow="GC Top Sales"
         title={`Welcome back, ${firstName}`}
         subtitle="Your AI sales team is working the pipeline right now."

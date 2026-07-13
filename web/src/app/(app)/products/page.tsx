@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/Badge";
 import { FileIcon } from "@/components/ui/icons";
 
 // Real MAE product-line photography (downloaded from maeglobalofficial.com —
-// we're their agent) shown as each card's header image, keyed by series.
+// we're their agent). Shown once per series as a full-size banner rather than
+// squeezed into every small SKU card, where it just cropped to nothing.
 const SERIES_IMAGE: Record<string, string> = {
   "BCODE+": "/mae/product-bcode.webp",
   "Claríty Skincare": "/mae/product-skincare.webp",
@@ -122,29 +123,41 @@ export default function ProductsPage() {
       />
       {error && <div className="text-sm text-red-600">{error}</div>}
 
-      {[...bySeries.entries()].map(([series, items]) => (
-        <section key={series} className="space-y-3">
-          <h2 className="font-semibold text-lg tracking-tight">{series}</h2>
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {items.map((p) => {
-              const saving = p.priceRetailMyr - p.priceMemberMyr;
-              const img = SERIES_IMAGE[series];
-              return (
-                <Card key={p.id} padding="none" interactive className="overflow-hidden">
-                  {img && (
-                    <div className="relative h-28 w-full">
-                      <Image src={img} alt="" fill className="object-cover object-top" sizes="400px" />
-                      <div
-                        className="absolute inset-0"
-                        style={{ background: "linear-gradient(0deg, #fff 0%, rgba(255,255,255,0) 55%)" }}
-                      />
-                      <div
-                        className="absolute inset-0"
-                        style={{ background: "linear-gradient(100deg, rgba(74,43,133,0.55) 0%, rgba(74,43,133,0) 55%)" }}
-                      />
-                    </div>
-                  )}
-                  <div className="p-5 space-y-2">
+      {[...bySeries.entries()].map(([series, items]) => {
+        const img = SERIES_IMAGE[series];
+        return (
+          <section key={series} className="space-y-3">
+            {/* One generous banner per series — shows the real photography properly
+                instead of cropping it into every small SKU card. */}
+            <div className="relative rounded-2xl overflow-hidden h-40 sm:h-48">
+              {img ? (
+                <>
+                  <Image src={img} alt="" fill className="object-cover" sizes="900px" />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, rgba(12,12,14,0.75) 0%, rgba(12,12,14,0.35) 45%, rgba(12,12,14,0.05) 75%)",
+                    }}
+                  />
+                </>
+              ) : (
+                <div
+                  className="absolute inset-0"
+                  style={{ background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-ink) 100%)" }}
+                />
+              )}
+              <div className="absolute inset-0 flex flex-col justify-center px-6">
+                <h2 className="font-semibold text-2xl tracking-tight text-white">{series}</h2>
+                <p className="text-white/70 text-sm mt-0.5">{items.length} product{items.length > 1 ? "s" : ""}</p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {items.map((p) => {
+                const saving = p.priceRetailMyr - p.priceMemberMyr;
+                return (
+                  <Card key={p.id} interactive className="space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <div className="font-medium text-sm">{p.name}</div>
                       {p.code && <Badge tone="neutral">{p.code}</Badge>}
@@ -176,13 +189,13 @@ export default function ProductsPage() {
                         Delete
                       </button>
                     </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+                  </Card>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
 
       {editing && (
         <ProductEditor
