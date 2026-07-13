@@ -1,5 +1,4 @@
-import type { ProductImage } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { resolveSendableAttachmentMeta, type SendableFileMeta } from "@/lib/attachments";
 
 // Facebook Messenger + Instagram DM Send API client. Both channels share the
 // same Send API shape (POST /{page-id}/messages with a page access token);
@@ -55,10 +54,7 @@ export async function sendMetaAttachmentsByIds(
     return;
   }
   for (const id of attachmentIds.slice(0, MAX_ATTACHMENTS_PER_MESSAGE)) {
-    const attachment = await prisma.productImage.findUnique({
-      where: { id },
-      omit: { data: true },
-    });
+    const attachment = await resolveSendableAttachmentMeta(id);
     if (!attachment) continue;
     await sendMetaAttachmentUrl(creds, recipientId, attachment, `${baseUrl}/api/attachments/${id}/public`);
   }
@@ -67,7 +63,7 @@ export async function sendMetaAttachmentsByIds(
 async function sendMetaAttachmentUrl(
   creds: MetaMessagingCreds,
   recipientId: string,
-  attachment: Omit<ProductImage, "data">,
+  attachment: SendableFileMeta,
   url: string
 ): Promise<void> {
   try {

@@ -160,9 +160,10 @@ model ProductImage {
 }
 
 // Real customer results GC can cite at the deciding moment. Text social
-// proof (a quote + result) is injected into the sales prompt; visual proof
-// (before/after photos) is handled via ProductImage attachments labeled as
-// testimonials, which GC already knows how to send.
+// proof (a quote + result) and an optional before/after photo live on the
+// SAME record, so an agent manages proof-and-picture together in one place.
+// GC decides on her own when to send the photo (see engine.ts) — no manual
+// dispatch required.
 model Testimonial {
   id        String       @id @default(cuid())
   profileId String
@@ -176,6 +177,13 @@ model Testimonial {
   rating       Int?    // 1-5 stars, optional
   isActive     Boolean @default(true)
   sortOrder    Int     @default(0)
+
+  // Optional before/after photo. Bytes only ever loaded by the one
+  // byte-serving route, same discipline as ProductImage.
+  photoData      Bytes?
+  photoMimeType  String?
+  photoFileName  String?
+  photoSizeBytes Int?
 
   createdAt DateTime @default(now())
 

@@ -1,6 +1,45 @@
 import type { ProductImage } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 export const ATTACHMENT_MAX_BYTES = 8 * 1024 * 1024; // 8MB
+
+// Testimonial photos share the same "attachment id" namespace GC's
+// sendAttachmentIds output uses for ProductImage ids, disambiguated by this
+// prefix so every resolver (serve routes, WhatsApp/Messenger senders) can
+// route to the right table without guessing.
+export const TESTIMONIAL_PHOTO_PREFIX = "test_";
+
+export type SendableFile = { fileName: string; mimeType: string; fileType: "PHOTO" | "PDF"; data: Uint8Array };
+export type SendableFileMeta = { fileName: string; fileType: "PHOTO" | "PDF" };
+
+// Full bytes — used by WhatsApp's upload-then-reference send path. Loads
+// exactly one file, never a batch.
+export async function resolveSendableAttachment(id: string): Promise<SendableFile | null> {
+  if (id.startsWith(TESTIMONIAL_PHOTO_PREFIX)) {
+    const t = await prisma.testimonial.findUnique({ where: { id: id.slice(TESTIMONIAL_PHOTO_PREFIX.length) } });
+    if (!t || !t.photoData || !t.photoMimeType) return null;
+    return { fileName: t.photoFileName || "testimonial.jpg", mimeType: t.photoMimeType, fileType: "PHOTO", data: new Uint8Array(t.photoData) };
+  }
+  const a = await prisma.productImage.findUnique({ where: { id } });
+  if (!a) return null;
+  return { fileName: a.fileName, mimeType: a.mimeType, fileType: a.fileType as "PHOTO" | "PDF", data: new Uint8Array(a.data) };
+}
+
+// Metadata only — used by Messenger/Instagram's send-by-URL path, which
+// never needs the raw bytes on our side.
+export async function resolveSendableAttachmentMeta(id: string): Promise<SendableFileMeta | null> {
+  if (id.startsWith(TESTIMONIAL_PHOTO_PREFIX)) {
+    const t = await prisma.testimonial.findUnique({
+      where: { id: id.slice(TESTIMONIAL_PHOTO_PREFIX.length) },
+      select: { photoFileName: true, photoMimeType: true },
+    });
+    if (!t || !t.photoMimeType) return null;
+    return { fileName: t.photoFileName || "testimonial.jpg", fileType: "PHOTO" };
+  }
+  const a = await prisma.productImage.findUnique({ where: { id }, select: { fileName: true, fileType: true } });
+  if (!a) return null;
+  return { fileName: a.fileName, fileType: a.fileType as "PHOTO" | "PDF" };
+}
 
 export const ATTACHMENT_MIME_TO_TYPE: Record<string, "PHOTO" | "PDF"> = {
   "image/jpeg": "PHOTO",

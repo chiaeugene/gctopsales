@@ -1,5 +1,5 @@
 import type { Product, StoreProfile, TrainingExample, Order, Testimonial } from "@prisma/client";
-import type { AttachmentMetadata } from "@/lib/attachments";
+import { TESTIMONIAL_PHOTO_PREFIX, type AttachmentMetadata } from "@/lib/attachments";
 import { parseJson } from "@/lib/json";
 import {
   IdentityBrainSchema,
@@ -47,7 +47,7 @@ export function buildGcSystemPrompt(opts: {
   profile: StoreProfile;
   products: (Product & { attachments?: AttachmentMetadata[] })[];
   trainingExamples: TrainingExample[];
-  testimonials?: Testimonial[];
+  testimonials?: Omit<Testimonial, "photoData">[];
   order?: Order | null;
 }): string {
   const { profile, products, trainingExamples, testimonials = [], order } = opts;
@@ -159,14 +159,17 @@ ${marketKnown
         const stars = t.rating ? ` ${"★".repeat(t.rating)}` : "";
         const forProduct = t.productId && productName.get(t.productId) ? ` [${productName.get(t.productId)}]` : "";
         const mk = t.market ? ` (${t.market})` : "";
-        return `- ${who}${mk}${forProduct}: "${t.resultText}"${stars}`;
+        const photo = t.photoMimeType ? ` [photo available, id: ${TESTIMONIAL_PHOTO_PREFIX}${t.id}]` : "";
+        return `- ${who}${mk}${forProduct}: "${t.resultText}"${stars}${photo}`;
       })
       .join("\n");
     prompt += section(
       "Real customer results you can cite (social proof — use at the deciding moment)",
       `${lines}
 
-Use these REAL results as proof exactly when it moves the sale — right after a recommendation, or when a customer hesitates or doubts it works. Prefer a testimonial for the SAME product and, if possible, the same market/segment as this customer. Quote them naturally ("one of my customers, a busy mum, told me…"), never as a dumped list. NEVER invent, exaggerate, or alter a result — only use what's written above. If a customer wants visual proof and a product has a before/after image attached, offer to send it.`
+Use these REAL results as proof exactly when it moves the sale — right after a recommendation, or when a customer hesitates or doubts it works. Prefer a testimonial for the SAME product and, if possible, the same market/segment as this customer. Quote them naturally ("one of my customers, a busy mum, told me…"), never as a dumped list. NEVER invent, exaggerate, or alter a result — only use what's written above.
+
+Some testimonials have a real before/after photo attached (marked "[photo available, id: ...]" above). When one fits the moment — a customer hesitating, asking "does this actually work", or right after you cite that specific result — YOU decide on your own to send it by including its id in sendAttachmentIds. Do not ask the agent for permission and do not just describe the photo in words when you have the real one to send; a top closer shows proof instead of just claiming it. Only ever send a photo id that's listed above, and only when it's genuinely relevant to what's being discussed.`
     );
   }
 
@@ -224,7 +227,7 @@ ANTI-PATTERNS (never do these — they mark you as a cheap bot, not a top seller
     "Closing mastery — how a top 5% seller actually converts",
     `You are aiming to close, warmly, on a very high share of genuine conversations. Use these proven moves — naturally, never mechanically:
 - PROBLEM → AGITATE → SOLVE: once you understand their problem, briefly reflect back the cost of leaving it unsolved (the daily discomfort, how long they've put up with it, what it's stopping them from enjoying) BEFORE presenting the product. A customer who feels the problem is a customer ready to buy. Do this with empathy, never fear-mongering.
-- SOCIAL PROOF: weave in that this is an award-winning, best-selling MAE product with thousands of happy users and real results — reference the specific award/best-seller status in the product notes. If the agent has testimonial images attached, offer to send one at the deciding moment ("want me to show you what other customers experienced?").
+- SOCIAL PROOF: weave in that this is an award-winning, best-selling MAE product with thousands of happy users and real results — reference the specific award/best-seller status in the product notes. If a before/after photo is available for a relevant testimonial, just send it at the deciding moment rather than only describing it — proof beats a promise.
 - VALUE OVER PRICE: never let price stand naked. Frame it against the problem's cost and as a small daily amount ("that's about RM8 a day to finally fix your gut"). Anchor retail → member → saving so the member price feels like a win they're getting.
 - ASSUMPTIVE & CHOICE CLOSES: when buying signals appear, don't ask "do you want to buy?" — move forward: "shall I get this sent out to you?" or offer a choice between two good options ("the trial box to start, or the value bundle that most people go for?") — either answer is a yes.
 - HANDLE, DON'T ARGUE: every objection = "I need one more reason to feel safe." Empathize first, answer with a concrete fact/certification/testimonial, then re-close. Never get defensive, never pressure.

@@ -1,5 +1,4 @@
-import type { ProductImage } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { resolveSendableAttachment, type SendableFile } from "@/lib/attachments";
 
 // WhatsApp Cloud API client. Multi-tenant: every call takes the tenant's own
 // credentials (from their ChannelConnection row) — there is no global token.
@@ -83,12 +82,14 @@ export async function sendWhatsAppTemplate(
   }
 }
 
-// Uploads a product attachment's bytes to Meta's Media API, then sends it as
-// an image or document message referencing the returned media id.
+// Uploads an attachment's bytes to Meta's Media API, then sends it as an
+// image or document message referencing the returned media id. `attachment`
+// may be a product file or a testimonial before/after photo — both resolve
+// to the same shape via resolveSendableAttachment.
 export async function sendWhatsAppAttachment(
   creds: WhatsAppCreds,
   to: string,
-  attachment: ProductImage
+  attachment: SendableFile
 ): Promise<void> {
   try {
     const form = new FormData();
@@ -141,7 +142,7 @@ export async function sendWhatsAppAttachmentsByIds(
   attachmentIds: string[]
 ): Promise<void> {
   for (const id of attachmentIds.slice(0, MAX_ATTACHMENTS_PER_MESSAGE)) {
-    const attachment = await prisma.productImage.findUnique({ where: { id } });
+    const attachment = await resolveSendableAttachment(id);
     if (attachment) await sendWhatsAppAttachment(creds, to, attachment);
   }
 }

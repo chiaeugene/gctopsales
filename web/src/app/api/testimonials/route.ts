@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { TESTIMONIAL_PHOTO_PREFIX } from "@/lib/attachments";
 
 export async function GET() {
   return handle(async () => {
@@ -10,6 +11,7 @@ export async function GET() {
       where: { profileId: profile.id },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
       include: { product: { select: { id: true, name: true } } },
+      omit: { photoData: true },
     });
     return {
       testimonials: testimonials.map((t) => ({
@@ -21,6 +23,7 @@ export async function GET() {
         resultText: t.resultText,
         rating: t.rating,
         isActive: t.isActive,
+        photoUrl: t.photoMimeType ? `/api/attachments/${TESTIMONIAL_PHOTO_PREFIX}${t.id}` : null,
       })),
     };
   });

@@ -5,6 +5,7 @@ import { chatComplete, extractJson, llmConfigured, type ChatMessage } from "@/li
 import { buildGcSystemPrompt } from "@/lib/ai/prompts";
 import { EngineOutputSchema, type EngineOutput } from "@/lib/ai/schemas";
 import { AI_ALLOWED_STATUSES, MONEY_STATES, type OrderStatus } from "@/lib/constants";
+import { TESTIMONIAL_PHOTO_PREFIX } from "@/lib/attachments";
 
 const HISTORY_LIMIT = 40;
 
@@ -56,6 +57,9 @@ export async function generateGcReply(opts: {
       where: { profileId: profile.id, isActive: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
       take: 40,
+      // Metadata only — photoMimeType just tells us a photo exists; the
+      // bytes are never loaded here (same OOM discipline as attachments).
+      omit: { photoData: true },
     }),
     prisma.message.findMany({
       where: { conversationId },
@@ -133,9 +137,12 @@ export async function generateGcReply(opts: {
   if (!parsed.success) console.error("[engine] JSON contract violated twice; falling back to raw text + takeover.");
 
   // Guardrail: only allow attachment ids that actually belong to this
-  // tenant's active products — the model can never reference another
-  // tenant's files or an id it invented.
-  const validAttachmentIds = new Set(products.flatMap((p) => p.attachments.map((a) => a.id)));
+  // tenant's active products or active testimonials with a photo — the model
+  // can never reference another tenant's files or an id it invented.
+  const validAttachmentIds = new Set([
+    ...products.flatMap((p) => p.attachments.map((a) => a.id)),
+    ...testimonials.filter((t) => t.photoMimeType).map((t) => `${TESTIMONIAL_PHOTO_PREFIX}${t.id}`),
+  ]);
   const attachmentIds = output.sendAttachmentIds.filter((id) => validAttachmentIds.has(id));
 
   const updatedOrder = await applyEngineEffects(profile, order, output);

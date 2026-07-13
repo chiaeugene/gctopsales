@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +16,7 @@ type Testimonial = {
   resultText: string;
   rating: number | null;
   isActive: boolean;
+  photoUrl: string | null;
 };
 type Product = { id: string; name: string };
 
@@ -27,6 +28,8 @@ export default function TestimonialsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState<Partial<Testimonial> | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     const [t, p] = await Promise.all([fetch("/api/testimonials"), fetch("/api/products")]);
@@ -72,14 +75,41 @@ export default function TestimonialsPage() {
     await load();
   }
 
+  async function uploadPhoto(file: File) {
+    if (!draft?.id) return;
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch(`/api/testimonials/${draft.id}/photo`, { method: "POST", body: form });
+      if (!res.ok) {
+        setError((await res.json()).error || "Photo upload failed");
+        return;
+      }
+      const { url } = await res.json();
+      setDraft((d) => (d ? { ...d, photoUrl: url } : d));
+      await load();
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function removePhoto() {
+    if (!draft?.id) return;
+    await fetch(`/api/testimonials/${draft.id}/photo`, { method: "DELETE" });
+    setDraft((d) => (d ? { ...d, photoUrl: null } : d));
+    await load();
+  }
+
   return (
     <div className="max-w-3xl space-y-6">
       <PageHeader
         title="Customer results (social proof)"
         subtitle={
           <>
-            Real results GC cites at the deciding moment. Add genuine customer outcomes — GC uses them naturally when a
-            customer hesitates or doubts a product works. Only what you add here is ever used.
+            Real results GC cites at the deciding moment. Add a genuine quote and, where you have one, a before/after
+            photo — GC decides on her own when it fits to send it, the way a top seller would. Only what you add here
+            is ever used.
           </>
         }
         action={<Button onClick={() => setDraft({ isActive: true })}>+ Add result</Button>}
@@ -91,7 +121,11 @@ export default function TestimonialsPage() {
         {items.map((t) => (
           <Card key={t.id}>
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
+              {t.photoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={t.photoUrl} alt="" className="w-14 h-14 rounded-xl object-cover shrink-0 border border-black/[0.06]" />
+              )}
+              <div className="min-w-0 flex-1">
                 <div className="text-sm flex items-center flex-wrap gap-x-1">
                   <span className="font-medium">{t.customerName || "A customer"}</span>
                   {t.market && <span className="text-xs text-black/35"> · {t.market}</span>}
@@ -162,6 +196,42 @@ export default function TestimonialsPage() {
               <input type="checkbox" checked={draft.isActive ?? true} onChange={(e) => setDraft({ ...draft, isActive: e.target.checked })} />
               Active (GC can cite this)
             </label>
+
+            {/* Before/after photo — quote and picture live together; GC decides
+                on her own when to send it, no manual dispatch needed. */}
+            <div className="border-t border-black/[0.06] pt-3 space-y-2">
+              <div className="text-sm font-semibold">Before/after photo</div>
+              {!draft.id && <p className="text-xs text-black/45">Save this result first, then reopen it to add a photo.</p>}
+              {draft.id && (
+                <div className="flex items-center gap-3">
+                  {draft.photoUrl ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={draft.photoUrl} alt="" className="w-16 h-16 rounded-xl object-cover border border-black/[0.06]" />
+                      <button onClick={removePhoto} className="text-xs text-red-600 hover:underline">Remove photo</button>
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        ref={fileRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) uploadPhoto(f);
+                          e.target.value = "";
+                        }}
+                      />
+                      <Button variant="secondary" onClick={() => fileRef.current?.click()} disabled={uploading}>
+                        {uploading ? "Uploading…" : "Upload photo"}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-end gap-2 pt-1">
               <Button variant="secondary" onClick={() => setDraft(null)}>Cancel</Button>
               <Button onClick={() => save(draft)}>Save</Button>
