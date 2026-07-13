@@ -2,6 +2,10 @@ import Link from "next/link";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { ORDER_STATUSES } from "@/lib/constants";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { AlertIcon } from "@/components/ui/icons";
 
 export default async function OrdersPage(props: { searchParams: Promise<{ status?: string }> }) {
   const profile = await requireProfile();
@@ -14,22 +18,20 @@ export default async function OrdersPage(props: { searchParams: Promise<{ status
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Orders & Conversations</h1>
-      </div>
+    <div className="space-y-5">
+      <PageHeader title="Orders & Conversations" />
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 animate-fade-up">
         <FilterChip href="/orders" label="All" active={!status} />
         {ORDER_STATUSES.map((s) => (
           <FilterChip key={s} href={`/orders?status=${encodeURIComponent(s)}`} label={s} active={status === s} />
         ))}
       </div>
 
-      <div className="rounded-xl bg-white border border-neutral-200 overflow-x-auto">
+      <Card padding="none" className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-xs text-neutral-500 border-b border-neutral-200">
+            <tr className="text-left text-xs text-black/45 border-b border-black/[0.06]">
               <th className="px-4 py-3">Customer</th>
               <th className="px-4 py-3">Channel</th>
               <th className="px-4 py-3">Status</th>
@@ -38,35 +40,39 @@ export default async function OrdersPage(props: { searchParams: Promise<{ status
               <th className="px-4 py-3">Updated</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-100">
+          <tbody className="divide-y divide-black/[0.05]">
             {orders.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-neutral-400">
-                  No orders{status ? ` in “${status}”` : ""} yet.
+                <td colSpan={6} className="px-4 py-8 text-center text-black/35">
+                  No orders{status ? ` in "${status}"` : ""} yet.
                 </td>
               </tr>
             )}
             {orders.map((o) => (
-              <tr key={o.id} className="hover:bg-neutral-50">
+              <tr key={o.id} className="hover:bg-black/[0.02] transition-colors">
                 <td className="px-4 py-3">
-                  <Link href={`/orders/${o.id}`} className="font-medium text-violet-700 hover:underline">
+                  <Link href={`/orders/${o.id}`} className="font-medium text-[var(--accent-ink)] hover:underline">
                     {o.customerName || o.externalContactId || "New customer"}
                   </Link>
-                  {o.needsHuman && <span className="ml-2 text-xs text-amber-600 font-semibold">⚠ needs you</span>}
-                  <div className="text-xs text-neutral-400 truncate max-w-[26rem]">{o.summary || o.productInterest || ""}</div>
+                  {o.needsHuman && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-xs text-amber-600 font-semibold">
+                      <AlertIcon className="w-3 h-3" /> needs you
+                    </span>
+                  )}
+                  <div className="text-xs text-black/40 truncate max-w-[26rem]">{o.summary || o.productInterest || ""}</div>
                 </td>
-                <td className="px-4 py-3 text-xs">{o.source}</td>
+                <td className="px-4 py-3 text-xs text-black/60">{o.source}</td>
                 <td className="px-4 py-3">
-                  <span className="rounded-full bg-violet-50 text-violet-700 px-2 py-0.5 text-xs">{o.status}</span>
+                  <Badge tone="accent">{o.status}</Badge>
                 </td>
-                <td className="px-4 py-3 text-xs">{o.paymentStatus}</td>
-                <td className="px-4 py-3 text-xs">{o.totalMyr ? `RM${o.totalMyr.toLocaleString()}` : "—"}</td>
-                <td className="px-4 py-3 text-xs text-neutral-500">{o.updatedAt.toLocaleString("en-MY")}</td>
+                <td className="px-4 py-3 text-xs text-black/60">{o.paymentStatus}</td>
+                <td className="px-4 py-3 text-xs text-black/60 tabular-nums">{o.totalMyr ? `RM${o.totalMyr.toLocaleString()}` : "—"}</td>
+                <td className="px-4 py-3 text-xs text-black/40">{o.updatedAt.toLocaleString("en-MY")}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
+      </Card>
     </div>
   );
 }
@@ -77,8 +83,8 @@ function FilterChip({ href, label, active }: { href: string; label: string; acti
       href={href}
       className={
         active
-          ? "rounded-full bg-violet-700 text-white px-3 py-1 text-xs font-medium"
-          : "rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-600 hover:bg-neutral-100"
+          ? "rounded-full bg-[var(--ink)] text-white px-3 py-1 text-xs font-medium"
+          : "rounded-full border border-black/[0.08] px-3 py-1 text-xs font-medium text-black/60 hover:bg-black/[0.04] transition-colors"
       }
     >
       {label}

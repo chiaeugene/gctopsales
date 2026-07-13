@@ -1,9 +1,58 @@
 @import "tailwindcss";
 
 :root {
-  --gc-purple: #6d28d9;
+  /* Ink / canvas — never pure black or white */
+  --ink: #0c0c0e;
+  --canvas: #faf9f7;
+  --accent: #4c3a92;
+  --accent-ink: #2f2361;
+  --accent-soft: #efecfa;
+  --hot: #c2410c;
+  --hot-soft: #fef1e8;
+
+  --shadow-sm: 0 1px 2px rgba(12, 12, 14, 0.05), 0 1px 1px rgba(12, 12, 14, 0.03);
+  --shadow-md: 0 1px 2px rgba(12, 12, 14, 0.04), 0 10px 28px -8px rgba(12, 12, 14, 0.12);
+  --shadow-lg: 0 2px 4px rgba(12, 12, 14, 0.04), 0 24px 48px -16px rgba(12, 12, 14, 0.18);
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900 antialiased;
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.03em;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up {
+    animation: none;
+  }
+}
+
+/* SVG score-ring helper — see gym page */
+.score-ring {
+  transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .score-ring {
+    transition: none;
+  }
 }

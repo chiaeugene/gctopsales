@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { StarIcon } from "@/components/ui/icons";
 
 type Scenario = { key: string; title: string; opener: string; focus: string };
 type Msg = { role: "AGENT" | "CUSTOMER"; content: string };
@@ -70,91 +74,88 @@ export default function TrainPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Train GC</h1>
-          <p className="text-sm text-neutral-500">
-            You're the seller; GC plays real MAE customer types. Reply in your own voice — GC learns how you sell.
-          </p>
-        </div>
-        <button
-          onClick={synthesize}
-          disabled={busy}
-          className="rounded-lg bg-violet-700 text-white px-4 py-2 text-sm font-semibold hover:bg-violet-800 disabled:opacity-50"
-        >
-          Learn my style →
-        </button>
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        title="Train GC"
+        subtitle="You're the seller; GC plays real MAE customer types. Reply in your own voice — GC learns how you sell."
+        action={
+          <Button onClick={synthesize} disabled={busy}>
+            Learn my style
+          </Button>
+        }
+      />
 
       {styleResult && (
-        <div className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-          <div className="font-semibold mb-1">GC will now sound more like you:</div>
-          {styleResult}
-        </div>
+        <Card className="!bg-emerald-50 !border-emerald-200 flex items-start gap-2.5 text-sm text-emerald-900">
+          <StarIcon className="w-4 h-4 mt-0.5 shrink-0 text-emerald-700" />
+          <div>
+            <div className="font-semibold mb-1">GC will now sound more like you:</div>
+            {styleResult}
+          </div>
+        </Card>
       )}
 
-      <div className="flex gap-4 h-[calc(100vh-12rem)]">
+      <div className="flex gap-5 h-[calc(100vh-12rem)]">
         {/* Scenario list */}
         <div className="w-64 shrink-0 space-y-2 overflow-y-auto">
           {scenarios.map((s) => (
-            <button
-              key={s.key}
-              onClick={() => startScenario(s)}
-              className={
-                "block w-full text-left rounded-xl border p-3 " +
-                (active?.key === s.key ? "border-violet-500 bg-violet-50" : "border-neutral-200 bg-white hover:bg-neutral-50")
-              }
-            >
-              <div className="text-sm font-medium">{s.title}</div>
-              <div className="text-xs text-neutral-500 line-clamp-2">{s.focus}</div>
+            <button key={s.key} onClick={() => startScenario(s)} className="block w-full text-left">
+              <Card
+                interactive
+                padding="sm"
+                className={active?.key === s.key ? "!border-[var(--accent)] !bg-[var(--accent-soft)]" : ""}
+              >
+                <div className="text-sm font-medium">{s.title}</div>
+                <div className="text-xs text-black/45 line-clamp-2 mt-0.5">{s.focus}</div>
+              </Card>
             </button>
           ))}
         </div>
 
         {/* Chat */}
-        <div className="flex-1 rounded-xl bg-white border border-neutral-200 flex flex-col min-w-0">
+        <Card padding="none" className="flex-1 flex flex-col min-w-0">
           {!active ? (
-            <div className="flex-1 flex items-center justify-center text-sm text-neutral-400">
+            <div className="flex-1 flex items-center justify-center text-sm text-black/35">
               Pick a customer type to start role-playing.
             </div>
           ) : (
             <>
-              <div className="px-4 py-3 border-b border-neutral-200 text-sm">
-                <span className="font-semibold">{active.title}</span> — you are the seller
+              <div className="px-5 py-3.5 border-b border-black/[0.06] text-sm">
+                <span className="font-semibold">{active.title}</span>
+                <span className="text-black/45"> — you are the seller</span>
               </div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <div className="flex-1 overflow-y-auto p-5 space-y-3">
                 {messages.map((m, i) => (
                   <div key={i} className={m.role === "AGENT" ? "flex justify-end" : "flex justify-start"}>
                     <div
                       className={
                         m.role === "AGENT"
-                          ? "max-w-[75%] rounded-2xl rounded-br-sm bg-violet-600 text-white px-4 py-2 text-sm whitespace-pre-wrap"
-                          : "max-w-[75%] rounded-2xl rounded-bl-sm bg-neutral-100 px-4 py-2 text-sm whitespace-pre-wrap"
+                          ? "max-w-[75%] rounded-2xl rounded-br-md bg-[var(--ink)] text-white px-4 py-2.5 text-sm whitespace-pre-wrap"
+                          : "max-w-[75%] rounded-2xl rounded-bl-md bg-black/[0.04] px-4 py-2.5 text-sm whitespace-pre-wrap"
                       }
                     >
-                      {m.role === "CUSTOMER" && <div className="text-[10px] text-neutral-400 mb-0.5">Customer (GC)</div>}
+                      {m.role === "CUSTOMER" && <div className="text-[10px] text-black/35 mb-0.5">Customer (GC)</div>}
                       {m.content}
                     </div>
                   </div>
                 ))}
-                {busy && <div className="text-xs text-neutral-400">Customer is typing…</div>}
+                {busy && <div className="text-xs text-black/35">Customer is typing…</div>}
                 <div ref={bottomRef} />
               </div>
-              <form onSubmit={send} className="p-3 border-t border-neutral-200 flex gap-2">
+              <form onSubmit={send} className="p-3.5 border-t border-black/[0.06] flex gap-2">
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Reply as the seller (your own words)…"
-                  className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="flex-1 rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow"
                 />
-                <button type="submit" disabled={busy || !input.trim()} className="rounded-lg bg-violet-700 text-white px-4 py-2 text-sm font-semibold hover:bg-violet-800 disabled:opacity-50">
+                <Button type="submit" disabled={busy || !input.trim()}>
                   Send
-                </button>
+                </Button>
               </form>
             </>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

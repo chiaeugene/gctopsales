@@ -26,41 +26,43 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <form onSubmit={submit} className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 space-y-4">
-        <div className="text-center space-y-1">
-          <div className="text-3xl font-bold text-violet-700">GC Top Sales</div>
-          <p className="text-sm text-neutral-500">AI sales machine for MAE agents</p>
+    <main className="min-h-screen flex items-center justify-center p-6 bg-[var(--canvas)]">
+      <div className="w-full max-w-sm animate-fade-up">
+        <div className="text-center mb-8">
+          <div className="text-[26px] font-semibold tracking-tight text-[var(--ink)]">GC Top Sales</div>
+          <p className="mt-1.5 text-[14px] text-black/45">AI sales machine for MAE agents</p>
         </div>
-        <label className="block">
-          <span className="text-sm font-medium">Email</span>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-medium">Password</span>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-          />
-        </label>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-lg bg-violet-700 text-white py-2.5 text-sm font-semibold hover:bg-violet-800 disabled:opacity-50"
-        >
-          {busy ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
+        <form onSubmit={submit} className="rounded-2xl bg-white [box-shadow:var(--shadow-lg)] border border-black/[0.06] p-8 space-y-4">
+          <label className="block">
+            <span className="text-[13px] font-medium text-black/70">Email</span>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1.5 w-full rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow"
+            />
+          </label>
+          <label className="block">
+            <span className="text-[13px] font-medium text-black/70">Password</span>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1.5 w-full rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow"
+            />
+          </label>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <button
+            type="submit"
+            disabled={busy}
+            className="w-full rounded-full bg-[var(--ink)] text-white py-2.5 text-sm font-medium hover:bg-[var(--accent-ink)] disabled:opacity-40 transition-colors"
+          >
+            {busy ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

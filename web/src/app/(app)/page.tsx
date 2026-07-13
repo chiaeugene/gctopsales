@@ -4,6 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { parseJson } from "@/lib/json";
 import { MARKET_INFO, type Market } from "@/lib/constants";
 import { scoreLead } from "@/lib/orders/lead-score";
+import { Card } from "@/components/ui/Card";
+import { StatCard } from "@/components/ui/StatCard";
+import { Badge } from "@/components/ui/Badge";
+import { FlameIcon, SnowflakeIcon, AlertIcon, ChartIcon } from "@/components/ui/icons";
 
 export default async function DashboardPage() {
   const profile = await requireProfile();
@@ -25,6 +29,7 @@ export default async function DashboardPage() {
     where: { profileId: profile.id, paymentStatus: "CONFIRMED" },
     _sum: { totalMyr: true },
   });
+  const revenue = paidTotals._sum.totalMyr ?? 0;
 
   // Priority queue: open leads ranked by buying temperature.
   const openLeads = await prisma.order.findMany({
@@ -82,171 +87,179 @@ export default async function DashboardPage() {
   }
   const topLostReasons = [...lostReasons.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
 
-  const stats = [
-    { label: "Conversations", value: total },
-    { label: "Win rate", value: `${winRate}%` },
-    { label: "Paid orders", value: paid },
-    { label: "Revenue", value: `RM${(paidTotals._sum.totalMyr ?? 0).toLocaleString()}` },
-  ];
+  const firstName = profile.agentName?.split(" ")[0] || "there";
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+    <div className="space-y-8">
+      {/* Hero: one dominant metric, Apple product-page style */}
+      <div className="animate-fade-up">
+        <p className="text-[15px] text-black/45">Welcome back, {firstName}</p>
+        <div className="mt-2 flex items-baseline gap-4 flex-wrap">
+          <h1 className="text-[44px] leading-none font-semibold tracking-tight text-[var(--ink)]">
+            RM{revenue.toLocaleString()}
+          </h1>
+          <span className="text-[15px] text-black/40">confirmed revenue · {winRate}% win rate</span>
+        </div>
+      </div>
 
       {needsHuman > 0 && (
-        <Link href="/orders?status=Human+Takeover+Needed" className="block rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 hover:bg-amber-100">
-          ⚠️ {needsHuman} conversation{needsHuman > 1 ? "s" : ""} need your attention — click to review
+        <Link
+          href="/orders?status=Human+Takeover+Needed"
+          className="flex items-center gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 hover:bg-amber-100 transition-colors animate-fade-up"
+        >
+          <AlertIcon className="w-4 h-4 shrink-0" />
+          {needsHuman} conversation{needsHuman > 1 ? "s" : ""} need your attention — click to review
         </Link>
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((s) => (
-          <div key={s.label} className="rounded-xl bg-white border border-neutral-200 p-4">
-            <div className="text-2xl font-bold">{s.value}</div>
-            <div className="text-sm text-neutral-500">{s.label}</div>
-          </div>
-        ))}
+        <StatCard label="Conversations" value={total} />
+        <StatCard label="Win rate" value={`${winRate}%`} />
+        <StatCard label="Paid orders" value={paid} />
+        <StatCard label="Awaiting payment" value={awaitingPayment} />
       </div>
 
       {/* Priority queue — work the hottest leads first */}
-      <section className="rounded-xl bg-white border border-neutral-200">
-        <div className="px-4 py-3 border-b border-neutral-200 font-semibold text-sm flex items-center justify-between">
-          <span>🔥 Priority queue — work these first</span>
-          <span className="text-xs font-normal text-neutral-400">ranked by buying temperature</span>
-        </div>
-        <ul className="divide-y divide-neutral-100">
-          {hotLeads.length === 0 && <li className="px-4 py-6 text-sm text-neutral-500">No open leads right now.</li>}
-          {hotLeads.map(({ o, s }) => (
-            <li key={o.id}>
-              <Link href={`/orders/${o.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50">
-                <TempBadge temp={s.temp} score={s.score} />
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium truncate">
-                    {o.customerName || o.externalContactId || "New customer"}
-                    <span className="text-xs text-neutral-400"> · {o.status}</span>
-                    {o.needsHuman && <span className="text-xs text-amber-600 font-semibold"> · needs you</span>}
+      <section>
+        <Card padding="none">
+          <div className="px-5 py-4 border-b border-black/[0.06] flex items-center justify-between">
+            <span className="font-semibold text-[15px]">Priority queue — work these first</span>
+            <span className="text-xs text-black/35">ranked by buying temperature</span>
+          </div>
+          <ul className="divide-y divide-black/[0.05]">
+            {hotLeads.length === 0 && <li className="px-5 py-8 text-sm text-black/40">No open leads right now.</li>}
+            {hotLeads.map(({ o, s }) => (
+              <li key={o.id}>
+                <Link href={`/orders/${o.id}`} className="flex items-center gap-3 px-5 py-3.5 hover:bg-black/[0.02] transition-colors">
+                  <TempBadge temp={s.temp} score={s.score} />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium truncate">
+                      {o.customerName || o.externalContactId || "New customer"}
+                      <span className="text-xs text-black/35"> · {o.status}</span>
+                      {o.needsHuman && <span className="text-xs text-amber-600 font-semibold"> · needs you</span>}
+                    </div>
+                    <div className="text-xs text-black/40 truncate">{s.reasons.join(" · ")}</div>
                   </div>
-                  <div className="text-xs text-neutral-500 truncate">{s.reasons.join(" · ")}</div>
-                </div>
-                {o.totalMyr && <span className="text-xs text-neutral-500 shrink-0">RM{o.totalMyr.toLocaleString()}</span>}
-              </Link>
-            </li>
-          ))}
-        </ul>
+                  {o.totalMyr && <span className="text-xs text-black/40 shrink-0">RM{o.totalMyr.toLocaleString()}</span>}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
       </section>
 
       <div className="grid lg:grid-cols-2 gap-4">
         {/* Funnel */}
-        <section className="rounded-xl bg-white border border-neutral-200 p-4">
-          <div className="font-semibold text-sm mb-3">Conversion funnel</div>
-          <div className="space-y-2">
+        <Card>
+          <div className="font-semibold text-[15px] mb-4 flex items-center gap-2">
+            <ChartIcon className="w-4 h-4 text-black/30" />
+            Conversion funnel
+          </div>
+          <div className="space-y-3">
             {funnel.map((f) => {
               const pct = funnel[0].value > 0 ? Math.round((f.value / funnel[0].value) * 100) : 0;
               return (
                 <div key={f.label}>
-                  <div className="flex justify-between text-xs text-neutral-500">
+                  <div className="flex justify-between text-xs text-black/45 mb-1">
                     <span>{f.label}</span>
                     <span>{f.value} ({pct}%)</span>
                   </div>
-                  <div className="h-2 rounded-full bg-neutral-100 overflow-hidden">
-                    <div className="h-full bg-violet-500" style={{ width: `${pct}%` }} />
+                  <div className="h-1.5 rounded-full bg-black/[0.05] overflow-hidden">
+                    <div className="h-full rounded-full bg-[var(--accent)] transition-all duration-700" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
               );
             })}
           </div>
-        </section>
+        </Card>
 
         {/* Top products + revenue by market */}
-        <section className="rounded-xl bg-white border border-neutral-200 p-4 space-y-4">
-          <div>
-            <div className="font-semibold text-sm mb-2">Top products (by units in carts)</div>
-            {topProducts.length === 0 ? (
-              <p className="text-xs text-neutral-400">No carts yet.</p>
-            ) : (
-              <ul className="space-y-1">
-                {topProducts.map(([name, count]) => (
-                  <li key={name} className="flex justify-between text-xs">
-                    <span className="truncate mr-2">{name}</span>
-                    <span className="text-neutral-500 shrink-0">{count}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+        <Card>
+          <div className="space-y-5">
+            <div>
+              <div className="font-semibold text-[15px] mb-2.5">Top products (by units in carts)</div>
+              {topProducts.length === 0 ? (
+                <p className="text-xs text-black/35">No carts yet.</p>
+              ) : (
+                <ul className="space-y-1.5">
+                  {topProducts.map(([name, count]) => (
+                    <li key={name} className="flex justify-between text-xs">
+                      <span className="truncate mr-2 text-black/70">{name}</span>
+                      <span className="text-black/40 shrink-0 tabular-nums">{count}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div>
+              <div className="font-semibold text-[15px] mb-2.5">Revenue by market</div>
+              {revByMarket.size === 0 ? (
+                <p className="text-xs text-black/35">No paid orders yet.</p>
+              ) : (
+                <ul className="space-y-1.5">
+                  {[...revByMarket.entries()].map(([m, amt]) => (
+                    <li key={m} className="flex justify-between text-xs">
+                      <span className="text-black/70">{MARKET_INFO[m as Market]?.name ?? m}</span>
+                      <span className="text-black/40 tabular-nums">
+                        {MARKET_INFO[m as Market]?.currencySymbol ?? "RM"}
+                        {amt.toLocaleString()}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
-          <div>
-            <div className="font-semibold text-sm mb-2">Revenue by market</div>
-            {revByMarket.size === 0 ? (
-              <p className="text-xs text-neutral-400">No paid orders yet.</p>
-            ) : (
-              <ul className="space-y-1">
-                {[...revByMarket.entries()].map(([m, amt]) => (
-                  <li key={m} className="flex justify-between text-xs">
-                    <span>{MARKET_INFO[m as Market]?.name ?? m}</span>
-                    <span className="text-neutral-500">
-                      {MARKET_INFO[m as Market]?.currencySymbol ?? "RM"}
-                      {amt.toLocaleString()}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </section>
+        </Card>
       </div>
 
       {/* Lost-sale reasons */}
       {topLostReasons.length > 0 && (
-        <section className="rounded-xl bg-white border border-neutral-200 p-4">
-          <div className="font-semibold text-sm mb-2">Why deals are lost (from report cards)</div>
-          <ul className="space-y-1">
+        <Card>
+          <div className="font-semibold text-[15px] mb-2.5">Why deals are lost (from report cards)</div>
+          <ul className="space-y-1.5">
             {topLostReasons.map(([reason, count]) => (
               <li key={reason} className="flex justify-between text-xs">
-                <span className="mr-2">{reason}</span>
-                <span className="text-red-500 shrink-0">{count}×</span>
+                <span className="mr-2 text-black/70">{reason}</span>
+                <span className="text-red-500 shrink-0 font-medium">{count}×</span>
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
       )}
 
-      <section className="rounded-xl bg-white border border-neutral-200">
-        <div className="px-4 py-3 border-b border-neutral-200 font-semibold text-sm">Latest conversations</div>
-        <ul className="divide-y divide-neutral-100">
+      <Card padding="none">
+        <div className="px-5 py-4 border-b border-black/[0.06] font-semibold text-[15px]">Latest conversations</div>
+        <ul className="divide-y divide-black/[0.05]">
           {recent.length === 0 && (
-            <li className="px-4 py-6 text-sm text-neutral-500">
-              No conversations yet — try the <Link href="/playground" className="text-violet-700 underline">Playground</Link>.
+            <li className="px-5 py-8 text-sm text-black/40">
+              No conversations yet — try the <Link href="/playground" className="text-[var(--accent-ink)] underline underline-offset-2">Playground</Link>.
             </li>
           )}
           {recent.map((o) => (
             <li key={o.id}>
-              <Link href={`/orders/${o.id}`} className="flex items-center justify-between px-4 py-3 hover:bg-neutral-50">
+              <Link href={`/orders/${o.id}`} className="flex items-center justify-between px-5 py-3.5 hover:bg-black/[0.02] transition-colors">
                 <div className="min-w-0">
                   <div className="text-sm font-medium truncate">
                     {o.customerName || o.externalContactId || "New customer"}{" "}
-                    <span className="text-xs text-neutral-400">({o.source})</span>
+                    <span className="text-xs text-black/35">({o.source})</span>
                   </div>
-                  <div className="text-xs text-neutral-500 truncate">{o.summary || o.productInterest || "—"}</div>
+                  <div className="text-xs text-black/40 truncate">{o.summary || o.productInterest || "—"}</div>
                 </div>
-                <span className="ml-3 shrink-0 rounded-full bg-violet-50 text-violet-700 px-2.5 py-1 text-xs font-medium">{o.status}</span>
+                <Badge tone="accent">{o.status}</Badge>
               </Link>
             </li>
           ))}
         </ul>
-      </section>
+      </Card>
 
-      <p className="text-xs text-neutral-400">Lost count: {lost} · Awaiting payment: {awaitingPayment}</p>
+      <p className="text-xs text-black/30">Lost count: {lost} · Awaiting payment: {awaitingPayment}</p>
     </div>
   );
 }
 
 function TempBadge({ temp, score }: { temp: string; score: number }) {
-  const style =
-    temp === "hot" ? "bg-red-100 text-red-700" : temp === "warm" ? "bg-amber-100 text-amber-700" : "bg-neutral-100 text-neutral-500";
-  const emoji = temp === "hot" ? "🔥" : temp === "warm" ? "🌤️" : "❄️";
-  return (
-    <span className={`shrink-0 rounded-lg px-2 py-1 text-xs font-bold ${style}`} title={`Score ${score}/100`}>
-      {emoji} {score}
-    </span>
-  );
+  if (temp === "hot") return <Badge tone="hot" icon={<FlameIcon className="w-3.5 h-3.5" />}>{score}</Badge>;
+  if (temp === "warm") return <Badge tone="warm">{score}</Badge>;
+  return <Badge tone="cold" icon={<SnowflakeIcon className="w-3.5 h-3.5" />}>{score}</Badge>;
 }

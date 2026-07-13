@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { CheckIcon } from "@/components/ui/icons";
 
 type Msg = { role: string; content: string };
 
@@ -62,29 +66,30 @@ export default function SetupPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Set up GC</h1>
-        <p className="text-sm text-neutral-500">
-          A quick conversational setup — GC will ask about your store voice, selling style, and (most importantly) your
-          payment details. Everything is saved to your brains automatically; you can fine-tune later in Settings.
-        </p>
-      </div>
+    <div className="max-w-2xl mx-auto space-y-5">
+      <PageHeader
+        title="Set up GC"
+        subtitle="A quick conversational setup — GC will ask about your store voice, selling style, and (most importantly) your payment details. Everything is saved to your brains automatically; you can fine-tune later in Settings."
+      />
 
       {done && (
-        <div className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-          ✅ Setup complete — GC is configured. You can refine anything in <a href="/settings" className="underline">Settings</a>, or{" "}
-          <a href="/playground" className="underline">test GC now</a>.
-        </div>
+        <Card className="!bg-emerald-50 !border-emerald-200 flex items-start gap-2.5 text-sm text-emerald-900">
+          <CheckIcon className="w-4 h-4 mt-0.5 shrink-0 text-emerald-700" />
+          <span>
+            Setup complete — GC is configured. You can refine anything in{" "}
+            <a href="/settings" className="underline">Settings</a>, or{" "}
+            <a href="/playground" className="underline">test GC now</a>.
+          </span>
+        </Card>
       )}
 
-      <div className="rounded-xl bg-white border border-neutral-200 min-h-[24rem] flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <Card padding="none" className="min-h-[24rem] flex flex-col">
+        <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {!started && (
             <div className="text-center mt-16">
-              <button onClick={start} disabled={busy} className="rounded-lg bg-violet-700 text-white px-5 py-2.5 text-sm font-semibold hover:bg-violet-800 disabled:opacity-50">
+              <Button onClick={start} disabled={busy}>
                 {busy ? "Starting…" : "Start setup interview"}
-              </button>
+              </Button>
             </div>
           )}
           {messages.map((m, i) => (
@@ -92,31 +97,31 @@ export default function SetupPage() {
               <div
                 className={
                   m.role === "CUSTOMER"
-                    ? "max-w-[80%] rounded-2xl rounded-br-sm bg-violet-600 text-white px-4 py-2 text-sm whitespace-pre-wrap"
-                    : "max-w-[80%] rounded-2xl rounded-bl-sm bg-neutral-100 px-4 py-2 text-sm whitespace-pre-wrap"
+                    ? "max-w-[80%] rounded-2xl rounded-br-md bg-[var(--ink)] text-white px-4 py-2.5 text-sm whitespace-pre-wrap"
+                    : "max-w-[80%] rounded-2xl rounded-bl-md bg-black/[0.04] px-4 py-2.5 text-sm whitespace-pre-wrap"
                 }
               >
                 {m.content}
               </div>
             </div>
           ))}
-          {busy && started && <div className="text-xs text-neutral-400">GC is typing…</div>}
+          {busy && started && <div className="text-xs text-black/35">GC is typing…</div>}
           <div ref={bottomRef} />
         </div>
         {started && (
-          <form onSubmit={send} className="p-3 border-t border-neutral-200 flex gap-2">
+          <form onSubmit={send} className="p-3.5 border-t border-black/[0.06] flex gap-2">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your answer…"
-              className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="flex-1 rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow"
             />
-            <button type="submit" disabled={busy || !input.trim()} className="rounded-lg bg-violet-700 text-white px-4 py-2 text-sm font-semibold hover:bg-violet-800 disabled:opacity-50">
+            <Button type="submit" disabled={busy || !input.trim()}>
               Send
-            </button>
+            </Button>
           </form>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

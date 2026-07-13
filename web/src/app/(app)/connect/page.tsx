@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { CheckIcon, AlertIcon } from "@/components/ui/icons";
 
 type Conn = { channel: string; externalId: string; displayName: string | null; isActive: boolean } | null;
 type Info = {
@@ -9,6 +13,9 @@ type Info = {
   verifyToken: string;
   connected: { WHATSAPP: Conn; MESSENGER: Conn; INSTAGRAM: Conn };
 };
+
+const inputClass =
+  "mt-1.5 w-full rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow";
 
 export default function ConnectPage() {
   const [info, setInfo] = useState<Info | null>(null);
@@ -57,7 +64,7 @@ export default function ConnectPage() {
     }
   }
 
-  if (!info) return <div className="text-sm text-neutral-400">Loading…</div>;
+  if (!info) return <div className="text-sm text-black/40">Loading…</div>;
 
   const connected = info.connected[tab];
   const idLabel =
@@ -66,13 +73,10 @@ export default function ConnectPage() {
 
   return (
     <div className="max-w-3xl space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold">Connect your channels</h1>
-        <p className="text-sm text-neutral-500">
-          Connect WhatsApp, Instagram DM, and Facebook Messenger so GC replies to your customers automatically. You&apos;ll
-          paste credentials from your own Meta account — a 5-10 minute one-time setup per channel.
-        </p>
-      </div>
+      <PageHeader
+        title="Connect your channels"
+        subtitle="Connect WhatsApp, Instagram DM, and Facebook Messenger so GC replies to your customers automatically. You'll paste credentials from your own Meta account — a 5-10 minute one-time setup per channel."
+      />
 
       <div className="flex gap-2">
         {(["WHATSAPP", "MESSENGER", "INSTAGRAM"] as const).map((c) => (
@@ -80,33 +84,35 @@ export default function ConnectPage() {
             key={c}
             onClick={() => setTab(c)}
             className={
-              "rounded-lg px-4 py-2 text-sm font-medium " +
-              (tab === c ? "bg-violet-700 text-white" : "bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-50")
+              "rounded-full px-4 py-2 text-sm font-medium transition-colors inline-flex items-center gap-1.5 " +
+              (tab === c ? "bg-[var(--ink)] text-white" : "bg-white border border-black/[0.08] text-black/60 hover:bg-black/[0.03]")
             }
           >
             {c === "WHATSAPP" ? "WhatsApp" : c === "MESSENGER" ? "Messenger" : "Instagram"}
-            {info.connected[c] && " ✓"}
+            {info.connected[c] && <CheckIcon className="w-3.5 h-3.5" />}
           </button>
         ))}
       </div>
 
       {connected ? (
-        <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-900 flex items-center justify-between">
-          <span>
-            ✅ Connected: <strong>{connected.displayName || connected.externalId}</strong>
+        <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+          <span className="flex items-center gap-2">
+            <CheckIcon className="w-4 h-4 shrink-0" />
+            Connected: <strong>{connected.displayName || connected.externalId}</strong>
           </span>
           <button onClick={() => disconnect(tab, connected.externalId)} className="text-red-600 hover:underline text-xs">
             Disconnect
           </button>
         </div>
       ) : (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-800">
+        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-800">
+          <AlertIcon className="w-3.5 h-3.5 shrink-0" />
           Not connected yet — follow the steps below.
         </div>
       )}
 
       {/* Step-by-step guide */}
-      <div className="rounded-xl bg-white border border-neutral-200 p-5 space-y-4">
+      <Card className="space-y-4">
         <h2 className="font-semibold">{tab === "WHATSAPP" ? "WhatsApp Business" : tab === "MESSENGER" ? "Facebook Messenger" : "Instagram DM"} setup</h2>
 
         {tab === "WHATSAPP" && (
@@ -146,38 +152,40 @@ export default function ConnectPage() {
         )}
 
         {/* Copyable webhook config */}
-        <div className="space-y-2 border-t border-neutral-100 pt-3">
+        <div className="space-y-2 border-t border-black/[0.06] pt-3">
           <CopyRow label="Callback / Webhook URL" value={webhookUrl} />
           <CopyRow label="Verify token" value={info.verifyToken} />
         </div>
-      </div>
+      </Card>
 
       {/* Connect form */}
       {!connected && (
-        <form onSubmit={connect} className="rounded-xl bg-white border border-neutral-200 p-5 grid md:grid-cols-2 gap-3">
-          <h2 className="font-semibold md:col-span-2">Enter your {tab === "WHATSAPP" ? "WhatsApp" : tab === "MESSENGER" ? "Messenger" : "Instagram"} credentials</h2>
-          <label className="block text-xs">
-            <span className="text-neutral-500">{idLabel}</span>
-            <input required value={form.externalId} onChange={(e) => setForm({ ...form, externalId: e.target.value })} className="mt-1 w-full rounded-lg border border-neutral-300 px-2 py-1.5 text-sm" />
-          </label>
-          <label className="block text-xs">
-            <span className="text-neutral-500">Display name (optional)</span>
-            <input value={form.displayName} onChange={(e) => setForm({ ...form, displayName: e.target.value })} className="mt-1 w-full rounded-lg border border-neutral-300 px-2 py-1.5 text-sm" />
-          </label>
-          <label className="block text-xs md:col-span-2">
-            <span className="text-neutral-500">Access token (stored securely server-side, never shown again)</span>
-            <input required type="password" value={form.accessToken} onChange={(e) => setForm({ ...form, accessToken: e.target.value })} className="mt-1 w-full rounded-lg border border-neutral-300 px-2 py-1.5 text-sm" />
-          </label>
-          {error && <p className="text-xs text-red-600 md:col-span-2">{error}</p>}
-          <div className="md:col-span-2">
-            <button type="submit" disabled={busy} className="rounded-lg bg-violet-700 text-white px-5 py-2 text-sm font-semibold hover:bg-violet-800 disabled:opacity-50">
-              {busy ? "Connecting…" : "Connect"}
-            </button>
-          </div>
-        </form>
+        <Card padding="none">
+          <form onSubmit={connect} className="grid md:grid-cols-2 gap-3 p-5">
+            <h2 className="font-semibold md:col-span-2">Enter your {tab === "WHATSAPP" ? "WhatsApp" : tab === "MESSENGER" ? "Messenger" : "Instagram"} credentials</h2>
+            <label className="block text-xs">
+              <span className="text-black/45">{idLabel}</span>
+              <input required value={form.externalId} onChange={(e) => setForm({ ...form, externalId: e.target.value })} className={inputClass} />
+            </label>
+            <label className="block text-xs">
+              <span className="text-black/45">Display name (optional)</span>
+              <input value={form.displayName} onChange={(e) => setForm({ ...form, displayName: e.target.value })} className={inputClass} />
+            </label>
+            <label className="block text-xs md:col-span-2">
+              <span className="text-black/45">Access token (stored securely server-side, never shown again)</span>
+              <input required type="password" value={form.accessToken} onChange={(e) => setForm({ ...form, accessToken: e.target.value })} className={inputClass} />
+            </label>
+            {error && <p className="text-xs text-red-600 md:col-span-2">{error}</p>}
+            <div className="md:col-span-2">
+              <Button type="submit" disabled={busy}>
+                {busy ? "Connecting…" : "Connect"}
+              </Button>
+            </div>
+          </form>
+        </Card>
       )}
 
-      <p className="text-xs text-neutral-400">
+      <p className="text-xs text-black/35">
         One-click connect (Meta Embedded Signup) is coming — it removes the token copying once our Meta app finishes
         review. Until then, this manual connect works fully.
       </p>
@@ -190,10 +198,10 @@ function Steps({ steps }: { steps: string[] }) {
     <ol className="space-y-2">
       {steps.map((s, i) => (
         <li key={i} className="flex gap-3 text-sm">
-          <span className="shrink-0 w-6 h-6 rounded-full bg-violet-100 text-violet-700 text-xs font-bold flex items-center justify-center">
+          <span className="shrink-0 w-6 h-6 rounded-full bg-[var(--accent-soft)] text-[var(--accent-ink)] text-xs font-bold flex items-center justify-center">
             {i + 1}
           </span>
-          <span className="text-neutral-700">{s}</span>
+          <span className="text-black/70">{s}</span>
         </li>
       ))}
     </ol>
@@ -204,18 +212,25 @@ function CopyRow({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-neutral-500 w-40 shrink-0">{label}</span>
-      <code className="flex-1 text-xs bg-neutral-100 rounded px-2 py-1.5 truncate">{value}</code>
-      <button
+      <span className="text-xs text-black/45 w-40 shrink-0">{label}</span>
+      <code className="flex-1 text-xs bg-black/[0.04] rounded-lg px-2 py-1.5 truncate">{value}</code>
+      <Button
+        variant="secondary"
         onClick={() => {
           navigator.clipboard.writeText(value);
           setCopied(true);
           setTimeout(() => setCopied(false), 1500);
         }}
-        className="text-xs rounded-lg border border-neutral-300 px-2 py-1.5 hover:bg-neutral-50"
+        className="!px-2.5 !py-1.5 !text-xs"
       >
-        {copied ? "Copied ✓" : "Copy"}
-      </button>
+        {copied ? (
+          <span className="inline-flex items-center gap-1">
+            <CheckIcon className="w-3.5 h-3.5" /> Copied
+          </span>
+        ) : (
+          "Copy"
+        )}
+      </Button>
     </div>
   );
 }
