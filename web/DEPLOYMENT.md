@@ -32,14 +32,56 @@ Copy `.env.example` → set every value. Minimum to boot: `DATABASE_URL`, `DIREC
 
 ## 4. Meta app setup (one app serves all tenants)
 
-1. Create a Meta app (Business type) with WhatsApp, Messenger, and Instagram products.
-2. **Webhooks:**
-   - WhatsApp → callback `https://<host>/api/webhooks/whatsapp`, verify token = `META_WEBHOOK_VERIFY_TOKEN`. Subscribe to `messages`.
-   - Messenger → callback `https://<host>/api/webhooks/meta`. Subscribe to `messages`, `messaging_postbacks`.
-   - Instagram → callback `https://<host>/api/webhooks/meta`. Subscribe to `messages`.
-3. `META_APP_SECRET` = the app secret (used to verify every inbound webhook signature).
-4. Each agent connects their own numbers/pages in **Settings → Meta channels** by pasting their phone-number-id / page-id / IG-id + a permanent access token. Inbound events route to the right tenant by that id.
-5. **Later:** replace manual token entry with Meta Embedded Signup (Facebook Login for Business) — it writes into the same `ChannelConnection` rows, so nothing else changes. Requires Meta app review (Advanced Access + Business/Tech-Provider verification), which is why manual credentials are the day-one path.
+One Meta app serves every agent — nobody creates their own app. Two connect
+paths exist and both write into the same `ChannelConnection` table:
+
+- **One-click connect** (`MetaConnectButtons`, Connect page): agent clicks
+  "Connect with Facebook", logs in, picks their WhatsApp number / Page, done.
+  No token or ID ever touches them. This is what steps 1-6 below unlock.
+- **Manual paste** (always available, no setup required): agent pastes their
+  own phone-number-id/page-id/IG-id + a permanent access token in
+  Settings → Meta channels. Works today with zero Meta app configuration.
+
+### Setting up one-click connect
+
+1. **Create the Meta app**: developers.facebook.com → My Apps → Create App →
+   type "Other" → "Business". Note the **App ID** and **App Secret** (App
+   Dashboard → Settings → Basic).
+2. **Add products**: WhatsApp, Messenger (Facebook Login comes with it),
+   Instagram.
+3. **Webhooks** (App Dashboard → each product → Webhooks):
+   - WhatsApp → callback `https://<host>/api/webhooks/whatsapp`, verify
+     token = `META_WEBHOOK_VERIFY_TOKEN`. Subscribe to `messages`.
+   - Messenger/Instagram → callback `https://<host>/api/webhooks/meta`.
+     Subscribe to `messages`, `messaging_postbacks`. (The connect flow
+     itself also auto-subscribes each Page/WABA via the Graph API once an
+     agent connects — this webhook config is the app-level default.)
+4. **Facebook Login for Business** (App Dashboard → Facebook Login for
+   Business → Configurations → Create): request
+   `pages_show_list, pages_messaging, instagram_basic, instagram_manage_messages, pages_manage_metadata, business_management`.
+   Note the configuration's **Configuration ID**.
+5. **WhatsApp Embedded Signup** (App Dashboard → WhatsApp → Embedded Signup →
+   Configuration → Create), linked to a WhatsApp Business Account. Note its
+   **Configuration ID**.
+6. Set env vars and redeploy: `META_APP_SECRET` (App Secret from step 1),
+   `NEXT_PUBLIC_META_APP_ID` (App ID), `NEXT_PUBLIC_META_LOGIN_CONFIG_ID`
+   (step 4), `NEXT_PUBLIC_META_WA_CONFIG_ID` (step 5).
+
+At this point one-click connect works for **you** (the app's admins/testers)
+— good enough to test the whole flow end to end immediately. To let real
+agents (people with no role on your Meta app) use it:
+
+7. **Business Verification**: Meta Business Suite → Business Settings →
+   Business Info → Start Verification. Needs your business's legal
+   documents; Meta reviews it (can take a few days).
+8. **App Review**: App Dashboard → App Review → Request the permissions
+   listed in step 4, plus `whatsapp_business_management` and
+   `whatsapp_business_messaging`. Meta asks for a short screencast per
+   permission showing the actual connect flow in this app — record one
+   using the Connect page. Typically a few days to a couple of weeks.
+
+Manual paste keeps working the entire time — nothing is blocked on Meta's
+review clock.
 
 ## 5. First-run checklist per agent
 

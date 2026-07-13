@@ -5,6 +5,9 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CheckIcon, AlertIcon } from "@/components/ui/icons";
+import { MetaConnectButtons } from "@/components/MetaConnectButtons";
+
+const META_APP_CONFIGURED = Boolean(process.env.NEXT_PUBLIC_META_APP_ID);
 
 type Conn = { channel: string; externalId: string; displayName: string | null; isActive: boolean } | null;
 type Info = {
@@ -23,6 +26,7 @@ export default function ConnectPage() {
   const [form, setForm] = useState({ externalId: "", accessToken: "", displayName: "" });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [showManual, setShowManual] = useState(!META_APP_CONFIGURED);
 
   async function load() {
     const res = await fetch("/api/connect-info");
@@ -75,9 +79,24 @@ export default function ConnectPage() {
     <div className="max-w-3xl space-y-5">
       <PageHeader
         title="Connect your channels"
-        subtitle="Connect WhatsApp, Instagram DM, and Facebook Messenger so GC replies to your customers automatically. You'll paste credentials from your own Meta account — a 5-10 minute one-time setup per channel."
+        subtitle={
+          META_APP_CONFIGURED
+            ? "Log in with Facebook and pick your business — no tokens or IDs to copy. One-time, one click per channel."
+            : "Connect WhatsApp, Instagram DM, and Facebook Messenger so GC replies to your customers automatically. You'll paste credentials from your own Meta account — a 5-10 minute one-time setup per channel."
+        }
       />
 
+      {META_APP_CONFIGURED && <MetaConnectButtons onConnected={load} />}
+
+      <button
+        onClick={() => setShowManual((v) => !v)}
+        className="text-xs font-medium text-black/40 hover:text-[var(--accent-ink)] transition-colors"
+      >
+        {showManual ? "Hide" : META_APP_CONFIGURED ? "Advanced: connect manually instead" : "Manual setup"}
+      </button>
+
+      {showManual && (
+        <>
       <div className="flex gap-2">
         {(["WHATSAPP", "MESSENGER", "INSTAGRAM"] as const).map((c) => (
           <button
@@ -184,11 +203,8 @@ export default function ConnectPage() {
           </form>
         </Card>
       )}
-
-      <p className="text-xs text-black/35">
-        One-click connect (Meta Embedded Signup) is coming — it removes the token copying once our Meta app finishes
-        review. Until then, this manual connect works fully.
-      </p>
+        </>
+      )}
     </div>
   );
 }
