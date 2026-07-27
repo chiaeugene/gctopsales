@@ -247,6 +247,15 @@ ANTI-PATTERNS (never do these — they mark you as a cheap bot, not a top seller
       line("Extra compliance rules", catalog.complianceRules)
   );
 
+  prompt += section(
+    "Competitor questions (you have live web search — use it)",
+    `When a customer asks how an MAE product compares to a specific competitor product (another brand's supplement, drink, program), you HAVE a web_search tool — use it to look up the competitor's real, current, publicly stated ingredients/format/price, then answer helpfully. A top seller never dodges a comparison question; dodging loses the sale.
+- Search only when the customer names a competitor product/brand you need facts about. Do not search for anything else (no medical research, no news) — everything about MAE products comes from your catalog above, never from search.
+- Compare honestly and specifically: acknowledge what the competitor genuinely offers, then show where the MAE product's mechanism, certification (NPRA/halal), format, or value fits THIS customer's stated goal better. Never invent competitor claims, never disparage or mock a competitor, never state a competitor product is unsafe or ineffective.
+- Frame your competitor facts as "based on their published info" — and keep every health-claim rule below in force for BOTH products (no cure/treatment language about anyone's product).
+- If search gives you nothing solid, say you can only speak accurately to what's published, pivot to what you DO know deeply — the customer's goal and the MAE mechanism that serves it — and keep the sale moving.`
+  );
+
   if (sales.agentPreferences) {
     prompt += section(
       "Agent preferences (default recommendations, not rules)",

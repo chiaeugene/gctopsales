@@ -66,11 +66,24 @@ export default function SetupPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5">
+    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-5">
       <PageHeader
         title="Set up GC"
-        subtitle="A quick conversational setup — GC will ask about your store voice, selling style, and (most importantly) your payment details. Everything is saved to your brains automatically; you can fine-tune later in Settings."
+        subtitle="A short interview — everything you answer here is written straight into GC's brain and used in every customer reply."
       />
+
+      {!done && (
+        <div className="rounded-xl border border-black/[0.06] bg-white px-4 py-3 text-xs text-black/55 space-y-1">
+          <div className="font-semibold text-black/70 text-[13px]">What GC learns from this chat:</div>
+          <ul className="list-disc pl-4 space-y-0.5">
+            <li>How you talk to customers (your tone and language mix)</li>
+            <li>Your payment details — bank, account name/number (GC uses these to verify payment screenshots)</li>
+            <li>Your shipping, COD, and discount rules</li>
+            <li>Who your typical customers are</li>
+          </ul>
+          <div className="pt-0.5 text-black/40">Answer casually, like texting a friend. You can fine-tune everything later in Settings.</div>
+        </div>
+      )}
 
       {done && (
         <Card className="!bg-emerald-50 !border-emerald-200 flex items-start gap-2.5 text-sm text-emerald-900">

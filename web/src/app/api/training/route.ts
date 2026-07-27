@@ -29,8 +29,19 @@ async function getConvo(profileId: string, scenarioKey: string) {
 
 export async function GET() {
   return handle(async () => {
-    await requireProfile();
-    return { scenarios: SCENARIOS };
+    const profile = await requireProfile();
+    const [exampleCount, sales] = await Promise.all([
+      prisma.trainingExample.count({ where: { profileId: profile.id } }),
+      Promise.resolve(profile.salesBrain),
+    ]);
+    const styleProfile = (() => {
+      try {
+        return (JSON.parse(sales || "{}") as { styleProfile?: string }).styleProfile ?? null;
+      } catch {
+        return null;
+      }
+    })();
+    return { scenarios: SCENARIOS, exampleCount, styleProfile };
   });
 }
 
@@ -62,24 +73,47 @@ export async function POST(req: Request) {
       content: m.content,
     }));
 
-    // Record the agent's message (if any).
-    if (body.data.message?.trim()) {
+    // Record the agent's message (if any) — BOTH as conversation history and
+    // as a TrainingExample, which the live sales prompt injects verbatim as a
+    // voice example. This is what makes "type here → GC replies like you" true.
+    const agentMessage = body.data.message?.trim();
+    let saved = false;
+    if (agentMessage) {
+      const lastCustomerMsg = [...priorMessages].reverse().find((m) => m.role === "CUSTOMER");
       await prisma.message.create({
-        data: { conversationId: convo.id, role: "AGENT", content: body.data.message.trim() },
+        data: { conversationId: convo.id, role: "AGENT", content: agentMessage },
       });
+      if (lastCustomerMsg) {
+        await prisma.trainingExample.create({
+          data: {
+            profileId: profile.id,
+            scenarioKey: body.data.scenarioKey,
+            customerMessage: lastCustomerMsg.content,
+            agentReply: agentMessage,
+          },
+        });
+        saved = true;
+      }
     }
 
     const customerReply = await roleplayCustomerTurn({
       profile,
       scenarioKey: body.data.scenarioKey,
       history,
-      agentMessage: body.data.message?.trim() ?? null,
+      agentMessage: agentMessage ?? null,
     });
 
     await prisma.message.create({
       data: { conversationId: convo.id, role: "CUSTOMER", content: customerReply },
     });
 
-    return { customerReply };
+    const exampleCount = await prisma.trainingExample.count({ where: { profileId: profile.id } });
+    // Auto-refresh the style profile every 5 examples so the agent never has
+    // to remember to click a button for training to "count".
+    if (saved && exampleCount >= 3 && exampleCount % 5 === 0) {
+      synthesizeStyleProfile(profile).catch(() => {});
+    }
+
+    return { customerReply, saved, exampleCount };
   });
 }

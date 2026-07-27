@@ -51,7 +51,10 @@ export async function generateGcReply(opts: {
     }),
     prisma.trainingExample.findMany({
       where: { profileId: profile.id },
-      orderBy: { createdAt: "asc" },
+      // Newest first — the prompt injects up to 12 and the agent's most
+      // recent replies are the best signal of their current voice.
+      orderBy: { createdAt: "desc" },
+      take: 12,
     }),
     prisma.testimonial.findMany({
       where: { profileId: profile.id, isActive: true },
@@ -96,7 +99,9 @@ export async function generateGcReply(opts: {
     messages.push({ role: "user", content: "SYSTEM: Open this conversation with a warm greeting appropriate to the store. Output the mandatory JSON contract." });
   }
 
-  const raw = await chatComplete({ system, messages, maxTokens: 4000, temperature: 0.7 });
+  // webSearch lets GC research competitor products on the spot (prompt
+  // gates when she actually uses it — see "Competitor questions" section).
+  const raw = await chatComplete({ system, messages, maxTokens: 4000, temperature: 0.7, webSearch: true });
 
   let parsed = EngineOutputSchema.safeParse(extractJson(raw));
   if (!parsed.success) {

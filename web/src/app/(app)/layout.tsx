@@ -24,7 +24,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen flex">
       <Sidebar email={user.email} isAdmin={user.role === "ADMIN"} onSignOut={doSignOut} />
-      <main className="flex-1 min-w-0 p-8 max-w-6xl">{children}</main>
+      {/* pt-18 clears the fixed mobile top bar; desktop keeps the old rhythm */}
+      <main className="flex-1 min-w-0 px-4 pb-6 pt-[4.5rem] sm:px-6 lg:p-8 max-w-6xl">{children}</main>
     </div>
   );
 }

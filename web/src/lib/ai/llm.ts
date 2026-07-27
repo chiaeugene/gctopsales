@@ -18,6 +18,10 @@ export async function chatComplete(opts: {
   messages: ChatMessage[];
   maxTokens?: number;
   temperature?: number;
+  // Lets the model search the web (Anthropic server-side tool) — used so GC
+  // can answer competitor-product questions with real, current facts instead
+  // of refusing or guessing. No-op on the OpenAI provider.
+  webSearch?: boolean;
 }): Promise<string> {
   const provider = process.env.LLM_PROVIDER || "anthropic";
   const maxTokens = opts.maxTokens ?? 1024;
@@ -37,22 +41,51 @@ export async function chatComplete(opts: {
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const model = process.env.GC_LLM_MODEL || "claude-sonnet-5";
-  // Newer Claude models reject the deprecated `temperature` param.
-  const res = await client.messages.create({
+
+  const tools = opts.webSearch
+    ? [{ type: "web_search_20260209" as const, name: "web_search" as const, max_uses: 3 }]
+    : undefined;
+
+  // With server-side tools the API can pause its internal loop
+  // (stop_reason "pause_turn") — re-send with the partial assistant turn
+  // appended and it resumes automatically.
+  const anthropicMessages: Anthropic.MessageParam[] = opts.messages.map((m) => ({
+    role: m.role,
+    content: m.content,
+  }));
+  let res = await client.messages.create({
     model,
     max_tokens: maxTokens,
     system: opts.system,
-    messages: opts.messages,
+    messages: anthropicMessages,
+    ...(tools ? { tools } : {}),
   });
-  const block = res.content.find((b) => b.type === "text");
-  if (!block) {
+  let continuations = 0;
+  while (res.stop_reason === "pause_turn" && continuations < 3) {
+    anthropicMessages.push({ role: "assistant", content: res.content });
+    res = await client.messages.create({
+      model,
+      max_tokens: maxTokens,
+      system: opts.system,
+      messages: anthropicMessages,
+      ...(tools ? { tools } : {}),
+    });
+    continuations++;
+  }
+
+  // With web search the response interleaves text with server_tool_use /
+  // web_search_tool_result blocks and may contain several text blocks —
+  // concatenate them all (the JSON contract extractor scans the whole thing).
+  const texts = res.content.filter((b): b is Anthropic.TextBlock => b.type === "text");
+  if (texts.length === 0) {
     console.error(
       "[llm debug] no text block — stop_reason:", res.stop_reason,
       "content types:", res.content.map((b) => b.type),
       "usage:", JSON.stringify(res.usage)
     );
+    return "";
   }
-  return block && block.type === "text" ? block.text : "";
+  return texts.map((b) => b.text).join("\n");
 }
 
 // Extracts the first JSON object from a model response (handles ```json fences
