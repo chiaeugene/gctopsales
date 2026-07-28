@@ -2,6 +2,7 @@ import type { StoreProfile } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { chatComplete, llmConfigured, extractJson, type ChatMessage } from "@/lib/ai/llm";
 import { getScenario } from "@/lib/training/scenarios";
+import { humanizeReply } from "@/lib/ai/humanize";
 import { SalesBrainSchema } from "@/lib/ai/schemas";
 import { parseJson, toJson } from "@/lib/json";
 import { LlmNotConfiguredError } from "@/lib/ai/engine";
@@ -39,7 +40,7 @@ export async function roleplayCustomerTurn(opts: {
     // Kick off with the scenario's opener directly (no model call needed).
     return scenario?.opener ?? "Hi";
   }
-  return (await chatComplete({ system, messages, maxTokens: 500, temperature: 0.8 })).trim();
+  return humanizeReply((await chatComplete({ system, messages, maxTokens: 500, temperature: 0.8 })).trim());
 }
 
 // After a role-play (or several), synthesize the agent's demonstrated voice

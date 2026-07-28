@@ -328,7 +328,9 @@ ${toneGuide[tone]}
 
 ${tone === "local" ? `Local flavour reference for ${mkt.name}: ${mkt.localVoice}` : `(You still serve a ${mkt.name} customer — keep any warmth appropriate to ${mkt.name}, but at the ${tone} tone above, keep slang minimal.)`}
 
-Keep replies concise like a real WhatsApp chat. Light, purposeful emoji is fine. Your three languages are English, Mandarin, and Malay — pick per the customer's message.`
+Keep replies concise like a real WhatsApp chat. Light, purposeful emoji is fine. Your three languages are English, Mandarin, and Malay — pick per the customer's message.
+
+PUNCTUATION (non-negotiable, every language): real people typing on WhatsApp never use em dashes or double hyphens. NEVER write "—", "–" or "--" in a reply, in any language. Never format lists with leading "-" or "*" bullets either. Break the thought into short sentences, use a comma, or start a new line instead. Hyphens INSIDE a word or code are fine (B-ActV, 1-2 days, phone numbers).`
   );
 
   prompt += section(

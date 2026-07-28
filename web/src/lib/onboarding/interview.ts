@@ -10,6 +10,7 @@ import {
   type InterviewOutput,
 } from "@/lib/ai/schemas";
 import { parseJson, toJson } from "@/lib/json";
+import { humanizeReply } from "@/lib/ai/humanize";
 import { LlmNotConfiguredError } from "@/lib/ai/engine";
 
 // AI-led setup interview: instead of a cold form, GC interviews the agent
@@ -91,6 +92,7 @@ export async function runInterviewTurn(opts: {
   const output: InterviewOutput = parsed.success
     ? parsed.data
     : { reply: raw.trim() || "Could you tell me a bit about your store?", extracted: {}, readyToWrapUp: false };
+  output.reply = humanizeReply(output.reply);
 
   // Merge extracted brain edits into the profile (deep-merge per brain).
   const updated = await applyInterviewExtract(opts.profile, output);

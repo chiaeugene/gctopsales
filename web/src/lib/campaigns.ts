@@ -1,6 +1,7 @@
 import type { StoreProfile } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { chatComplete, llmConfigured } from "@/lib/ai/llm";
+import { humanizeReply } from "@/lib/ai/humanize";
 import { parseJson } from "@/lib/json";
 import { IdentityBrainSchema } from "@/lib/ai/schemas";
 
@@ -121,7 +122,8 @@ Respond ONLY with a JSON array: [{"id": "<the lead id>", "message": "<the person
   const arr = parseMessageArray(raw);
   const out: Record<string, string> = {};
   for (const item of arr) {
-    if (item && typeof item.id === "string" && typeof item.message === "string") out[item.id] = item.message;
+    if (item && typeof item.id === "string" && typeof item.message === "string")
+      out[item.id] = humanizeReply(item.message);
   }
   return out;
 }

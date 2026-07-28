@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { parseJson, toJson } from "@/lib/json";
 import { chatComplete, extractJson, llmConfigured, type ChatMessage } from "@/lib/ai/llm";
 import { buildGcSystemPrompt } from "@/lib/ai/prompts";
+import { humanizeReply } from "@/lib/ai/humanize";
 import { EngineOutputSchema, type EngineOutput } from "@/lib/ai/schemas";
 import { AI_ALLOWED_STATUSES, MONEY_STATES, type OrderStatus } from "@/lib/constants";
 import { TESTIMONIAL_PHOTO_PREFIX } from "@/lib/attachments";
@@ -140,6 +141,10 @@ export async function generateGcReply(opts: {
         sendAttachmentIds: [],
       };
   if (!parsed.success) console.error("[engine] JSON contract violated twice; falling back to raw text + takeover.");
+
+  // Hard guarantee: no AI-looking dash punctuation ever reaches a customer,
+  // regardless of what the model produced (any language).
+  output.reply = humanizeReply(output.reply);
 
   // Guardrail: only allow attachment ids that actually belong to this
   // tenant's active products or active testimonials with a photo — the model
