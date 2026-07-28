@@ -133,7 +133,7 @@ export async function POST(req: Request) {
               });
               if (result?.reply) {
                 await sendWhatsAppText(creds, message.from, result.reply);
-                if (result.attachmentIds.length) await sendWhatsAppAttachmentsByIds(creds, message.from, result.attachmentIds);
+                if (result.attachmentIds.length) await sendWhatsAppAttachmentsByIds(creds, message.from, result.attachmentIds, profile.id);
               }
               continue;
             }
@@ -162,7 +162,7 @@ export async function POST(req: Request) {
 
           await sendWhatsAppText(creds, message.from, result.reply);
           if (result.attachmentIds.length) {
-            await sendWhatsAppAttachmentsByIds(creds, message.from, result.attachmentIds);
+            await sendWhatsAppAttachmentsByIds(creds, message.from, result.attachmentIds, profile.id);
           }
         } catch (err) {
           console.error("[whatsapp webhook] failed to process message", message.id, err);

@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import type { ProductImage } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
@@ -13,32 +14,58 @@ export type SendableFile = { fileName: string; mimeType: string; fileType: "PHOT
 export type SendableFileMeta = { fileName: string; fileType: "PHOTO" | "PDF" };
 
 // Full bytes — used by WhatsApp's upload-then-reference send path. Loads
-// exactly one file, never a batch.
-export async function resolveSendableAttachment(id: string): Promise<SendableFile | null> {
+// exactly one file, never a batch. Tenant-scoped: an id belonging to a
+// different profile resolves to null even if it exists.
+export async function resolveSendableAttachment(id: string, profileId: string): Promise<SendableFile | null> {
   if (id.startsWith(TESTIMONIAL_PHOTO_PREFIX)) {
-    const t = await prisma.testimonial.findUnique({ where: { id: id.slice(TESTIMONIAL_PHOTO_PREFIX.length) } });
+    const t = await prisma.testimonial.findFirst({
+      where: { id: id.slice(TESTIMONIAL_PHOTO_PREFIX.length), profileId },
+    });
     if (!t || !t.photoData || !t.photoMimeType) return null;
     return { fileName: t.photoFileName || "testimonial.jpg", mimeType: t.photoMimeType, fileType: "PHOTO", data: new Uint8Array(t.photoData) };
   }
-  const a = await prisma.productImage.findUnique({ where: { id } });
+  const a = await prisma.productImage.findFirst({ where: { id, profileId } });
   if (!a) return null;
   return { fileName: a.fileName, mimeType: a.mimeType, fileType: a.fileType as "PHOTO" | "PDF", data: new Uint8Array(a.data) };
 }
 
 // Metadata only — used by Messenger/Instagram's send-by-URL path, which
-// never needs the raw bytes on our side.
-export async function resolveSendableAttachmentMeta(id: string): Promise<SendableFileMeta | null> {
+// never needs the raw bytes on our side. Tenant-scoped like the above.
+export async function resolveSendableAttachmentMeta(id: string, profileId: string): Promise<SendableFileMeta | null> {
   if (id.startsWith(TESTIMONIAL_PHOTO_PREFIX)) {
-    const t = await prisma.testimonial.findUnique({
-      where: { id: id.slice(TESTIMONIAL_PHOTO_PREFIX.length) },
+    const t = await prisma.testimonial.findFirst({
+      where: { id: id.slice(TESTIMONIAL_PHOTO_PREFIX.length), profileId },
       select: { photoFileName: true, photoMimeType: true },
     });
     if (!t || !t.photoMimeType) return null;
     return { fileName: t.photoFileName || "testimonial.jpg", fileType: "PHOTO" };
   }
-  const a = await prisma.productImage.findUnique({ where: { id }, select: { fileName: true, fileType: true } });
+  const a = await prisma.productImage.findFirst({ where: { id, profileId }, select: { fileName: true, fileType: true } });
   if (!a) return null;
   return { fileName: a.fileName, fileType: a.fileType as "PHOTO" | "PDF" };
+}
+
+// --- Signed public attachment URLs -----------------------------------------
+// The /api/attachments/[id]/public route must be reachable by Meta's servers
+// without a session (Messenger/IG fetch attachments by URL), but a bare cuid
+// is guessable enough that we don't want it to be the only lock — especially
+// for testimonial before/after photos. Each generated URL carries an HMAC of
+// the id; the route rejects anything without a valid signature.
+
+function attachmentSigningSecret(): string | null {
+  return process.env.NEXTAUTH_SECRET || process.env.META_APP_SECRET || null;
+}
+
+export function signAttachmentId(id: string): string | null {
+  const secret = attachmentSigningSecret();
+  if (!secret) return null; // fail closed — caller skips the send
+  return crypto.createHmac("sha256", secret).update(`attachment:${id}`).digest("hex").slice(0, 32);
+}
+
+export function verifyAttachmentSig(id: string, sig: string | null): boolean {
+  const expected = signAttachmentId(id);
+  if (!expected || !sig || sig.length !== expected.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
 }
 
 export const ATTACHMENT_MIME_TO_TYPE: Record<string, "PHOTO" | "PDF"> = {

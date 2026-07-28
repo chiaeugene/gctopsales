@@ -84,11 +84,11 @@ async function run(req: Request) {
           if (order.source === "WHATSAPP") {
             const creds = { phoneNumberId: connection.externalId, accessToken: connection.accessToken };
             await sendWhatsAppText(creds, order.externalContactId, output.reply);
-            if (attachmentIds.length) await sendWhatsAppAttachmentsByIds(creds, order.externalContactId, attachmentIds);
+            if (attachmentIds.length) await sendWhatsAppAttachmentsByIds(creds, order.externalContactId, attachmentIds, profile.id);
           } else {
             const creds = { pageId: connection.externalId, accessToken: connection.accessToken };
             await sendMetaText(creds, order.externalContactId, output.reply);
-            if (attachmentIds.length) await sendMetaAttachmentsByIds(creds, order.externalContactId, attachmentIds);
+            if (attachmentIds.length) await sendMetaAttachmentsByIds(creds, order.externalContactId, attachmentIds, profile.id);
           }
         }
       }

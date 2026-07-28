@@ -139,10 +139,11 @@ export async function sendWhatsAppAttachment(
 export async function sendWhatsAppAttachmentsByIds(
   creds: WhatsAppCreds,
   to: string,
-  attachmentIds: string[]
+  attachmentIds: string[],
+  profileId: string
 ): Promise<void> {
   for (const id of attachmentIds.slice(0, MAX_ATTACHMENTS_PER_MESSAGE)) {
-    const attachment = await resolveSendableAttachment(id);
+    const attachment = await resolveSendableAttachment(id, profileId);
     if (attachment) await sendWhatsAppAttachment(creds, to, attachment);
   }
 }

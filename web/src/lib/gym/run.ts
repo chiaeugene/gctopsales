@@ -37,8 +37,10 @@ export async function runGym(profile: StoreProfile): Promise<GymReport> {
       orderBy: { sortOrder: "asc" },
       include: { attachments: { orderBy: { sortOrder: "asc" }, omit: { data: true } } },
     }),
-    prisma.trainingExample.findMany({ where: { profileId: profile.id }, orderBy: { createdAt: "asc" } }),
-    prisma.testimonial.findMany({ where: { profileId: profile.id, isActive: true }, take: 40 }),
+    // Mirror the live engine: newest examples win, and never load photo bytes
+    // (40 BLOBs per gym run is an OOM waiting to happen).
+    prisma.trainingExample.findMany({ where: { profileId: profile.id }, orderBy: { createdAt: "desc" }, take: 12 }),
+    prisma.testimonial.findMany({ where: { profileId: profile.id, isActive: true }, take: 40, omit: { photoData: true } }),
   ]);
 
   const system = buildGcSystemPrompt({ profile, products, trainingExamples, testimonials, order: null });
@@ -79,7 +81,7 @@ async function runScenario(
   sc: GymScenario,
   products: Product[],
   trainingExamples: TrainingExample[],
-  testimonials: Testimonial[]
+  testimonials: Omit<Testimonial, "photoData">[]
 ): Promise<ScenarioResult> {
   void products;
   void trainingExamples;

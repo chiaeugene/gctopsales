@@ -1,4 +1,4 @@
-import { resolveSendableAttachmentMeta, type SendableFileMeta } from "@/lib/attachments";
+import { resolveSendableAttachmentMeta, signAttachmentId, type SendableFileMeta } from "@/lib/attachments";
 
 // Facebook Messenger + Instagram DM Send API client. Both channels share the
 // same Send API shape (POST /{page-id}/messages with a page access token);
@@ -44,7 +44,8 @@ export async function sendMetaText(creds: MetaMessagingCreds, recipientId: strin
 export async function sendMetaAttachmentsByIds(
   creds: MetaMessagingCreds,
   recipientId: string,
-  attachmentIds: string[]
+  attachmentIds: string[],
+  profileId: string
 ): Promise<void> {
   const baseUrl = process.env.PUBLIC_BASE_URL;
   if (!baseUrl) {
@@ -54,9 +55,14 @@ export async function sendMetaAttachmentsByIds(
     return;
   }
   for (const id of attachmentIds.slice(0, MAX_ATTACHMENTS_PER_MESSAGE)) {
-    const attachment = await resolveSendableAttachmentMeta(id);
+    const attachment = await resolveSendableAttachmentMeta(id, profileId);
     if (!attachment) continue;
-    await sendMetaAttachmentUrl(creds, recipientId, attachment, `${baseUrl}/api/attachments/${id}/public`);
+    const sig = signAttachmentId(id);
+    if (!sig) {
+      console.error("[meta-messaging] No signing secret (NEXTAUTH_SECRET/META_APP_SECRET) — skipping attachment send.");
+      return;
+    }
+    await sendMetaAttachmentUrl(creds, recipientId, attachment, `${baseUrl}/api/attachments/${id}/public?sig=${sig}`);
   }
 }
 

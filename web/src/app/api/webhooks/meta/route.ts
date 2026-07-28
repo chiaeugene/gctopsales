@@ -117,7 +117,7 @@ export async function POST(req: Request) {
             });
             if (result?.reply) {
               await sendMetaText(creds, senderId, result.reply);
-              if (result.attachmentIds.length) await sendMetaAttachmentsByIds(creds, senderId, result.attachmentIds);
+              if (result.attachmentIds.length) await sendMetaAttachmentsByIds(creds, senderId, result.attachmentIds, profile.id);
             }
             continue;
           }
@@ -175,7 +175,7 @@ export async function POST(req: Request) {
 
         await sendMetaText(creds, senderId, result.reply);
         if (result.attachmentIds.length) {
-          await sendMetaAttachmentsByIds(creds, senderId, result.attachmentIds);
+          await sendMetaAttachmentsByIds(creds, senderId, result.attachmentIds, profile.id);
         }
       } catch (err) {
         console.error(`[meta webhook] failed to process ${channel} message`, message.mid, err);

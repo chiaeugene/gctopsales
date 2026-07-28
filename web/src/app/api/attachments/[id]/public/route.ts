@@ -1,20 +1,26 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { TESTIMONIAL_PHOTO_PREFIX } from "@/lib/attachments";
+import { TESTIMONIAL_PHOTO_PREFIX, verifyAttachmentSig } from "@/lib/attachments";
 
 // Unauthenticated byte-serving route: Messenger/Instagram send attachments
 // by URL (not upload-then-reference like WhatsApp), so Meta's servers must
-// be able to fetch this without a session. Security is by unguessable cuid
-// only — deliberately the same tradeoff already accepted for WhatsApp's
-// media upload path. `id` is either a raw ProductImage cuid or a
-// testimonial photo id prefixed with "test_".
+// be able to fetch this without a session. Every URL we hand to Meta carries
+// an HMAC signature (?sig=...) minted at send time; anything without a valid
+// signature is rejected, so a bare/guessed cuid is not enough. `id` is
+// either a raw ProductImage cuid or a testimonial photo id prefixed with
+// "test_".
 //
 // Deliberately does not use the shared `handle()` wrapper: it always calls
 // NextResponse.json(data), which would JSON-serialize this raw byte
 // response instead of streaming it.
-export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
+export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await ctx.params;
+
+    const sig = new URL(req.url).searchParams.get("sig");
+    if (!verifyAttachmentSig(id, sig)) {
+      return NextResponse.json({ error: "Attachment not found" }, { status: 404 });
+    }
 
     if (id.startsWith(TESTIMONIAL_PHOTO_PREFIX)) {
       const testimonialId = id.slice(TESTIMONIAL_PHOTO_PREFIX.length);
