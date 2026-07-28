@@ -17,6 +17,28 @@ export class LlmNotConfiguredError extends Error {
   }
 }
 
+export class DailyReplyCapError extends Error {
+  constructor(public cap: number) {
+    super(`Daily GC reply limit reached (${cap}/day). Resets at midnight.`);
+    this.name = "DailyReplyCapError";
+  }
+}
+
+// Cost guardrail: cap how many AI replies one agent can generate per day
+// (each reply is an Anthropic call, possibly with web search). Override with
+// the GC_DAILY_REPLY_CAP env var; 0 disables the cap.
+const DAILY_REPLY_CAP = Number(process.env.GC_DAILY_REPLY_CAP ?? 200);
+
+async function assertUnderDailyCap(profileId: string) {
+  if (!DAILY_REPLY_CAP) return;
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const used = await prisma.message.count({
+    where: { role: "GC", createdAt: { gte: startOfDay }, conversation: { profileId } },
+  });
+  if (used >= DAILY_REPLY_CAP) throw new DailyReplyCapError(DAILY_REPLY_CAP);
+}
+
 // Full auto-reply pipeline: load tenant brains → compile prompt → call LLM →
 // parse output contract → apply guarded side effects (facts, cart, status,
 // takeover). Used by the playground, every channel webhook, and the
@@ -35,6 +57,7 @@ export async function generateGcReply(opts: {
   const { profile, order, conversationId, customerMessage, systemNudge } = opts;
 
   if (!llmConfigured()) throw new LlmNotConfiguredError();
+  await assertUnderDailyCap(profile.id);
 
   // Frozen orders never auto-reply — the agent has taken over.
   if (order.needsHuman) {

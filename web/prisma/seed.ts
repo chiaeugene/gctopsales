@@ -411,6 +411,10 @@ const products: SeedProduct[] = [
 async function main() {
   const adminEmail = (process.env.ADMIN_EMAIL || "admin@gctopsales.local").toLowerCase();
   const adminPassword = process.env.ADMIN_PASSWORD || "change-me";
+  // Never plant a known default admin credential in a production database.
+  if (process.env.NODE_ENV === "production" && (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD)) {
+    throw new Error("Refusing to seed in production without explicit ADMIN_EMAIL and ADMIN_PASSWORD env vars.");
+  }
 
   // 1. Platform admin (no tenant workspace of their own required, but we give
   //    them one so they can use the Playground to test the shared brains).

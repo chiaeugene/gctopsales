@@ -45,6 +45,28 @@ export default function AdminPage() {
     }
     setUsers(json.users);
   }
+
+  async function resetPasscode(u: TenantUser) {
+    const passcode = prompt(
+      `New passcode for ${u.name} (${u.email}) — usually the last 6 digits of their phone:`
+    );
+    if (!passcode) return;
+    if (passcode.trim().length < 6) {
+      alert("Passcode must be at least 6 characters.");
+      return;
+    }
+    const res = await fetch("/api/admin/tenants", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: u.id, password: passcode.trim() }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      alert(json.error || "Reset failed");
+      return;
+    }
+    alert(`Passcode updated for ${u.email}. Tell them the new passcode — it takes effect immediately.`);
+  }
   useEffect(() => {
     load();
   }, []);
@@ -148,6 +170,7 @@ export default function AdminPage() {
               <th className="px-4 py-3">Orders</th>
               <th className="px-4 py-3">Products</th>
               <th className="px-4 py-3">Channels</th>
+              <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-black/[0.05]">
@@ -162,11 +185,21 @@ export default function AdminPage() {
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.orders ?? 0}</td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.products ?? 0}</td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.channels ?? 0}</td>
+                <td className="px-4 py-3">
+                  <button
+                    onClick={() => resetPasscode(u)}
+                    className="text-[11px] font-medium text-[var(--accent-ink)] hover:underline whitespace-nowrap"
+                  >
+                    Reset passcode
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </Card>
+
+      <RecentErrorsCard />
     </div>
   );
 }
@@ -337,6 +370,52 @@ function SheetImportCard({ onRegistered }: { onRegistered: () => Promise<void> }
             {busy ? "Registering…" : `Register ${pendingCount} new agent${pendingCount === 1 ? "" : "s"}`}
           </Button>
         </>
+      )}
+    </Card>
+  );
+}
+
+type ErrorRow = { id: string; route: string; message: string; createdAt: string };
+
+// Production failures land in ErrorLog (see lib/api.ts). This card is the
+// admin's window into them — if it's empty, the platform is healthy.
+function RecentErrorsCard() {
+  const [errors, setErrors] = useState<ErrorRow[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const res = await fetch("/api/admin/errors");
+      if (res.ok) setErrors((await res.json()).errors ?? []);
+      setLoaded(true);
+    })();
+  }, []);
+
+  return (
+    <Card padding="none">
+      <div className="px-5 py-4 border-b border-black/[0.06] flex items-center justify-between">
+        <span className="font-semibold">Recent errors (last 7 days)</span>
+        {loaded && errors.length === 0 && (
+          <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700">
+            <CheckIcon className="w-3.5 h-3.5" /> all healthy
+          </span>
+        )}
+      </div>
+      {errors.length > 0 && (
+        <ul className="divide-y divide-black/[0.05] max-h-72 overflow-y-auto">
+          {errors.map((e) => (
+            <li key={e.id} className="px-5 py-2.5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-medium">{e.route}</span>
+                <span className="text-[11px] text-black/35 shrink-0">{new Date(e.createdAt).toLocaleString()}</span>
+              </div>
+              <div className="text-xs text-red-700/80 break-all">{e.message}</div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {loaded && errors.length === 0 && (
+        <p className="px-5 py-4 text-xs text-black/40">No server errors recorded. This fills up automatically if anything breaks in production.</p>
       )}
     </Card>
   );

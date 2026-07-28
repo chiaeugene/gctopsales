@@ -174,9 +174,9 @@ model Testimonial {
   customerName String? // "Jamie L." / "a 45-year-old mum" — an attributable label
   market       String? // MY | SG | BN — lets GC cite same-market proof
   resultText   String // the quote / result, e.g. "lost 6kg in her first month"
-  rating       Int?    // 1-5 stars, optional
-  isActive     Boolean @default(true)
-  sortOrder    Int     @default(0)
+  rating       Int? // 1-5 stars, optional
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
 
   // Optional before/after photo. Bytes only ever loaded by the one
   // byte-serving route, same discipline as ProductImage.
@@ -331,4 +331,17 @@ model Message {
   createdAt DateTime @default(now())
 
   @@index([conversationId])
+}
+
+// Lightweight production error tracking, surfaced on the Admin page. Rows are
+// written best-effort by the API error handler — never let logging break the
+// request that failed.
+model ErrorLog {
+  id        String   @id @default(cuid())
+  route     String
+  message   String
+  profileId String? // which tenant hit it, when known
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }

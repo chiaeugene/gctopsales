@@ -5,12 +5,14 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CheckIcon } from "@/components/ui/icons";
+import { useT } from "@/components/I18nProvider";
 
 type Msg = { role: string; content: string };
 
 // Conversational setup interview — GC interviews the agent to fill the four
 // brains (especially payment details) instead of a cold form.
 export default function SetupPage() {
+  const { t } = useT();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -67,21 +69,18 @@ export default function SetupPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-4 sm:space-y-5">
-      <PageHeader
-        title="Set up GC"
-        subtitle="A short interview — everything you answer here is written straight into GC's brain and used in every customer reply."
-      />
+      <PageHeader title={t("setup.title")} subtitle={t("setup.subtitle")} />
 
       {!done && (
         <div className="rounded-xl border border-black/[0.06] bg-white px-4 py-3 text-xs text-black/55 space-y-1">
-          <div className="font-semibold text-black/70 text-[13px]">What GC learns from this chat:</div>
+          <div className="font-semibold text-black/70 text-[13px]">{t("setup.learnsTitle")}</div>
           <ul className="list-disc pl-4 space-y-0.5">
-            <li>How you talk to customers (your tone and language mix)</li>
-            <li>Your payment details — bank, account name/number (GC uses these to verify payment screenshots)</li>
-            <li>Your shipping, COD, and discount rules</li>
-            <li>Who your typical customers are</li>
+            <li>{t("setup.learn.tone")}</li>
+            <li>{t("setup.learn.payment")}</li>
+            <li>{t("setup.learn.shipping")}</li>
+            <li>{t("setup.learn.customers")}</li>
           </ul>
-          <div className="pt-0.5 text-black/40">Answer casually, like texting a friend. You can fine-tune everything later in Settings.</div>
+          <div className="pt-0.5 text-black/40">{t("setup.learnsFootnote")}</div>
         </div>
       )}
 
@@ -89,9 +88,11 @@ export default function SetupPage() {
         <Card className="!bg-emerald-50 !border-emerald-200 flex items-start gap-2.5 text-sm text-emerald-900">
           <CheckIcon className="w-4 h-4 mt-0.5 shrink-0 text-emerald-700" />
           <span>
-            Setup complete — GC is configured. You can refine anything in{" "}
-            <a href="/settings" className="underline">Settings</a>, or{" "}
-            <a href="/playground" className="underline">test GC now</a>.
+            {t("setup.done.prefix")}
+            <a href="/settings" className="underline">{t("setup.done.settings")}</a>
+            {t("setup.done.or")}
+            <a href="/playground" className="underline">{t("setup.done.test")}</a>
+            {t("setup.done.suffix")}
           </span>
         </Card>
       )}
@@ -101,7 +102,7 @@ export default function SetupPage() {
           {!started && (
             <div className="text-center mt-16">
               <Button onClick={start} disabled={busy}>
-                {busy ? "Starting…" : "Start setup interview"}
+                {busy ? t("setup.starting") : t("setup.startBtn")}
               </Button>
             </div>
           )}
@@ -118,7 +119,7 @@ export default function SetupPage() {
               </div>
             </div>
           ))}
-          {busy && started && <div className="text-xs text-black/35">GC is typing…</div>}
+          {busy && started && <div className="text-xs text-black/35">{t("setup.typing")}</div>}
           <div ref={bottomRef} />
         </div>
         {started && (
@@ -126,11 +127,11 @@ export default function SetupPage() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your answer…"
+              placeholder={t("setup.inputPlaceholder")}
               className="flex-1 rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow"
             />
             <Button type="submit" disabled={busy || !input.trim()}>
-              Send
+              {t("setup.send")}
             </Button>
           </form>
         )}

@@ -1,0 +1,14 @@
+{
+  "name": "GC Top Sales",
+  "short_name": "GC",
+  "description": "Your AI sales assistant for MAE Global",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf9fc",
+  "theme_color": "#6b41b4",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

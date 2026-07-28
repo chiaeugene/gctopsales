@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { requireProfile } from "@/lib/tenant";
+import { t, LANG_COOKIE, normalizeLang, type Lang } from "@/lib/i18n";
+import { CheckIcon } from "@/components/ui/icons";
 import { prisma } from "@/lib/prisma";
 import { parseJson } from "@/lib/json";
 import { MARKET_INFO, type Market } from "@/lib/constants";
@@ -13,6 +16,19 @@ import { FlameIcon, SnowflakeIcon, AlertIcon, ChartIcon } from "@/components/ui/
 
 export default async function DashboardPage() {
   const profile = await requireProfile();
+  const lang = normalizeLang((await cookies()).get(LANG_COOKIE)?.value);
+
+  // Onboarding checklist state (shown until all three steps are done).
+  const [trainedReplies, playgroundChats] = await Promise.all([
+    prisma.trainingExample.count({ where: { profileId: profile.id } }),
+    prisma.order.count({ where: { profileId: profile.id, source: "PLAYGROUND" } }),
+  ]);
+  const onboardSteps = [
+    { done: profile.onboardingStatus === "COMPLETED", href: "/setup", label: "onboard.step.setup", hint: "onboard.step.setupHint" },
+    { done: trainedReplies >= 5, href: "/train", label: "onboard.step.train", hint: "onboard.step.trainHint" },
+    { done: playgroundChats >= 1, href: "/playground", label: "onboard.step.chat", hint: "onboard.step.chatHint" },
+  ];
+  const onboardingDone = onboardSteps.every((s) => s.done);
 
   const [total, needsHuman, awaitingPayment, paid, lost, recent, allForAnalytics] = await Promise.all([
     prisma.order.count({ where: { profileId: profile.id } }),
@@ -105,6 +121,8 @@ export default async function DashboardPage() {
           { label: "Paid orders", value: paid },
         ]}
       />
+
+      {!onboardingDone && <OnboardingChecklist lang={lang} steps={onboardSteps} />}
 
       <FeatureSection />
 
@@ -268,4 +286,52 @@ function TempBadge({ temp, score }: { temp: string; score: number }) {
   if (temp === "hot") return <Badge tone="hot" icon={<FlameIcon className="w-3.5 h-3.5" />}>{score}</Badge>;
   if (temp === "warm") return <Badge tone="warm">{score}</Badge>;
   return <Badge tone="cold" icon={<SnowflakeIcon className="w-3.5 h-3.5" />}>{score}</Badge>;
+}
+
+function OnboardingChecklist({
+  lang,
+  steps,
+}: {
+  lang: Lang;
+  steps: { done: boolean; href: string; label: string; hint: string }[];
+}) {
+  const doneCount = steps.filter((s) => s.done).length;
+  return (
+    <Card className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40">
+      <div className="flex items-center justify-between gap-3 mb-1">
+        <h2 className="font-semibold">{t(lang, "onboard.title")}</h2>
+        <span className="text-xs font-medium text-[var(--accent-ink)] tabular-nums shrink-0">
+          {doneCount}/{steps.length} {t(lang, "onboard.progress")}
+        </span>
+      </div>
+      <p className="text-sm text-black/50 mb-4">{t(lang, "onboard.subtitle")}</p>
+      <div className="grid sm:grid-cols-3 gap-3">
+        {steps.map((s) => (
+          <Link
+            key={s.href}
+            href={s.href}
+            className={
+              "rounded-xl border px-4 py-3 transition-colors " +
+              (s.done
+                ? "border-emerald-200 bg-emerald-50/70"
+                : "border-black/[0.08] bg-white hover:border-[var(--accent)]/40")
+            }
+          >
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <span
+                className={
+                  "w-5 h-5 rounded-full flex items-center justify-center shrink-0 " +
+                  (s.done ? "bg-emerald-500 text-white" : "border border-black/20 text-transparent")
+                }
+              >
+                <CheckIcon className="w-3 h-3" />
+              </span>
+              {t(lang, s.label)}
+            </div>
+            <div className="text-xs text-black/45 mt-1.5">{t(lang, s.hint)}</div>
+          </Link>
+        ))}
+      </div>
+    </Card>
+  );
 }

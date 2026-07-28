@@ -5,6 +5,13 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ChatIcon, CheckIcon } from "@/components/ui/icons";
+import { useT } from "@/components/I18nProvider";
+
+// A chat is "quiet" once nothing has happened for a day — surface it so the
+// agent knows who to nudge.
+function quietDays(updatedAt: string): number {
+  return Math.floor((Date.now() - new Date(updatedAt).getTime()) / 86_400_000);
+}
 
 type Msg = { role: "CUSTOMER" | "GC" | "SYSTEM" | "AGENT"; content: string; attachmentIds?: string[] };
 type Chat = {
@@ -31,6 +38,7 @@ type OrderState = {
 // WhatsApp/IG/Messenger. Same production engine — just human-relayed until
 // the channels are connected.
 export default function PlaygroundPage() {
+  const { t } = useT();
   const [chats, setChats] = useState<Chat[]>([]);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -187,6 +195,28 @@ export default function PlaygroundPage() {
     }
   }
 
+  async function suggestFollowUp() {
+    if (!orderId || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/playground/suggest-follow-up", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Something went wrong");
+        return;
+      }
+      setMessages((m) => [...m, { role: "GC", content: json.reply, attachmentIds: json.attachmentIds }]);
+      loadChats();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const activeChat = chats.find((c) => c.orderId === orderId);
 
   const chatList = (
@@ -198,17 +228,15 @@ export default function PlaygroundPage() {
           onKeyDown={(e) => {
             if (e.key === "Enter") createChat();
           }}
-          placeholder="New customer's name…"
+          placeholder={t("ws.newChatName")}
           className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
         />
         <Button onClick={createChat} disabled={creating} className="w-full justify-center !py-2 !text-xs">
-          {creating ? "Creating…" : "+ New customer chat"}
+          {creating ? t("ws.creating") : t("ws.newChat")}
         </Button>
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        {chats.length === 0 && (
-          <p className="text-xs text-black/35 p-3">No chats yet. Start one per customer you&apos;re talking to.</p>
-        )}
+        {chats.length === 0 && <p className="text-xs text-black/35 p-3">{t("ws.noChats")}</p>}
         {chats.map((c) => (
           <div
             key={c.orderId}
@@ -219,8 +247,16 @@ export default function PlaygroundPage() {
             onClick={() => openChat(c.orderId)}
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-medium truncate">{c.name || "Unnamed customer"}</span>
-              {c.needsHuman && <span className="shrink-0 text-[10px] font-bold text-red-600">YOU</span>}
+              <span className="text-sm font-medium truncate">{c.name || t("ws.unnamed")}</span>
+              <span className="shrink-0 flex items-center gap-1.5">
+                {quietDays(c.updatedAt) >= 1 && !c.needsHuman && (
+                  <span className="text-[10px] font-semibold text-amber-600">
+                    {quietDays(c.updatedAt)}
+                    {t("ws.quietDays")}
+                  </span>
+                )}
+                {c.needsHuman && <span className="text-[10px] font-bold text-red-600">YOU</span>}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-[11px] text-black/40 truncate">{c.lastMessage || c.status}</span>
@@ -232,7 +268,7 @@ export default function PlaygroundPage() {
                   }}
                   className="text-[10px] text-black/40 hover:text-[var(--accent-ink)]"
                 >
-                  Rename
+                  {t("ws.rename")}
                 </button>
                 <button
                   onClick={(e) => {
@@ -241,7 +277,7 @@ export default function PlaygroundPage() {
                   }}
                   className="text-[10px] text-black/40 hover:text-red-600"
                 >
-                  Delete
+                  {t("ws.delete")}
                 </button>
               </span>
             </div>
@@ -253,10 +289,7 @@ export default function PlaygroundPage() {
 
   return (
     <div className="flex flex-col gap-3 sm:gap-5 h-[calc(100dvh-8.5rem)] lg:h-[calc(100vh-6rem)]">
-      <PageHeader
-        title="GC Workspace"
-        subtitle="One chat per customer. Paste what they sent you — GC writes the reply — copy it back to WhatsApp / IG / Messenger."
-      />
+      <PageHeader title={t("ws.title")} subtitle={t("ws.subtitle")} />
 
       <div className="flex gap-4 flex-1 min-h-0">
         {/* Chat list — desktop */}
@@ -272,13 +305,23 @@ export default function PlaygroundPage() {
                 className="md:hidden rounded-lg border border-black/10 px-2.5 py-1.5 text-xs font-medium"
                 onClick={() => setShowChats(true)}
               >
-                Chats
+                {t("ws.chats")}
               </button>
               <ChatIcon className="w-4 h-4 text-black/40 shrink-0 hidden sm:block" />
               <div className="font-semibold text-sm truncate">
-                {activeChat ? activeChat.name || "Unnamed customer" : "Pick or start a chat"}
+                {activeChat ? activeChat.name || t("ws.unnamed") : t("ws.pickChat")}
               </div>
             </div>
+            {orderId && !order?.needsHuman && (
+              <button
+                onClick={suggestFollowUp}
+                disabled={busy}
+                title="GC drafts a follow-up nudge for this customer — copy it and send"
+                className="shrink-0 rounded-lg border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-2.5 py-1.5 text-[11px] font-medium text-[var(--accent-ink)] hover:bg-[var(--accent-soft-2)] disabled:opacity-40"
+              >
+                {busy ? t("ws.suggesting") : t("ws.suggestFollowUp")}
+              </button>
+            )}
             {order && (
               <button
                 className="xl:hidden rounded-lg border border-black/10 px-2.5 py-1.5 text-[11px] font-medium text-black/60"
@@ -298,25 +341,21 @@ export default function PlaygroundPage() {
 
           {!orderId ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 p-6 text-center">
-              <p className="text-sm text-black/40 max-w-xs">
-                Start a chat for each customer you&apos;re talking to. GC remembers every chat separately.
-              </p>
+              <p className="text-sm text-black/40 max-w-xs">{t("ws.startHint")}</p>
               <Button onClick={() => (window.innerWidth < 768 ? setShowChats(true) : createChat())}>
-                Start a customer chat
+                {t("ws.startChat")}
               </Button>
             </div>
           ) : (
             <>
               <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3">
                 {messages.length === 0 && (
-                  <p className="text-sm text-black/35 text-center mt-10 px-4">
-                    Paste the customer&apos;s first message below — exactly as they sent it, any language.
-                  </p>
+                  <p className="text-sm text-black/35 text-center mt-10 px-4">{t("ws.firstMessageHint")}</p>
                 )}
                 {messages.map((m, i) => (
                   <MessageBubble key={i} msg={m} />
                 ))}
-                {busy && <div className="text-xs text-black/35">GC is typing…</div>}
+                {busy && <div className="text-xs text-black/35">{t("ws.typing")}</div>}
                 <div ref={bottomRef} />
               </div>
 
@@ -373,11 +412,11 @@ export default function PlaygroundPage() {
                     }
                   }}
                   rows={1}
-                  placeholder="Paste the customer's message…"
+                  placeholder={t("ws.pasteMessage")}
                   className="flex-1 resize-none rounded-xl border border-black/10 px-3 sm:px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
                 />
                 <Button type="submit" disabled={busy || !input.trim()}>
-                  Send
+                  {t("ws.send")}
                 </Button>
               </form>
             </>
@@ -386,8 +425,8 @@ export default function PlaygroundPage() {
 
         {/* Order state — desktop */}
         <Card padding="md" className="hidden xl:block w-72 shrink-0 space-y-3 overflow-y-auto">
-          <div className="font-semibold text-sm">Live order state</div>
-          {!order && <p className="text-xs text-black/35">Updates as GC works the sale — status, cart, payment.</p>}
+          <div className="font-semibold text-sm">{t("ws.orderState")}</div>
+          {!order && <p className="text-xs text-black/35">{t("ws.orderStateHint")}</p>}
           {order && <OrderPanel order={order} />}
         </Card>
       </div>
@@ -398,9 +437,9 @@ export default function PlaygroundPage() {
           <div className="absolute inset-0 bg-black/30" onClick={() => setShowChats(false)} />
           <div className="relative w-72 max-w-[85vw] bg-white h-full shadow-xl flex flex-col">
             <div className="p-3 border-b border-black/[0.06] flex items-center justify-between">
-              <span className="font-semibold text-sm">Customer chats</span>
+              <span className="font-semibold text-sm">{t("ws.customerChats")}</span>
               <button onClick={() => setShowChats(false)} className="text-xs text-black/40">
-                Close
+                {t("ws.close")}
               </button>
             </div>
             <div className="flex-1 min-h-0">{chatList}</div>
@@ -412,6 +451,7 @@ export default function PlaygroundPage() {
 }
 
 function MessageBubble({ msg }: { msg: Msg }) {
+  const { t } = useT();
   const [copied, setCopied] = useState(false);
   if (msg.role === "SYSTEM") {
     return (
@@ -454,10 +494,10 @@ function MessageBubble({ msg }: { msg: Msg }) {
             >
               {copied ? (
                 <>
-                  <CheckIcon className="w-3 h-3" /> Copied — paste to customer
+                  <CheckIcon className="w-3 h-3" /> {t("ws.copied")}
                 </>
               ) : (
-                "Copy reply"
+                t("ws.copyReply")
               )}
             </button>
           </div>

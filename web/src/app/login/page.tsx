@@ -19,7 +19,7 @@ export default function LoginPage() {
     const res = await signIn("credentials", { email, password, redirect: false });
     setBusy(false);
     if (res?.error) {
-      setError("Invalid email or password.");
+      setError("Invalid email or password · 邮箱或密码不正确");
       return;
     }
     router.push("/");
@@ -55,7 +55,7 @@ export default function LoginPage() {
           </div>
           <form onSubmit={submit} className="rounded-2xl bg-white [box-shadow:var(--shadow-lg)] border border-black/[0.06] p-8 space-y-4">
             <label className="block">
-              <span className="text-[13px] font-medium text-black/70">Email</span>
+              <span className="text-[13px] font-medium text-black/70">Email · 邮箱</span>
               <input
                 type="email"
                 required
@@ -65,7 +65,7 @@ export default function LoginPage() {
               />
             </label>
             <label className="block">
-              <span className="text-[13px] font-medium text-black/70">Password</span>
+              <span className="text-[13px] font-medium text-black/70">Password · 密码</span>
               <input
                 type="password"
                 required
@@ -81,7 +81,7 @@ export default function LoginPage() {
               className="w-full rounded-full text-white py-2.5 text-sm font-medium disabled:opacity-40 transition-colors"
               style={{ background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-ink) 100%)" }}
             >
-              {busy ? "Signing in…" : "Sign in"}
+              {busy ? "Signing in… · 登录中…" : "Sign in · 登录"}
             </button>
           </form>
         </div>

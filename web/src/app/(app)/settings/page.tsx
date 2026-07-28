@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { AlertIcon, CheckIcon } from "@/components/ui/icons";
+import { useT } from "@/components/I18nProvider";
 
 type Channel = { id: string; channel: string; externalId: string; displayName: string | null; isActive: boolean };
 type Settings = {
@@ -27,6 +28,7 @@ type Field = { key: string; label: string; help?: string; example?: string };
 
 // Every field below feeds GC's brain directly — labels/help are agent-friendly,
 // but the keys are unchanged so nothing in the engine breaks.
+// title/why/label/help hold i18n dictionary keys, translated with t() at render.
 const BRAIN_SECTIONS: {
   id: keyof Pick<Settings, "identityBrain" | "salesBrain" | "fulfillmentBrain" | "catalogRules">;
   title: string;
@@ -36,84 +38,84 @@ const BRAIN_SECTIONS: {
 }[] = [
   {
     id: "fulfillmentBrain",
-    title: "Payment & delivery",
-    why: "The most important section — GC uses this to collect payment and check payment screenshots.",
+    title: "settings.section.fulfillment.title",
+    why: "settings.section.fulfillment.why",
     important: true,
     fields: [
       {
         key: "paymentMethods",
-        label: "Your payment methods",
-        help: "Exact bank + account name + number. GC checks customer payment screenshots against THIS.",
+        label: "settings.field.paymentMethods.label",
+        help: "settings.field.paymentMethods.help",
         example: "Maybank 1234567890 (CHIA EU GENE), Touch 'n Go 012-3456789",
       },
       {
         key: "paymentInstructions",
-        label: "What GC tells customers when it's time to pay",
+        label: "settings.field.paymentInstructions.label",
         example: "Transfer to Maybank 1234567890, then send me the receipt screenshot ya!",
       },
-      { key: "codRules", label: "Cash on delivery — do you offer it? Where? Any conditions?", example: "COD only in Klang Valley, order RM200+" },
-      { key: "shippingPolicy", label: "How you ship", example: "J&T from KL, ship within 1-2 working days" },
-      { key: "shippingFeeRules", label: "Shipping fees", example: "Free WM shipping above RM150, otherwise RM10. EM RM15." },
-      { key: "deliveryTimeline", label: "How long delivery takes", example: "WM 2-3 days, EM 4-6 days, SG about a week" },
-      { key: "returnRefundPolicy", label: "Returns & refunds", example: "Unopened products within 7 days; no refund once opened" },
+      { key: "codRules", label: "settings.field.codRules.label", example: "COD only in Klang Valley, order RM200+" },
+      { key: "shippingPolicy", label: "settings.field.shippingPolicy.label", example: "J&T from KL, ship within 1-2 working days" },
+      { key: "shippingFeeRules", label: "settings.field.shippingFeeRules.label", example: "Free WM shipping above RM150, otherwise RM10. EM RM15." },
+      { key: "deliveryTimeline", label: "settings.field.deliveryTimeline.label", example: "WM 2-3 days, EM 4-6 days, SG about a week" },
+      { key: "returnRefundPolicy", label: "settings.field.returnRefundPolicy.label", example: "Unopened products within 7 days; no refund once opened" },
       {
         key: "humanOnlyTopics",
-        label: "Topics GC must always pass to you",
-        help: "GC freezes the chat and waits for you when these come up.",
+        label: "settings.field.humanOnlyTopics.label",
+        help: "settings.field.humanOnlyTopics.help",
         example: "Bulk/agent pricing, complaints about a previous order",
       },
     ],
   },
   {
     id: "identityBrain",
-    title: "Your store & customers",
-    why: "Helps GC introduce your store the way you would.",
+    title: "settings.section.identity.title",
+    why: "settings.section.identity.why",
     fields: [
-      { key: "storeName", label: "Store name customers know you by", example: "GC Wellness by Eugene" },
-      { key: "targetCustomer", label: "Who usually buys from you", example: "Working mums 30-50, weight & energy goals" },
-      { key: "brandPersonality", label: "Your store's personality", example: "Like a knowledgeable big sister — caring but straight-talking" },
-      { key: "toneOfVoice", label: "How you talk to customers", example: "Warm, uses 'dear', short messages, some emoji" },
-      { key: "languageStyle", label: "Languages you sell in", example: "Mostly Mandarin + English mix, some Malay" },
-      { key: "differentiators", label: "Why customers buy from YOU (not another agent)", example: "I follow up personally, fast delivery, I use the products myself" },
-      { key: "offerings", label: "What you sell (in one line)", example: "Full MAE range, focus on BCODE+ weight management" },
+      { key: "storeName", label: "settings.field.storeName.label", example: "GC Wellness by Eugene" },
+      { key: "targetCustomer", label: "settings.field.targetCustomer.label", example: "Working mums 30-50, weight & energy goals" },
+      { key: "brandPersonality", label: "settings.field.brandPersonality.label", example: "Like a knowledgeable big sister — caring but straight-talking" },
+      { key: "toneOfVoice", label: "settings.field.toneOfVoice.label", example: "Warm, uses 'dear', short messages, some emoji" },
+      { key: "languageStyle", label: "settings.field.languageStyle.label", example: "Mostly Mandarin + English mix, some Malay" },
+      { key: "differentiators", label: "settings.field.differentiators.label", example: "I follow up personally, fast delivery, I use the products myself" },
+      { key: "offerings", label: "settings.field.offerings.label", example: "Full MAE range, focus on BCODE+ weight management" },
     ],
   },
   {
     id: "salesBrain",
-    title: "How GC should sell",
-    why: "Your selling rules — what GC may promise, push, or never say.",
+    title: "settings.section.sales.title",
+    why: "settings.section.sales.why",
     fields: [
       {
         key: "discountRules",
-        label: "Discounts GC is allowed to give",
-        help: "GC follows this EXACTLY. Outside these rules, she hands the chat to you instead of discounting.",
+        label: "settings.field.discountRules.label",
+        help: "settings.field.discountRules.help",
         example: "No discounts beyond member price. Free gift for 2+ sets.",
       },
-      { key: "followUpRules", label: "How you like to follow up silent customers", example: "Gentle check-in after 1 day, max twice, never pushy" },
-      { key: "objectionStyle", label: "How you handle 'too expensive' / 'let me think'", example: "Break into per-day cost, share a similar customer's result" },
-      { key: "conversationStrategy", label: "How you open and qualify a new lead", example: "Ask about their goal + what they've tried before recommending" },
-      { key: "upsellStrategy", label: "When and what you upsell", example: "After they commit: upgrade single box to 2-box bundle for free gift" },
-      { key: "allowedToSay", label: "Things you WANT GC to say", example: "I'm an authorized MAE agent; products are NPRA-notified & halal" },
-      { key: "neverSay", label: "Things GC must NEVER say", example: "Never guarantee weight-loss numbers, never mention my supplier price" },
-      { key: "salesPressure", label: "Sales pressure: soft / balanced / assertive", example: "balanced" },
+      { key: "followUpRules", label: "settings.field.followUpRules.label", example: "Gentle check-in after 1 day, max twice, never pushy" },
+      { key: "objectionStyle", label: "settings.field.objectionStyle.label", example: "Break into per-day cost, share a similar customer's result" },
+      { key: "conversationStrategy", label: "settings.field.conversationStrategy.label", example: "Ask about their goal + what they've tried before recommending" },
+      { key: "upsellStrategy", label: "settings.field.upsellStrategy.label", example: "After they commit: upgrade single box to 2-box bundle for free gift" },
+      { key: "allowedToSay", label: "settings.field.allowedToSay.label", example: "I'm an authorized MAE agent; products are NPRA-notified & halal" },
+      { key: "neverSay", label: "settings.field.neverSay.label", example: "Never guarantee weight-loss numbers, never mention my supplier price" },
+      { key: "salesPressure", label: "settings.field.salesPressure.label", example: "balanced" },
     ],
   },
   {
     id: "catalogRules",
-    title: "Promos & product rules",
-    why: "Keep the promo field fresh — GC actively pushes whatever you write here.",
+    title: "settings.section.catalog.title",
+    why: "settings.section.catalog.why",
     fields: [
       {
         key: "currentPromotions",
-        label: "THIS MONTH's promo",
-        help: "Update monthly! GC brings this up at the right moment in every sale.",
+        label: "settings.field.currentPromotions.label",
+        help: "settings.field.currentPromotions.help",
         example: "July: buy 2 boxes B-ActV free 1 shaker, ends 31/7",
       },
-      { key: "bundleRules", label: "Bundles you offer", example: "SET2BC = 2 boxes B-ActV + 1 CactiGold" },
-      { key: "membershipPitch", label: "How you pitch membership pricing", example: "One-time RM30 membership unlocks ~20% member price forever" },
-      { key: "loyaltyProgram", label: "Loyalty / repeat-customer perks", example: "Every 5th box free shaker; birthday month 5% off" },
-      { key: "authenticityGuarantee", label: "How you prove products are genuine", example: "Sealed MAE boxes with QR verification, I'm a registered agent" },
-      { key: "complianceRules", label: "Extra claim rules for your market", example: "Never call it 'slimming medicine'; always food supplement" },
+      { key: "bundleRules", label: "settings.field.bundleRules.label", example: "SET2BC = 2 boxes B-ActV + 1 CactiGold" },
+      { key: "membershipPitch", label: "settings.field.membershipPitch.label", example: "One-time RM30 membership unlocks ~20% member price forever" },
+      { key: "loyaltyProgram", label: "settings.field.loyaltyProgram.label", example: "Every 5th box free shaker; birthday month 5% off" },
+      { key: "authenticityGuarantee", label: "settings.field.authenticityGuarantee.label", example: "Sealed MAE boxes with QR verification, I'm a registered agent" },
+      { key: "complianceRules", label: "settings.field.complianceRules.label", example: "Never call it 'slimming medicine'; always food supplement" },
     ],
   },
 ];
@@ -122,6 +124,7 @@ const inputClass =
   "mt-1.5 w-full rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow";
 
 export default function SettingsPage() {
+  const { t } = useT();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedCard, setSavedCard] = useState<string | null>(null);
@@ -130,7 +133,7 @@ export default function SettingsPage() {
     const res = await fetch("/api/settings");
     const json = await res.json();
     if (!res.ok) {
-      setError(json.error || "Failed to load settings");
+      setError(json.error || t("settings.loadFailed"));
       return;
     }
     setSettings(json);
@@ -147,21 +150,18 @@ export default function SettingsPage() {
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
-      setError((await res.json()).error || "Save failed");
+      setError((await res.json()).error || t("settings.saveFailed"));
       return;
     }
     setSavedCard(card);
     setTimeout(() => setSavedCard(null), 2000);
   }
 
-  if (!settings) return <div className="text-sm text-black/40">{error || "Loading…"}</div>;
+  if (!settings) return <div className="text-sm text-black/40">{error || t("settings.loading")}</div>;
 
   return (
     <div className="space-y-4 sm:space-y-6 max-w-4xl">
-      <PageHeader
-        title="Settings"
-        subtitle="Everything here feeds GC's brain directly — plain answers are fine, she understands normal language."
-      />
+      <PageHeader title={t("settings.title")} subtitle={t("settings.subtitle")} />
       {error && <div className="text-sm text-red-600">{error}</div>}
 
       <MarketsCard
@@ -198,13 +198,9 @@ export default function SettingsPage() {
       <Card className="!border-amber-200 !bg-amber-50 space-y-3">
         <h2 className="font-semibold text-amber-900 flex items-center gap-2">
           <AlertIcon className="w-4 h-4 shrink-0" />
-          Auto-confirm payments (high risk, off by default)
+          {t("settings.autoconfirm.title")}
         </h2>
-        <p className="text-sm text-amber-800">
-          When ON, a payment screenshot that passes AI verification — recipient matches your payment details AND the
-          amount exactly matches the order total — confirms the order without waiting for you. Edited screenshots are a
-          real risk; anything uncertain still comes to you. Make sure your payment details above are exact first.
-        </p>
+        <p className="text-sm text-amber-800">{t("settings.autoconfirm.desc")}</p>
         <label className="flex items-center gap-2 text-sm font-medium text-amber-900">
           <input
             type="checkbox"
@@ -214,10 +210,10 @@ export default function SettingsPage() {
               save("autoconfirm", { autoConfirmPayments: e.target.checked });
             }}
           />
-          Enable AI auto-confirm
+          {t("settings.autoconfirm.enable")}
           {savedCard === "autoconfirm" && (
             <span className="inline-flex items-center gap-1 text-emerald-700 text-xs">
-              <CheckIcon className="w-3.5 h-3.5" /> Saved
+              <CheckIcon className="w-3.5 h-3.5" /> {t("settings.saved")}
             </span>
           )}
         </label>
@@ -226,38 +222,42 @@ export default function SettingsPage() {
   );
 }
 
-const MARKET_LABELS: Record<string, string> = { MY: "Malaysia (RM)", SG: "Singapore (S$)", BN: "Brunei (RM store)" };
+// Values are i18n dictionary keys — translated with t() at render.
+const MARKET_LABELS: Record<string, string> = {
+  MY: "settings.market.MY",
+  SG: "settings.market.SG",
+  BN: "settings.market.BN",
+};
 
 const TONE_OPTIONS = [
-  { value: "professional", label: "Professional", desc: "Polished & courteous — a knowledgeable consultant. Minimal slang." },
-  { value: "balanced", label: "Balanced", desc: "Warm and friendly with light local flavour where it fits. (Most agents pick this.)" },
-  { value: "local", label: "Local", desc: "Full local personality — Manglish / Singlish / Malay slang. Feels like a local friend." },
+  { value: "professional", label: "settings.tone.professional.label", desc: "settings.tone.professional.desc" },
+  { value: "balanced", label: "settings.tone.balanced.label", desc: "settings.tone.balanced.desc" },
+  { value: "local", label: "settings.tone.local.label", desc: "settings.tone.local.desc" },
 ];
 
 function SaveButton({ saved, onClick }: { saved: boolean; onClick: () => void }) {
+  const { t } = useT();
   return (
     <Button variant="secondary" onClick={onClick} className="!px-4 !py-1.5 !text-xs">
       {saved ? (
         <span className="inline-flex items-center gap-1">
-          <CheckIcon className="w-3.5 h-3.5" /> Saved
+          <CheckIcon className="w-3.5 h-3.5" /> {t("settings.saved")}
         </span>
       ) : (
-        "Save"
+        t("settings.save")
       )}
     </Button>
   );
 }
 
 function ToneCard(props: { tone: string; saved: boolean; onSave: (v: string) => void }) {
+  const { t } = useT();
   const [tone, setTone] = useState(props.tone);
   useEffect(() => setTone(props.tone), [props.tone]);
   return (
     <Card className="space-y-3">
-      <h2 className="font-semibold">GC&apos;s tone of voice</h2>
-      <p className="text-sm text-black/45">
-        GC always replies in the customer&apos;s language (English / Mandarin / Malay) — this just sets how much local
-        slang she uses.
-      </p>
+      <h2 className="font-semibold">{t("settings.tone.title")}</h2>
+      <p className="text-sm text-black/45">{t("settings.tone.desc")}</p>
       <div className="space-y-2">
         {TONE_OPTIONS.map((o) => (
           <label
@@ -269,8 +269,8 @@ function ToneCard(props: { tone: string; saved: boolean; onSave: (v: string) => 
           >
             <input type="radio" name="tone" checked={tone === o.value} onChange={() => setTone(o.value)} className="mt-1" />
             <span>
-              <span className="text-sm font-medium">{o.label}</span>
-              <span className="block text-xs text-black/45">{o.desc}</span>
+              <span className="text-sm font-medium">{t(o.label)}</span>
+              <span className="block text-xs text-black/45">{t(o.desc)}</span>
             </span>
           </label>
         ))}
@@ -286,6 +286,7 @@ function MarketsCard(props: {
   saved: boolean;
   onSave: (v: { homeMarket: string; marketsServed: string[] }) => void;
 }) {
+  const { t } = useT();
   const [home, setHome] = useState(props.homeMarket);
   const [served, setServed] = useState<string[]>(props.marketsServed);
   useEffect(() => {
@@ -299,25 +300,22 @@ function MarketsCard(props: {
 
   return (
     <Card className="space-y-3">
-      <h2 className="font-semibold">Countries you sell to</h2>
-      <p className="text-sm text-black/45">
-        GC quotes the right currency and shipping per customer. When you serve more than one country, she confirms
-        where the customer is before quoting a price.
-      </p>
+      <h2 className="font-semibold">{t("settings.markets.title")}</h2>
+      <p className="text-sm text-black/45">{t("settings.markets.desc")}</p>
       <div className="flex flex-wrap gap-4">
         {["MY", "SG", "BN"].map((m) => (
           <label key={m} className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={served.includes(m)} onChange={() => toggle(m)} />
-            {MARKET_LABELS[m]}
+            {t(MARKET_LABELS[m])}
           </label>
         ))}
       </div>
       <label className="block text-xs">
-        <span className="text-black/45">Home market (your default currency)</span>
+        <span className="text-black/45">{t("settings.markets.home")}</span>
         <select value={home} onChange={(e) => setHome(e.target.value)} className={inputClass + " w-56"}>
           {["MY", "SG", "BN"].map((m) => (
             <option key={m} value={m}>
-              {MARKET_LABELS[m]}
+              {t(MARKET_LABELS[m])}
             </option>
           ))}
         </select>
@@ -336,6 +334,7 @@ function BrainCard(props: {
   saved: boolean;
   onSave: (values: Record<string, string>) => void;
 }) {
+  const { t } = useT();
   const [values, setValues] = useState(props.values);
   const [open, setOpen] = useState(Boolean(props.important));
   useEffect(() => setValues(props.values), [props.values]);
@@ -347,18 +346,18 @@ function BrainCard(props: {
       <button type="button" onClick={() => setOpen((v) => !v)} className="w-full text-left">
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-semibold flex items-center gap-2">
-            {props.title}
+            {t(props.title)}
             {props.important && (
               <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--accent-ink)] bg-[var(--accent-soft)] rounded-full px-2 py-0.5">
-                Important
+                {t("settings.important")}
               </span>
             )}
           </h2>
           <span className="text-xs text-black/40 shrink-0">
-            {filled}/{props.fields.length} filled {open ? "▴" : "▾"}
+            {filled}/{props.fields.length} {t("settings.filled")} {open ? "▴" : "▾"}
           </span>
         </div>
-        <p className="text-sm text-black/45 mt-0.5">{props.why}</p>
+        <p className="text-sm text-black/45 mt-0.5">{t(props.why)}</p>
       </button>
 
       {open && (
@@ -366,13 +365,13 @@ function BrainCard(props: {
           <div className="grid md:grid-cols-2 gap-3">
             {props.fields.map((f) => (
               <label key={f.key} className="block text-xs">
-                <span className="font-medium text-black/70">{f.label}</span>
-                {f.help && <span className="block text-black/40 mt-0.5">{f.help}</span>}
+                <span className="font-medium text-black/70">{t(f.label)}</span>
+                {f.help && <span className="block text-black/40 mt-0.5">{t(f.help)}</span>}
                 <textarea
                   value={values[f.key] ?? ""}
                   onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
                   rows={3}
-                  placeholder={f.example ? `e.g. ${f.example}` : undefined}
+                  placeholder={f.example ? `${t("settings.eg")} ${f.example}` : undefined}
                   className={inputClass}
                 />
               </label>
@@ -391,18 +390,16 @@ function FollowUpCard(props: {
   saved: boolean;
   onSave: (v: { followUpAfterHours: number | null; maxFollowUps: number }) => void;
 }) {
+  const { t } = useT();
   const [hours, setHours] = useState(props.followUpAfterHours);
   const [max, setMax] = useState(props.maxFollowUps);
   return (
     <Card className="space-y-3">
-      <h2 className="font-semibold">Automatic follow-ups</h2>
-      <p className="text-sm text-black/45">
-        GC nudges customers who went quiet. Keep the delay under 24h so messages still deliver on WhatsApp. Leave blank
-        to turn follow-ups off.
-      </p>
+      <h2 className="font-semibold">{t("settings.followups.title")}</h2>
+      <p className="text-sm text-black/45">{t("settings.followups.desc")}</p>
       <div className="flex flex-wrap items-end gap-3">
         <label className="block text-xs">
-          <span className="text-black/45">Follow up after (hours)</span>
+          <span className="text-black/45">{t("settings.followups.after")}</span>
           <input
             type="number"
             min={1}
@@ -413,7 +410,7 @@ function FollowUpCard(props: {
           />
         </label>
         <label className="block text-xs">
-          <span className="text-black/45">Max follow-ups</span>
+          <span className="text-black/45">{t("settings.followups.max")}</span>
           <input
             type="number"
             min={0}
@@ -430,6 +427,7 @@ function FollowUpCard(props: {
 }
 
 function ChannelsCard(props: { channels: Channel[]; onChanged: () => void }) {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const [channel, setChannel] = useState("WHATSAPP");
   const [externalId, setExternalId] = useState("");
@@ -449,7 +447,7 @@ function ChannelsCard(props: { channels: Channel[]; onChanged: () => void }) {
         body: JSON.stringify({ channel, externalId, accessToken, displayName: displayName || undefined }),
       });
       if (!res.ok) {
-        setError((await res.json()).error || "Failed to connect");
+        setError((await res.json()).error || t("settings.channels.connectFailed"));
         return;
       }
       setExternalId("");
@@ -471,19 +469,20 @@ function ChannelsCard(props: { channels: Channel[]; onChanged: () => void }) {
   }
 
   const idLabel =
-    channel === "WHATSAPP" ? "Phone number ID" : channel === "MESSENGER" ? "Facebook Page ID" : "Instagram Business Account ID";
+    channel === "WHATSAPP"
+      ? t("settings.channels.idWhatsapp")
+      : channel === "MESSENGER"
+        ? t("settings.channels.idMessenger")
+        : t("settings.channels.idInstagram");
 
   return (
     <Card className="space-y-4">
       <button type="button" onClick={() => setOpen((v) => !v)} className="w-full text-left">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="font-semibold">Advanced: channel credentials</h2>
+          <h2 className="font-semibold">{t("settings.channels.title")}</h2>
           <span className="text-xs text-black/40">{open ? "▴" : "▾"}</span>
         </div>
-        <p className="text-sm text-black/45 mt-0.5">
-          Technical setup for connecting WhatsApp/Messenger/Instagram directly. Most agents can ignore this — use the
-          Connect page instead, or keep using GC Workspace with copy-paste.
-        </p>
+        <p className="text-sm text-black/45 mt-0.5">{t("settings.channels.desc")}</p>
       </button>
 
       {open && (
@@ -495,10 +494,10 @@ function ChannelsCard(props: { channels: Channel[]; onChanged: () => void }) {
                   <span>
                     <span className="font-medium">{c.channel}</span>{" "}
                     <span className="text-black/45">{c.displayName || c.externalId}</span>
-                    {!c.isActive && <span className="text-red-600 text-xs ml-2">inactive</span>}
+                    {!c.isActive && <span className="text-red-600 text-xs ml-2">{t("settings.channels.inactive")}</span>}
                   </span>
                   <button onClick={() => disconnect(c.id)} className="text-xs text-red-600 hover:underline">
-                    Disconnect
+                    {t("settings.channels.disconnect")}
                   </button>
                 </li>
               ))}
@@ -507,7 +506,7 @@ function ChannelsCard(props: { channels: Channel[]; onChanged: () => void }) {
 
           <form onSubmit={connect} className="grid md:grid-cols-2 gap-3">
             <label className="block text-xs">
-              <span className="text-black/45">Channel</span>
+              <span className="text-black/45">{t("settings.channels.channel")}</span>
               <select value={channel} onChange={(e) => setChannel(e.target.value)} className={inputClass}>
                 <option value="WHATSAPP">WhatsApp</option>
                 <option value="MESSENGER">Facebook Messenger</option>
@@ -519,17 +518,17 @@ function ChannelsCard(props: { channels: Channel[]; onChanged: () => void }) {
               <input required value={externalId} onChange={(e) => setExternalId(e.target.value)} className={inputClass} />
             </label>
             <label className="block text-xs">
-              <span className="text-black/45">Access token (kept server-side, never shown again)</span>
+              <span className="text-black/45">{t("settings.channels.accessToken")}</span>
               <input required type="password" value={accessToken} onChange={(e) => setAccessToken(e.target.value)} className={inputClass} />
             </label>
             <label className="block text-xs">
-              <span className="text-black/45">Display name (optional)</span>
+              <span className="text-black/45">{t("settings.channels.displayName")}</span>
               <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={inputClass} />
             </label>
             {error && <p className="text-xs text-red-600 md:col-span-2">{error}</p>}
             <div className="md:col-span-2">
               <Button type="submit" disabled={busy}>
-                {busy ? "Connecting…" : "Connect channel"}
+                {busy ? t("settings.channels.connecting") : t("settings.channels.connect")}
               </Button>
             </div>
           </form>

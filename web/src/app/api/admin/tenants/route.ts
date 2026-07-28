@@ -44,6 +44,31 @@ const PostSchema = z.object({
   cloneCatalog: z.boolean().default(true),
 });
 
+const PatchSchema = z.object({
+  userId: z.string().min(1),
+  password: z.string().min(6).max(100),
+});
+
+// Admin-only passcode reset. The admin is the single authority for
+// credentials — agents cannot change their own passcode.
+export async function PATCH(req: Request) {
+  return handle(async () => {
+    const admin = await requireAdmin();
+    const body = PatchSchema.safeParse(await req.json());
+    if (!body.success) throw new ApiError(400, "Passcode must be at least 6 characters");
+
+    void admin;
+    const user = await prisma.user.findUnique({ where: { id: body.data.userId } });
+    if (!user) throw new ApiError(404, "User not found");
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: await bcrypt.hash(body.data.password, 10) },
+    });
+    return { ok: true, email: user.email };
+  });
+}
+
 export async function POST(req: Request) {
   return handle(async () => {
     const admin = await requireAdmin();
