@@ -39,6 +39,8 @@ const PostSchema = z.object({
   password: z.string().min(6).max(100),
   name: z.string().min(1).max(200),
   storeName: z.string().max(200).optional(),
+  // ADMIN accounts see the Admin panel (all agents, passcode resets, errors).
+  role: z.enum(["AGENT", "ADMIN"]).default("AGENT"),
   // Copy the admin profile's products + brains into the new tenant (default
   // true — that's the whole point of a MAE-agent platform).
   cloneCatalog: z.boolean().default(true),
@@ -90,7 +92,7 @@ export async function POST(req: Request) {
       data: {
         email,
         name: body.data.name,
-        role: "AGENT",
+        role: body.data.role,
         passwordHash: await bcrypt.hash(body.data.password, 10),
         profile: {
           create: {

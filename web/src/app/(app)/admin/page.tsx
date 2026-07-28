@@ -33,6 +33,7 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({ email: "", password: "", name: "", storeName: "", phone: "" });
+  const [makeAdmin, setMakeAdmin] = useState(false);
   // Once the admin types their own passcode, stop auto-filling from the phone.
   const [passcodeEdited, setPasscodeEdited] = useState(false);
 
@@ -84,6 +85,7 @@ export default function AdminPage() {
           password: form.password,
           name: form.name,
           storeName: form.storeName || undefined,
+          role: makeAdmin ? "ADMIN" : "AGENT",
           cloneCatalog: true,
         }),
       });
@@ -92,6 +94,7 @@ export default function AdminPage() {
         return;
       }
       setForm({ email: "", password: "", name: "", storeName: "", phone: "" });
+      setMakeAdmin(false);
       setPasscodeEdited(false);
       await load();
     } finally {
@@ -152,9 +155,24 @@ export default function AdminPage() {
               className={inputClass}
             />
           </label>
+          <label className="md:col-span-2 flex items-start gap-2 text-xs rounded-xl border border-black/[0.07] bg-black/[0.015] px-3 py-2.5">
+            <input
+              type="checkbox"
+              checked={makeAdmin}
+              onChange={(e) => setMakeAdmin(e.target.checked)}
+              className="mt-0.5"
+            />
+            <span>
+              <span className="font-medium text-black/75">Make this a platform admin</span>
+              <span className="block text-black/45">
+                Admins see every agent, can reset passcodes, push the catalog and view errors. Only tick this for
+                yourself or a co-owner.
+              </span>
+            </span>
+          </label>
           <div className="md:col-span-2">
             <Button type="submit" disabled={busy}>
-              {busy ? "Creating…" : "Create agent (with MAE catalog)"}
+              {busy ? "Creating…" : makeAdmin ? "Create admin (with MAE catalog)" : "Create agent (with MAE catalog)"}
             </Button>
           </div>
         </form>
