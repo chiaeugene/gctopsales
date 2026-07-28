@@ -22,11 +22,19 @@ type TenantUser = {
 const inputClass =
   "mt-1.5 w-full rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow";
 
+// Team convention: an agent's passcode is the last 6 digits of their phone.
+function passcodeFromPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  return digits.length >= 6 ? digits.slice(-6) : "";
+}
+
 export default function AdminPage() {
   const [users, setUsers] = useState<TenantUser[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "", name: "", storeName: "" });
+  const [form, setForm] = useState({ email: "", password: "", name: "", storeName: "", phone: "" });
+  // Once the admin types their own passcode, stop auto-filling from the phone.
+  const [passcodeEdited, setPasscodeEdited] = useState(false);
 
   async function load() {
     const res = await fetch("/api/admin/tenants");
@@ -49,13 +57,20 @@ export default function AdminPage() {
       const res = await fetch("/api/admin/tenants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, storeName: form.storeName || undefined, cloneCatalog: true }),
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+          name: form.name,
+          storeName: form.storeName || undefined,
+          cloneCatalog: true,
+        }),
       });
       if (!res.ok) {
         setError((await res.json()).error || "Failed to create tenant");
         return;
       }
-      setForm({ email: "", password: "", name: "", storeName: "" });
+      setForm({ email: "", password: "", name: "", storeName: "", phone: "" });
+      setPasscodeEdited(false);
       await load();
     } finally {
       setBusy(false);
@@ -71,6 +86,8 @@ export default function AdminPage() {
       {error && <div className="text-sm text-red-600">{error}</div>}
 
       <PushCatalogCard />
+
+      <SheetImportCard onRegistered={load} />
 
       <Card padding="none">
         <form onSubmit={createTenant} className="grid md:grid-cols-2 gap-3 p-5">
@@ -88,8 +105,30 @@ export default function AdminPage() {
             <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClass} />
           </label>
           <label className="block text-xs">
-            <span className="text-black/45">Password (min 8 chars)</span>
-            <input required type="text" minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className={inputClass} />
+            <span className="text-black/45">Phone (passcode auto-fills from last 6 digits)</span>
+            <input
+              value={form.phone}
+              placeholder="e.g. 012-3456789"
+              onChange={(e) => {
+                const phone = e.target.value;
+                setForm((f) => ({ ...f, phone, password: passcodeEdited ? f.password : passcodeFromPhone(phone) }));
+              }}
+              className={inputClass}
+            />
+          </label>
+          <label className="block text-xs">
+            <span className="text-black/45">Passcode (6 digits — what the agent logs in with)</span>
+            <input
+              required
+              type="text"
+              minLength={6}
+              value={form.password}
+              onChange={(e) => {
+                setPasscodeEdited(true);
+                setForm({ ...form, password: e.target.value });
+              }}
+              className={inputClass}
+            />
           </label>
           <div className="md:col-span-2">
             <Button type="submit" disabled={busy}>
@@ -129,6 +168,177 @@ export default function AdminPage() {
         </table>
       </Card>
     </div>
+  );
+}
+
+type SheetAgent = {
+  name: string;
+  email: string;
+  phone: string;
+  passcode: string | null;
+  exists: boolean;
+};
+type RowStatus = "ready" | "registering" | "done" | "failed";
+
+// Google Sheet as the agent roster: paste a link-shared sheet with
+// Name / Email / Phone columns, load it, review the prefilled rows, then
+// register everyone new in one click. Passcode = last 6 digits of phone.
+function SheetImportCard({ onRegistered }: { onRegistered: () => Promise<void> }) {
+  const [url, setUrl] = useState("");
+  const [rows, setRows] = useState<SheetAgent[]>([]);
+  const [status, setStatus] = useState<Record<string, RowStatus>>({});
+  const [rowError, setRowError] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [summary, setSummary] = useState<string | null>(null);
+
+  // Remember the sheet link on this device so it's truly one-click next time.
+  useEffect(() => {
+    const saved = localStorage.getItem("gc-admin-sheet-url");
+    if (saved) setUrl(saved);
+  }, []);
+
+  async function loadSheet() {
+    setBusy(true);
+    setError(null);
+    setSummary(null);
+    setRows([]);
+    setStatus({});
+    setRowError({});
+    try {
+      const res = await fetch("/api/admin/import-sheet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sheetUrl: url }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Could not load the sheet");
+        return;
+      }
+      localStorage.setItem("gc-admin-sheet-url", url);
+      setRows(json.agents);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function registerAllNew() {
+    setBusy(true);
+    setError(null);
+    setSummary(null);
+    let ok = 0;
+    let failed = 0;
+    try {
+      for (const a of rows) {
+        if (a.exists || !a.passcode) continue;
+        setStatus((s) => ({ ...s, [a.email]: "registering" }));
+        try {
+          const res = await fetch("/api/admin/tenants", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: a.email, password: a.passcode, name: a.name, cloneCatalog: true }),
+          });
+          if (res.ok) {
+            ok++;
+            setStatus((s) => ({ ...s, [a.email]: "done" }));
+          } else {
+            failed++;
+            const json = await res.json().catch(() => ({}));
+            setStatus((s) => ({ ...s, [a.email]: "failed" }));
+            setRowError((s) => ({ ...s, [a.email]: json.error || "Failed" }));
+          }
+        } catch {
+          failed++;
+          setStatus((s) => ({ ...s, [a.email]: "failed" }));
+        }
+      }
+      setSummary(`Registered ${ok} agent${ok === 1 ? "" : "s"}${failed ? `, ${failed} failed` : ""}.`);
+      await onRegistered();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const pendingCount = rows.filter((a) => !a.exists && a.passcode && status[a.email] !== "done").length;
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">Register agents from Google Sheet</h2>
+        <p className="text-sm text-black/45">
+          Keep your agent roster in a Google Sheet with <strong>Name</strong>, <strong>Email</strong> and{" "}
+          <strong>Phone</strong> columns. Share it as &quot;Anyone with the link: Viewer&quot;, paste the link, and load.
+          Each agent&apos;s passcode is set to the <strong>last 6 digits of their phone number</strong>, and they get the
+          full MAE catalog + GC brains.
+        </p>
+      </div>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://docs.google.com/spreadsheets/d/…"
+          className={inputClass + " !mt-0 flex-1"}
+        />
+        <Button onClick={loadSheet} disabled={busy || !url.trim()}>
+          {busy && rows.length === 0 ? "Loading…" : "Load agents"}
+        </Button>
+      </div>
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      {summary && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+          <CheckIcon className="w-4 h-4 shrink-0" />
+          {summary}
+        </div>
+      )}
+      {rows.length > 0 && (
+        <>
+          <div className="overflow-x-auto -mx-5 px-5">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-black/45 border-b border-black/[0.06]">
+                  <th className="py-2 pr-3">Name</th>
+                  <th className="py-2 pr-3">Email</th>
+                  <th className="py-2 pr-3">Phone</th>
+                  <th className="py-2 pr-3">Passcode</th>
+                  <th className="py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-black/[0.05]">
+                {rows.map((a) => (
+                  <tr key={a.email}>
+                    <td className="py-2 pr-3">{a.name}</td>
+                    <td className="py-2 pr-3 text-xs">{a.email}</td>
+                    <td className="py-2 pr-3 text-xs tabular-nums">{a.phone || "—"}</td>
+                    <td className="py-2 pr-3 text-xs tabular-nums font-medium">{a.passcode || "no phone!"}</td>
+                    <td className="py-2 text-xs">
+                      {a.exists ? (
+                        <span className="text-black/40">already registered</span>
+                      ) : !a.passcode ? (
+                        <span className="text-red-600">needs a phone number in the sheet</span>
+                      ) : status[a.email] === "done" ? (
+                        <span className="text-emerald-700 inline-flex items-center gap-1">
+                          <CheckIcon className="w-3.5 h-3.5" /> registered
+                        </span>
+                      ) : status[a.email] === "failed" ? (
+                        <span className="text-red-600">{rowError[a.email] || "failed"}</span>
+                      ) : status[a.email] === "registering" ? (
+                        <span className="text-black/45">registering…</span>
+                      ) : (
+                        <span className="text-[var(--accent-ink)]">ready</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Button onClick={registerAllNew} disabled={busy || pendingCount === 0}>
+            {busy ? "Registering…" : `Register ${pendingCount} new agent${pendingCount === 1 ? "" : "s"}`}
+          </Button>
+        </>
+      )}
+    </Card>
   );
 }
 

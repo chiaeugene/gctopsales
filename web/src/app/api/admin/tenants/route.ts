@@ -34,7 +34,9 @@ export async function GET() {
 
 const PostSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8).max(100),
+  // 6-char minimum: agent passcodes default to the last 6 digits of their
+  // phone number (the admin's chosen convention).
+  password: z.string().min(6).max(100),
   name: z.string().min(1).max(200),
   storeName: z.string().max(200).optional(),
   // Copy the admin profile's products + brains into the new tenant (default
