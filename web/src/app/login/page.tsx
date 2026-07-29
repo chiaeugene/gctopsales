@@ -55,7 +55,7 @@ export default function LoginPage() {
             .
           </h1>
           <p className="mt-5 text-[16px] leading-relaxed text-black/50 max-w-md">
-            GC learns your products, your rules, and your voice — then sells for you in every chat, in any language,
+            GC learns your products, your rules, and your voice, then sells for you in every chat, in any language,
             around the clock. You stay in control of every ringgit.
           </p>
 
