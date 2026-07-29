@@ -3,7 +3,12 @@ import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { CHANNELS } from "@/lib/constants";
-import { subscribeWabaWebhook, registerPhoneNumber, MetaOAuthError } from "@/lib/meta-oauth";
+import {
+  subscribeWabaWebhook,
+  registerPhoneNumber,
+  upgradeToLongLivedToken,
+  MetaOAuthError,
+} from "@/lib/meta-oauth";
 
 // Manual-credentials phase of "connect your Meta": the agent pastes their own
 // WhatsApp phone_number_id + token (or page id + page token for
@@ -27,6 +32,10 @@ export async function POST(req: Request) {
     const body = PostSchema.safeParse(await req.json());
     if (!body.success) throw new ApiError(400, "Invalid channel payload");
 
+    // Console/manual tokens are often short-lived (1-24h). Upgrade before
+    // storing so the connection doesn't silently die mid-conversation.
+    const accessToken = await upgradeToLongLivedToken(body.data.accessToken);
+
     // A channel identity can belong to exactly one tenant.
     const existing = await prisma.channelConnection.findUnique({
       where: { channel_externalId: { channel: body.data.channel, externalId: body.data.externalId } },
@@ -39,7 +48,7 @@ export async function POST(req: Request) {
       ? await prisma.channelConnection.update({
           where: { id: existing.id },
           data: {
-            accessToken: body.data.accessToken,
+            accessToken,
             displayName: body.data.displayName ?? existing.displayName,
             isActive: true,
           },
@@ -49,7 +58,7 @@ export async function POST(req: Request) {
             profileId: profile.id,
             channel: body.data.channel,
             externalId: body.data.externalId,
-            accessToken: body.data.accessToken,
+            accessToken,
             displayName: body.data.displayName,
           },
         });
@@ -65,7 +74,7 @@ export async function POST(req: Request) {
     if (body.data.channel === "WHATSAPP") {
       if (body.data.wabaId) {
         try {
-          await subscribeWabaWebhook(body.data.wabaId, body.data.accessToken);
+          await subscribeWabaWebhook(body.data.wabaId, accessToken);
           subscribed = true;
         } catch (err) {
           subscribed = false;
@@ -73,7 +82,7 @@ export async function POST(req: Request) {
           console.error("[channels] WABA subscribe failed", detail);
         }
       }
-      const reg = await registerPhoneNumber(body.data.externalId, body.data.accessToken);
+      const reg = await registerPhoneNumber(body.data.externalId, accessToken);
       registered = reg.ok;
       if (!reg.ok) console.error("[channels] register failed", reg.detail);
     }

@@ -307,6 +307,8 @@ type RepairReport = {
   platform: string | null;
   tokenValid: boolean;
   tokenDetail: string | null;
+  tokenExpiresInDays: number | null;
+  tokenNeverExpires: boolean;
   wabaIds: string[];
   subscriptions: { wabaId: string; ok: boolean; detail?: string }[];
   registered: boolean;
@@ -358,7 +360,15 @@ function WhatsAppActivateCard({ connection }: { connection: NonNullable<Conn> })
       {report && (
         <div className="rounded-xl bg-white/80 border border-emerald-200 p-3 space-y-1.5 text-xs">
           <CheckLine ok={report.tokenValid} label="Credentials valid">
-            {report.number ? `${report.number}${report.verifiedName ? ` · ${report.verifiedName}` : ""}` : report.tokenDetail}
+            {report.tokenValid
+              ? `${report.number ?? report.phoneNumberId}${report.verifiedName ? ` · ${report.verifiedName}` : ""}${
+                  report.tokenNeverExpires
+                    ? " · token never expires"
+                    : report.tokenExpiresInDays !== null
+                      ? ` · token good for ${report.tokenExpiresInDays} more days`
+                      : ""
+                }`
+              : `${report.tokenDetail} — press "Connect with Facebook" below to reconnect.`}
           </CheckLine>
           <CheckLine ok={subsOk} label="Receiving messages (webhook subscribed)">
             {report.wabaIds.length === 0

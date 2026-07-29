@@ -6,6 +6,8 @@ import {
   discoverWabaIds,
   subscribeWabaWebhook,
   fetchPhoneNumberStatus,
+  upgradeToLongLivedToken,
+  inspectTokenExpiry,
 } from "@/lib/meta-oauth";
 
 // "Activate number": the one button that makes a connected WhatsApp number
@@ -25,25 +27,36 @@ export async function POST() {
 
     const results = [];
     for (const c of connections) {
-      const status = await fetchPhoneNumberStatus(c.externalId, c.accessToken);
+      // Try to salvage a short-lived token first; persist if it improved.
+      const upgraded = await upgradeToLongLivedToken(c.accessToken);
+      let token = c.accessToken;
+      if (upgraded !== c.accessToken) {
+        await prisma.channelConnection.update({ where: { id: c.id }, data: { accessToken: upgraded } });
+        token = upgraded;
+      }
 
-      const wabaIds = await discoverWabaIds(c.accessToken);
+      const expiry = await inspectTokenExpiry(token);
+      const status = await fetchPhoneNumberStatus(c.externalId, token);
+
+      const wabaIds = await discoverWabaIds(token);
       const subscriptions: { wabaId: string; ok: boolean; detail?: string }[] = [];
       for (const wabaId of wabaIds) {
         try {
-          await subscribeWabaWebhook(wabaId, c.accessToken);
+          await subscribeWabaWebhook(wabaId, token);
           subscriptions.push({ wabaId, ok: true });
         } catch (err) {
           subscriptions.push({ wabaId, ok: false, detail: err instanceof Error ? err.message : "failed" });
         }
       }
 
-      const reg = await registerPhoneNumber(c.externalId, c.accessToken);
+      const reg = await registerPhoneNumber(c.externalId, token);
 
       const report = {
         phoneNumberId: c.externalId,
         displayName: c.displayName,
         tokenValid: status.ok,
+        tokenExpiresInDays: expiry.expiresInDays,
+        tokenNeverExpires: expiry.valid && expiry.expiresInDays === null,
         number: status.displayPhoneNumber ?? null,
         verifiedName: status.verifiedName ?? null,
         platform: status.platform ?? null,

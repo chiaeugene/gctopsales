@@ -39,7 +39,8 @@ export async function exchangeCodeForToken(code: string): Promise<string> {
   const url = new URL(`https://graph.facebook.com/${apiVersion()}/oauth/access_token`);
   url.searchParams.set("client_id", appId);
   url.searchParams.set("client_secret", appSecret);
-  url.searchParams.set("redirect_uri", ""); // JS SDK popup code flow — no redirect involved
+  // No redirect_uri: the JS SDK popup code flow doesn't use one, and sending
+  // an empty value makes Meta hand back a ~1 hour session token.
   url.searchParams.set("code", code);
 
   const res = await fetch(url.toString());
@@ -47,7 +48,54 @@ export async function exchangeCodeForToken(code: string): Promise<string> {
   if (!res.ok || !json.access_token) {
     throw new MetaOAuthError("Failed to exchange code for token", json.error ?? json);
   }
-  return json.access_token;
+  // Short-lived tokens die in about an hour and take the whole connection with
+  // them — always upgrade before storing.
+  return upgradeToLongLivedToken(json.access_token);
+}
+
+// Trades a short-lived token for a long-lived one (~60 days). Safe to call on
+// an already-long-lived token; returns the original if the upgrade is refused.
+export async function upgradeToLongLivedToken(token: string): Promise<string> {
+  const { appId, appSecret } = requireAppCreds();
+  const url = new URL(`https://graph.facebook.com/${apiVersion()}/oauth/access_token`);
+  url.searchParams.set("grant_type", "fb_exchange_token");
+  url.searchParams.set("client_id", appId);
+  url.searchParams.set("client_secret", appSecret);
+  url.searchParams.set("fb_exchange_token", token);
+
+  try {
+    const res = await fetch(url.toString());
+    const json = (await res.json()) as { access_token?: string };
+    if (res.ok && json.access_token) return json.access_token;
+  } catch {
+    // fall through — keep what we have rather than breaking the connect
+  }
+  return token;
+}
+
+// When does this token die? Surfaced in the Connect diagnostic so an expiring
+// connection is visible before customers hit silence.
+export async function inspectTokenExpiry(
+  token: string
+): Promise<{ expiresAt: number | null; expiresInDays: number | null; valid: boolean }> {
+  const { appId, appSecret } = requireAppCreds();
+  const url = new URL(`https://graph.facebook.com/${apiVersion()}/debug_token`);
+  url.searchParams.set("input_token", token);
+  url.searchParams.set("access_token", `${appId}|${appSecret}`);
+
+  try {
+    const res = await fetch(url.toString());
+    const json = (await res.json()) as { data?: { expires_at?: number; is_valid?: boolean } };
+    const expiresAt = json.data?.expires_at ?? null;
+    return {
+      expiresAt,
+      // expires_at === 0 means "never expires" (system user tokens)
+      expiresInDays: expiresAt && expiresAt > 0 ? Math.round((expiresAt * 1000 - Date.now()) / 86_400_000) : null,
+      valid: Boolean(json.data?.is_valid),
+    };
+  } catch {
+    return { expiresAt: null, expiresInDays: null, valid: false };
+  }
 }
 
 export type FacebookPage = {
