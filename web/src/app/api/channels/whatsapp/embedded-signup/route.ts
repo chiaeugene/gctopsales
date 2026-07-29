@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import {
   exchangeCodeForToken,
   subscribeWabaWebhook,
+  registerPhoneNumber,
   fetchPhoneNumberDisplayName,
   MetaOAuthError,
 } from "@/lib/meta-oauth";
@@ -27,9 +28,15 @@ export async function POST(req: Request) {
     const { code, wabaId, phoneNumberId } = body.data;
 
     let accessToken: string;
+    let registration: { ok: boolean; detail?: string };
     try {
       accessToken = await exchangeCodeForToken(code);
       await subscribeWabaWebhook(wabaId, accessToken);
+      // Without registration the number is dead to the Cloud API (no sends,
+      // no inbound webhooks). Don't fail the connect if it errors — the
+      // repair endpoint can retry — but surface the result.
+      registration = await registerPhoneNumber(phoneNumberId, accessToken);
+      if (!registration.ok) console.error("[embedded-signup] register failed:", registration.detail);
     } catch (err) {
       if (err instanceof MetaOAuthError) throw new ApiError(502, err.message);
       throw err;
@@ -58,6 +65,12 @@ export async function POST(req: Request) {
           },
         });
 
-    return { id: connection.id, channel: connection.channel, externalId: connection.externalId, displayName: connection.displayName };
+    return {
+      id: connection.id,
+      channel: connection.channel,
+      externalId: connection.externalId,
+      displayName: connection.displayName,
+      registered: registration.ok,
+    };
   });
 }

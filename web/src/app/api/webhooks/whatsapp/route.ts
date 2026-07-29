@@ -56,6 +56,7 @@ export async function POST(req: Request) {
   }
 
   if (!verifyMetaSignature(rawBody, req.headers.get("x-hub-signature-256"))) {
+    console.error("[whatsapp webhook] SIGNATURE FAILED — check META_APP_SECRET matches the app");
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
@@ -65,6 +66,14 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ ok: true });
   }
+  // Delivery receipt log — proves Meta reached us and shows what it sent.
+  console.log(
+    "[whatsapp webhook] delivery:",
+    (payload.entry ?? [])
+      .flatMap((e) => e.changes ?? [])
+      .map((c) => `${c.value?.metadata?.phone_number_id ?? "?"}:${c.value?.messages?.length ?? 0}msg`)
+      .join(", ") || "no-entries"
+  );
 
   for (const entry of payload.entry ?? []) {
     for (const change of entry.changes ?? []) {

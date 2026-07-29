@@ -104,6 +104,8 @@ export default function ConnectPage() {
         </p>
       </Card>
 
+      {info.connected.WHATSAPP && <WhatsAppActivateCard connection={info.connected.WHATSAPP} />}
+
       {META_APP_CONFIGURED && <MetaConnectButtons onConnected={load} />}
 
       <button
@@ -266,5 +268,52 @@ function CopyRow({ label, value }: { label: string; value: string }) {
         )}
       </Button>
     </div>
+  );
+}
+
+// One-click Cloud API registration for a connected WhatsApp number. Numbers
+// onboarded through Embedded Signup must be registered before they can send
+// or receive — this retries it any time (idempotent, safe).
+function WhatsAppActivateCard({ connection }: { connection: NonNullable<Conn> }) {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+
+  async function activate() {
+    setBusy(true);
+    setResult(null);
+    try {
+      const res = await fetch("/api/channels/whatsapp/repair", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) {
+        setResult(json.error || "Activation failed");
+        return;
+      }
+      const r = json.results?.[0];
+      setResult(
+        r?.registered
+          ? "Number registered with WhatsApp — GC can now send and receive on it. Try messaging it!"
+          : `Registration failed: ${r?.detail || "unknown error"}`
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="!border-emerald-200 !bg-emerald-50/60 space-y-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="text-sm text-emerald-900">
+          <span className="font-semibold">WhatsApp connected:</span> {connection.displayName || connection.externalId}
+        </div>
+        <Button onClick={activate} disabled={busy} className="!px-4 !py-1.5 !text-xs">
+          {busy ? "Activating…" : "Activate number"}
+        </Button>
+      </div>
+      <p className="text-xs text-emerald-800/80">
+        If GC isn&apos;t replying on this number yet, press Activate once — it completes the WhatsApp Cloud API
+        registration that new numbers need.
+      </p>
+      {result && <p className="text-xs font-medium text-emerald-900">{result}</p>}
+    </Card>
   );
 }

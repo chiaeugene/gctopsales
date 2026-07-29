@@ -100,6 +100,27 @@ export async function subscribeWabaWebhook(wabaId: string, accessToken: string):
   }
 }
 
+// Registers a freshly onboarded phone number with the Cloud API. Numbers
+// created through Embedded Signup are NOT usable (no sends, no webhook
+// deliveries) until this one-time /register call succeeds — Meta's signup
+// success screen says "your partner must register it within 90 days" and WE
+// are that partner. The pin is the number's two-step verification PIN; new
+// numbers have none, so we set one deterministically.
+export async function registerPhoneNumber(phoneNumberId: string, accessToken: string): Promise<{ ok: boolean; detail?: string }> {
+  const url = new URL(`https://graph.facebook.com/${apiVersion()}/${phoneNumberId}/register`);
+  const res = await fetch(url.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify({ messaging_product: "whatsapp", pin: "000000" }),
+  });
+  if (res.ok) return { ok: true };
+  const json = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+  const msg = json?.error?.message ?? `HTTP ${res.status}`;
+  // "already registered" style responses are success for our purposes.
+  if (/already/i.test(msg)) return { ok: true, detail: msg };
+  return { ok: false, detail: msg };
+}
+
 // Fetches the WhatsApp phone number's display name/verified name, purely so
 // the Connect page can show something friendlier than a raw phone_number_id.
 export async function fetchPhoneNumberDisplayName(phoneNumberId: string, accessToken: string): Promise<string | null> {
