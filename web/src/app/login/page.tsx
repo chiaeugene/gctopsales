@@ -49,7 +49,7 @@ export default function LoginPage() {
           {/* Vision */}
           <div className="text-center lg:text-left">
             <AnimatedHeadline
-              prefix="Every business deserves"
+              prefix="Every customer deserves"
               words={["a top seller", "a closer", "a 24/7 team", "a sales legend", "GC"]}
               className="text-[40px] sm:text-[48px] leading-[1.08]"
             />
