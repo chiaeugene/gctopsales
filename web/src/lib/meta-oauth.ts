@@ -121,6 +121,55 @@ export async function registerPhoneNumber(phoneNumberId: string, accessToken: st
   return { ok: false, detail: msg };
 }
 
+// Discovers which WhatsApp Business Accounts a token actually has rights over,
+// by asking Meta to introspect the token. Embedded Signup / Business Login
+// tokens carry "granular_scopes" listing the exact WABA ids they were granted
+// — so we never have to ask the agent to hunt for their WABA id.
+export async function discoverWabaIds(accessToken: string): Promise<string[]> {
+  const { appId, appSecret } = requireAppCreds();
+  const url = new URL(`https://graph.facebook.com/${apiVersion()}/debug_token`);
+  url.searchParams.set("input_token", accessToken);
+  url.searchParams.set("access_token", `${appId}|${appSecret}`);
+
+  const res = await fetch(url.toString());
+  const json = (await res.json()) as {
+    data?: { granular_scopes?: { scope?: string; target_ids?: string[] }[] };
+  };
+  const ids = new Set<string>();
+  for (const s of json.data?.granular_scopes ?? []) {
+    if (typeof s.scope === "string" && s.scope.startsWith("whatsapp_business")) {
+      for (const id of s.target_ids ?? []) ids.add(String(id));
+    }
+  }
+  return [...ids];
+}
+
+// Reads a phone number's live state from Meta — the ground truth for "can
+// this number actually send/receive?".
+export async function fetchPhoneNumberStatus(
+  phoneNumberId: string,
+  accessToken: string
+): Promise<{ ok: boolean; displayPhoneNumber?: string; verifiedName?: string; platform?: string; detail?: string }> {
+  const url = new URL(`https://graph.facebook.com/${apiVersion()}/${phoneNumberId}`);
+  url.searchParams.set("fields", "display_phone_number,verified_name,platform_type,quality_rating");
+  url.searchParams.set("access_token", accessToken);
+
+  const res = await fetch(url.toString());
+  const json = (await res.json()) as {
+    display_phone_number?: string;
+    verified_name?: string;
+    platform_type?: string;
+    error?: { message?: string };
+  };
+  if (!res.ok) return { ok: false, detail: json.error?.message ?? `HTTP ${res.status}` };
+  return {
+    ok: true,
+    displayPhoneNumber: json.display_phone_number,
+    verifiedName: json.verified_name,
+    platform: json.platform_type,
+  };
+}
+
 // Fetches the WhatsApp phone number's display name/verified name, purely so
 // the Connect page can show something friendlier than a raw phone_number_id.
 export async function fetchPhoneNumberDisplayName(phoneNumberId: string, accessToken: string): Promise<string | null> {

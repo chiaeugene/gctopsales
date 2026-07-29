@@ -300,30 +300,43 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 // One-click Cloud API registration for a connected WhatsApp number. Numbers
 // onboarded through Embedded Signup must be registered before they can send
 // or receive — this retries it any time (idempotent, safe).
+type RepairReport = {
+  phoneNumberId: string;
+  number: string | null;
+  verifiedName: string | null;
+  platform: string | null;
+  tokenValid: boolean;
+  tokenDetail: string | null;
+  wabaIds: string[];
+  subscriptions: { wabaId: string; ok: boolean; detail?: string }[];
+  registered: boolean;
+  registerDetail: string | null;
+};
+
 function WhatsAppActivateCard({ connection }: { connection: NonNullable<Conn> }) {
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [report, setReport] = useState<RepairReport | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function activate() {
     setBusy(true);
-    setResult(null);
+    setError(null);
+    setReport(null);
     try {
       const res = await fetch("/api/channels/whatsapp/repair", { method: "POST" });
       const json = await res.json();
       if (!res.ok) {
-        setResult(json.error || "Activation failed");
+        setError(json.error || "Activation failed");
         return;
       }
-      const r = json.results?.[0];
-      setResult(
-        r?.registered
-          ? "Number registered with WhatsApp — GC can now send and receive on it. Try messaging it!"
-          : `Registration failed: ${r?.detail || "unknown error"}`
-      );
+      setReport(json.results?.[0] ?? null);
     } finally {
       setBusy(false);
     }
   }
+
+  const subsOk = report ? report.subscriptions.length > 0 && report.subscriptions.every((s) => s.ok) : false;
+  const allGood = report ? report.tokenValid && subsOk && report.registered : false;
 
   return (
     <Card className="!border-emerald-200 !bg-emerald-50/60 space-y-2">
@@ -332,14 +345,48 @@ function WhatsAppActivateCard({ connection }: { connection: NonNullable<Conn> })
           <span className="font-semibold">WhatsApp connected:</span> {connection.displayName || connection.externalId}
         </div>
         <Button onClick={activate} disabled={busy} className="!px-4 !py-1.5 !text-xs">
-          {busy ? "Activating…" : "Activate number"}
+          {busy ? "Checking…" : "Activate & check"}
         </Button>
       </div>
       <p className="text-xs text-emerald-800/80">
-        If GC isn&apos;t replying on this number yet, press Activate once — it completes the WhatsApp Cloud API
-        registration that new numbers need.
+        Press this once after connecting. It subscribes GC to your WhatsApp account (so messages reach GC), registers
+        the number for sending, and reports anything still broken.
       </p>
-      {result && <p className="text-xs font-medium text-emerald-900">{result}</p>}
+
+      {error && <p className="text-xs font-medium text-red-700">{error}</p>}
+
+      {report && (
+        <div className="rounded-xl bg-white/80 border border-emerald-200 p-3 space-y-1.5 text-xs">
+          <CheckLine ok={report.tokenValid} label="Credentials valid">
+            {report.number ? `${report.number}${report.verifiedName ? ` · ${report.verifiedName}` : ""}` : report.tokenDetail}
+          </CheckLine>
+          <CheckLine ok={subsOk} label="Receiving messages (webhook subscribed)">
+            {report.wabaIds.length === 0
+              ? "No WhatsApp account found on this token — reconnect using Connect with Facebook."
+              : report.subscriptions.map((s) => `${s.wabaId}${s.ok ? "" : `: ${s.detail}`}`).join(", ")}
+          </CheckLine>
+          <CheckLine ok={report.registered} label="Sending enabled (number registered)">
+            {report.registerDetail}
+          </CheckLine>
+          <p className={"pt-1 font-medium " + (allGood ? "text-emerald-800" : "text-amber-700")}>
+            {allGood
+              ? `All set. WhatsApp ${report.number ?? "your number"} now and GC will reply.`
+              : "Something above is still red — send that line to your developer."}
+          </p>
+        </div>
+      )}
     </Card>
+  );
+}
+
+function CheckLine({ ok, label, children }: { ok: boolean; label: string; children?: React.ReactNode }) {
+  return (
+    <div className="flex gap-2">
+      <span className={"shrink-0 font-bold " + (ok ? "text-emerald-600" : "text-red-600")}>{ok ? "✓" : "✗"}</span>
+      <span className="min-w-0">
+        <span className="font-medium text-black/75">{label}</span>
+        {children ? <span className="block text-black/45 break-all">{children}</span> : null}
+      </span>
+    </div>
   );
 }
