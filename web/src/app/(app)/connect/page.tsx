@@ -23,7 +23,8 @@ const inputClass =
 export default function ConnectPage() {
   const [info, setInfo] = useState<Info | null>(null);
   const [tab, setTab] = useState<"WHATSAPP" | "MESSENGER" | "INSTAGRAM">("WHATSAPP");
-  const [form, setForm] = useState({ externalId: "", accessToken: "", displayName: "" });
+  const [form, setForm] = useState({ externalId: "", accessToken: "", displayName: "", wabaId: "" });
+  const [connectResult, setConnectResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showManual, setShowManual] = useState(!META_APP_CONFIGURED);
@@ -44,13 +45,24 @@ export default function ConnectPage() {
       const res = await fetch("/api/channels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ channel: tab, ...form, displayName: form.displayName || undefined }),
+        body: JSON.stringify({
+          channel: tab,
+          ...form,
+          displayName: form.displayName || undefined,
+          wabaId: form.wabaId || undefined,
+        }),
       });
+      const json = await res.json();
       if (!res.ok) {
-        setError((await res.json()).error || "Failed to connect");
+        setError(json.error || "Failed to connect");
         return;
       }
-      setForm({ externalId: "", accessToken: "", displayName: "" });
+      if (tab === "WHATSAPP") {
+        setConnectResult(
+          `Saved. Inbound messages: ${json.subscribed === true ? "subscribed ✓" : json.subscribed === false ? `FAILED (${json.detail ?? "check the WABA ID"})` : "not subscribed (no WABA ID given)"} · Sending: ${json.registered ? "registered ✓" : "registration failed"}`
+        );
+      }
+      setForm({ externalId: "", accessToken: "", displayName: "", wabaId: "" });
       await load();
     } finally {
       setBusy(false);
@@ -210,11 +222,25 @@ export default function ConnectPage() {
               <span className="text-black/45">Display name (optional)</span>
               <input value={form.displayName} onChange={(e) => setForm({ ...form, displayName: e.target.value })} className={inputClass} />
             </label>
+            {tab === "WHATSAPP" && (
+              <label className="block text-xs md:col-span-2">
+                <span className="text-black/45">
+                  WhatsApp Business Account ID <strong>(required for GC to receive messages)</strong>
+                </span>
+                <input
+                  value={form.wabaId}
+                  onChange={(e) => setForm({ ...form, wabaId: e.target.value })}
+                  placeholder="e.g. 1736816070840085 — shown next to your Phone number ID in Meta"
+                  className={inputClass}
+                />
+              </label>
+            )}
             <label className="block text-xs md:col-span-2">
               <span className="text-black/45">Access token (stored securely server-side, never shown again)</span>
               <input required type="password" value={form.accessToken} onChange={(e) => setForm({ ...form, accessToken: e.target.value })} className={inputClass} />
             </label>
             {error && <p className="text-xs text-red-600 md:col-span-2">{error}</p>}
+            {connectResult && <p className="text-xs font-medium text-[var(--accent-ink)] md:col-span-2">{connectResult}</p>}
             <div className="md:col-span-2">
               <Button type="submit" disabled={busy}>
                 {busy ? "Connecting…" : "Connect"}
