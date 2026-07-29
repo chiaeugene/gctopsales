@@ -61,7 +61,7 @@ export default function GymPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       <PageHeader
         title="Sales Gym"
         subtitle="Runs GC against the hardest MAE selling situations — Shopee-cheaper, skeptics, drug fears, pregnancy safety, rebound, rude customers — grades each response, and shows exactly where she's strong or weak."

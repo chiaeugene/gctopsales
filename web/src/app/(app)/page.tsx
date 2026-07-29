@@ -11,7 +11,6 @@ import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { HeroBanner } from "@/components/ui/HeroBanner";
-import FeatureSection from "@/components/ui/stack-feature-section";
 import { FlameIcon, SnowflakeIcon, AlertIcon, ChartIcon } from "@/components/ui/icons";
 
 export default async function DashboardPage() {
@@ -122,10 +121,7 @@ export default async function DashboardPage() {
         ]}
       />
 
-      {!onboardingDone && <OnboardingChecklist lang={lang} steps={onboardSteps} />}
-
-      <FeatureSection />
-
+      {/* Urgent first: anything waiting on the human beats everything else. */}
       {needsHuman > 0 && (
         <Link
           href="/orders?status=Human+Takeover+Needed"
@@ -135,6 +131,8 @@ export default async function DashboardPage() {
           {needsHuman} conversation{needsHuman > 1 ? "s" : ""} need your attention — click to review
         </Link>
       )}
+
+      {!onboardingDone && <OnboardingChecklist lang={lang} steps={onboardSteps} />}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Conversations" value={total} />
@@ -238,9 +236,12 @@ export default async function DashboardPage() {
       </div>
 
       {/* Lost-sale reasons */}
-      {topLostReasons.length > 0 && (
+      {(topLostReasons.length > 0 || lost > 0) && (
         <Card>
-          <div className="font-semibold text-[15px] mb-2.5">Why deals are lost (from report cards)</div>
+          <div className="font-semibold text-[15px] mb-2.5 flex items-center justify-between gap-3">
+            <span>Why deals are lost (from report cards)</span>
+            <span className="text-xs font-normal text-black/40 shrink-0 tabular-nums">{lost} lost total</span>
+          </div>
           <ul className="space-y-1.5">
             {topLostReasons.map(([reason, count]) => (
               <li key={reason} className="flex justify-between text-xs">
@@ -248,6 +249,9 @@ export default async function DashboardPage() {
                 <span className="text-red-500 shrink-0 font-medium">{count}×</span>
               </li>
             ))}
+          {topLostReasons.length === 0 && (
+            <li className="text-xs text-black/35">No report-card reasons yet — run reports on lost chats to see patterns here.</li>
+          )}
           </ul>
         </Card>
       )}

@@ -63,7 +63,7 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       <PageHeader
         title="WhatsApp templates"
         subtitle={

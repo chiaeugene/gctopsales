@@ -30,8 +30,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <I18nProvider lang={lang}>
       <div className="min-h-screen flex">
         <Sidebar email={user.email} isAdmin={user.role === "ADMIN"} onSignOut={doSignOut} />
-        {/* pt-18 clears the fixed mobile top bar; desktop keeps the old rhythm */}
-        <main className="flex-1 min-w-0 px-4 pb-6 pt-[4.5rem] sm:px-6 lg:p-8 max-w-6xl">{children}</main>
+        {/* pt-18 clears the fixed mobile top bar. The inner div centers the
+            content column in the remaining width — without it every page hugs
+            the sidebar and wide screens get a dead right gutter. */}
+        <main className="flex-1 min-w-0 px-4 pb-6 pt-[4.5rem] sm:px-6 lg:px-8 lg:pb-8 lg:pt-8">
+          <div className="mx-auto w-full max-w-6xl">{children}</div>
+        </main>
       </div>
     </I18nProvider>
   );

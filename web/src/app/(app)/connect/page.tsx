@@ -76,7 +76,7 @@ export default function ConnectPage() {
   const webhookUrl = tab === "WHATSAPP" ? info.whatsappWebhookUrl : info.metaWebhookUrl;
 
   return (
-    <div className="max-w-3xl space-y-5">
+    <div className="max-w-3xl mx-auto space-y-5">
       <PageHeader
         title="Connect your channels"
         subtitle={

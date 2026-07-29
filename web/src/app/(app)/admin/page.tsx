@@ -103,7 +103,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl mx-auto">
       <PageHeader
         title="Admin — Agent accounts"
         subtitle="Each agent gets their own workspace: own Meta channels, own customers, own payment details — pre-loaded with the full MAE catalog and GC Top Sales brains."

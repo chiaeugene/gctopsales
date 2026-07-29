@@ -160,7 +160,7 @@ export default function SettingsPage() {
   if (!settings) return <div className="text-sm text-black/40">{error || t("settings.loading")}</div>;
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-4xl">
+    <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
       <PageHeader title={t("settings.title")} subtitle={t("settings.subtitle")} />
       {error && <div className="text-sm text-red-600">{error}</div>}
 
