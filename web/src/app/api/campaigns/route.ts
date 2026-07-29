@@ -3,6 +3,9 @@ import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { findTargets, draftCampaignMessages, SEGMENT_LABELS, type Segment } from "@/lib/campaigns";
+import { chatComplete, extractJson, llmConfigured } from "@/lib/ai/llm";
+import { parseJson } from "@/lib/json";
+import { CatalogRulesSchema } from "@/lib/ai/schemas";
 import { sendWhatsAppText, sendWhatsAppTemplate } from "@/lib/channels/whatsapp";
 import { sendMetaText } from "@/lib/channels/meta-messaging";
 
@@ -35,6 +38,48 @@ export async function POST(req: Request) {
   return handle(async () => {
     const profile = await requireProfile();
     const body = await req.json();
+
+    // GC cooks up campaign ideas from the agent's actual lead base — the agent
+    // picks one instead of inventing an offer from scratch.
+    if (body?.action === "suggest") {
+      if (!llmConfigured()) throw new ApiError(503, "AI not configured");
+      const [segments, catalog] = await Promise.all([
+        Promise.all(
+          (Object.keys(SEGMENT_LABELS) as Segment[]).map(async (seg) => ({
+            segment: seg,
+            label: SEGMENT_LABELS[seg],
+            targets: (await findTargets(profile, seg)).slice(0, 40),
+          }))
+        ),
+        Promise.resolve(CatalogRulesSchema.parse(parseJson(profile.catalogRules, {}))),
+      ]);
+
+      const baseSummary = segments
+        .map((s) => {
+          const interests = s.targets
+            .map((t) => t.productInterest)
+            .filter(Boolean)
+            .slice(0, 12)
+            .join(", ");
+          return `${s.label} (${s.segment}): ${s.targets.length} leads${interests ? `; interested in: ${interests}` : ""}`;
+        })
+        .join("\n");
+
+      const raw = await chatComplete({
+        system: `You are a retention-marketing strategist for a MAE Global wellness seller. Given their current lead base and running promotions, propose the 2-3 BEST re-engagement campaigns to run right now. Respond ONLY with JSON: {"ideas": [{"title": "short catchy name", "segment": "warm_quiet"|"interested_no_buy"|"past_buyers", "offer": "2-3 sentence campaign brief GC will use to personalize each message (the angle, the honest urgency lever, the product focus)", "why": "1 sentence on why this segment+angle now"}]}. Rules: only honest urgency (real promos, first-purchase gifts, membership benefits, health-goal momentum); never invent discounts; if a promotion is listed below, build at least one idea around it; skip segments with 0 leads.`,
+        messages: [
+          {
+            role: "user",
+            content: `LEAD BASE:\n${baseSummary}\n\nCURRENT PROMOTIONS: ${catalog.currentPromotions || "none listed"}`,
+          },
+        ],
+        maxTokens: 900,
+        temperature: 0.6,
+      });
+      const json = extractJson(raw) as { ideas?: { title: string; segment: string; offer: string; why: string }[] } | null;
+      const valid = new Set(Object.keys(SEGMENT_LABELS));
+      return { ideas: (json?.ideas ?? []).filter((i) => valid.has(i.segment)).slice(0, 3) };
+    }
 
     if (body?.action === "preview") {
       const parsed = PreviewSchema.safeParse(body);

@@ -62,20 +62,58 @@ export default function TemplatesPage() {
     await load();
   }
 
+  const [generating, setGenerating] = useState(false);
+  async function generate() {
+    setGenerating(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/templates", { method: "PUT" });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "GC could not draft templates");
+        return;
+      }
+      await load();
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <PageHeader
-        title="WhatsApp templates"
+        title="Message library"
         subtitle={
           <>
-            Templates are the only way to message a customer after the 24-hour window closes — so re-engagement campaigns
-            use them for cold leads. Create the template in your Meta WhatsApp Manager, get it approved, then mirror it
-            here (same name, language, and body) so GC can send it.
+            Ready-to-send messages for the moments every seller repeats: re-introductions, payment reminders, shipping
+            updates, reorder nudges, promo blasts. Copy any of them into WhatsApp today. When WhatsApp connects, these
+            same templates get submitted to Meta and GC sends them automatically to cold leads.
           </>
         }
         action={<Button onClick={() => setDraft({ language: "en", category: "MARKETING", status: "PENDING" })}>+ Add template</Button>}
       />
       {error && <div className="text-sm text-red-600">{error}</div>}
+
+      {/* GC drafts the starter library from this agent's own brains */}
+      <Card className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-semibold">Let GC write your starter set</h2>
+          <p className="text-sm text-black/50 mt-0.5 max-w-md">
+            One click and GC drafts 5 practical templates in your store&apos;s voice, using your real shipping and payment
+            rules. Edit anything after.
+          </p>
+        </div>
+        <Button onClick={generate} disabled={generating} className="shrink-0">
+          {generating ? "Drafting…" : "Draft 5 templates"}
+        </Button>
+      </Card>
+
+      <div className="flex items-center gap-2 text-xs text-black/40">
+        <span className="text-[10px] font-bold uppercase tracking-wide text-sky-700 bg-sky-50 border border-sky-200 rounded-full px-2 py-0.5">
+          Releasing soon
+        </span>
+        Auto-sending templates through WhatsApp unlocks when channels connect. Until then, use Copy.
+      </div>
 
       <div className="space-y-2">
         {items.length === 0 && <p className="text-sm text-black/35">No templates yet. Add your Meta-approved templates here to reach cold leads.</p>}
@@ -94,6 +132,7 @@ export default function TemplatesPage() {
               </div>
               <div className="text-sm text-black/60 whitespace-pre-wrap bg-black/[0.02] rounded-lg p-2">{t.bodyText}</div>
               {t.variableHint && <div className="text-xs text-black/35">Variables: {t.variableHint}</div>}
+              <CopyTemplateButton text={t.bodyText} />
             </div>
           </Card>
         ))}
@@ -150,4 +189,22 @@ export default function TemplatesPage() {
 function StatusBadge({ status }: { status: string }) {
   const tone = (status === "APPROVED" ? "success" : status === "REJECTED" ? "danger" : "warm") as "success" | "danger" | "warm";
   return <Badge tone={tone}>{status}</Badge>;
+}
+
+// Manual mode: copy the template body (with {{n}} slots filled by hand) until
+// WhatsApp auto-send unlocks.
+function CopyTemplateButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-ink)] hover:underline"
+    >
+      {copied ? "Copied, fill in the blanks and send" : "Copy message"}
+    </button>
+  );
 }

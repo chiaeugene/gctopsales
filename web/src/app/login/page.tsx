@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { AnimatedHeadline } from "@/components/ui/animated-headline";
 
-// Platform front door: this sells the VISION (an AI sales team for any
-// business), not one product line. Aurora-lit light canvas, one glass panel,
-// quiet confidence — no stock photography, no product shots.
+// Platform front door. One centered composition: the vision (animated
+// headline) and the sign-in panel sit close together as a single unit
+// instead of being flung to opposite screen edges.
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -29,83 +30,55 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-dvh grid lg:grid-cols-2">
-      {/* Vision side */}
-      <div className="hidden lg:flex flex-col justify-between p-12 xl:p-16">
-        <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-xl [box-shadow:var(--shadow-purple)]"
-            style={{ background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-ink) 100%)" }}
-          />
-          <span className="text-[17px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-            GC
-            <span className="text-black/35 font-medium"> · AI Sales Team</span>
-          </span>
-        </div>
+    <main className="min-h-dvh flex flex-col">
+      {/* Top bar brand */}
+      <header className="flex items-center gap-3 px-6 sm:px-10 pt-6">
+        <div
+          className="w-8 h-8 rounded-xl [box-shadow:var(--shadow-purple)]"
+          style={{ background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-ink) 100%)" }}
+        />
+        <span className="text-[16px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+          GC
+          <span className="text-black/35 font-medium"> · AI Sales Team</span>
+        </span>
+      </header>
 
-        <div className="max-w-lg">
-          <h1
-            className="text-[44px] xl:text-[52px] font-semibold leading-[1.05] tracking-[-0.035em] text-[var(--ink)]"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Every business deserves a{" "}
-            <span className="bg-clip-text text-transparent bg-[linear-gradient(120deg,var(--accent)_0%,#c026d3_100%)]">
-              closer
-            </span>
-            .
-          </h1>
-          <p className="mt-5 text-[16px] leading-relaxed text-black/50 max-w-md">
-            GC learns your products, your rules, and your voice, then sells for you in every chat, in any language,
-            around the clock. You stay in control of every ringgit.
-          </p>
-
-          <div className="mt-9 grid grid-cols-3 gap-3 max-w-md">
-            {[
-              ["Trained by you", "Role-play once, sell forever"],
-              ["Every channel", "WhatsApp · IG · Messenger"],
-              ["Your rules", "Prices and payments locked"],
-            ].map(([k, v]) => (
-              <div key={k} className="rounded-xl glass border ring-1 ring-black/[0.04] px-3.5 py-3">
-                <div className="text-[13px] font-semibold text-[var(--ink)]">{k}</div>
-                <div className="mt-0.5 text-[11px] leading-snug text-black/45">{v}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="text-[12px] text-black/35">
-          © {new Date().getFullYear()} GC · AI Sales Team ·{" "}
-          <a href="/privacy" className="hover:text-black/60 transition-colors">Privacy</a> ·{" "}
-          <a href="/terms" className="hover:text-black/60 transition-colors">Terms</a>
-        </div>
-      </div>
-
-      {/* Form side */}
-      <div className="flex items-center justify-center p-6">
-        <div className="w-full max-w-sm animate-fade-up">
-          {/* Mobile brand (vision side hidden) */}
-          <div className="lg:hidden text-center mb-8">
-            <div
-              className="inline-flex items-center gap-2.5 text-[22px] font-semibold tracking-tight"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              <span
-                className="w-8 h-8 rounded-xl inline-block [box-shadow:var(--shadow-purple)]"
-                style={{ background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-ink) 100%)" }}
-              />
-              GC<span className="text-black/35 font-medium"> · AI Sales Team</span>
+      {/* Centered composition: vision + panel close together */}
+      <div className="flex-1 flex items-center justify-center px-6 py-10">
+        <div className="w-full max-w-4xl grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-center">
+          {/* Vision */}
+          <div className="text-center lg:text-left">
+            <AnimatedHeadline
+              prefix="Every business deserves"
+              words={["a top seller", "a closer", "a 24/7 team", "a sales legend", "GC"]}
+              className="text-[40px] sm:text-[48px] leading-[1.08]"
+            />
+            <p className="mt-5 text-[15.5px] leading-relaxed text-black/50 max-w-md mx-auto lg:mx-0">
+              GC learns your products, your rules, and your voice, then sells for you in every chat, in any language,
+              around the clock. You stay in control of every ringgit.
+            </p>
+            <div className="mt-7 flex flex-wrap justify-center lg:justify-start gap-2">
+              {["Trained by you", "WhatsApp · IG · Messenger", "Your prices, locked"].map((chip) => (
+                <span
+                  key={chip}
+                  className="rounded-full glass border ring-1 ring-black/[0.04] px-3.5 py-1.5 text-[12px] font-medium text-black/60"
+                >
+                  {chip}
+                </span>
+              ))}
             </div>
           </div>
 
+          {/* Sign-in panel */}
           <form
             onSubmit={submit}
-            className="rounded-3xl glass border ring-1 ring-black/[0.05] [box-shadow:var(--shadow-lg)] p-8 space-y-5"
+            className="w-full max-w-sm mx-auto lg:mx-0 rounded-3xl glass border ring-1 ring-black/[0.05] [box-shadow:var(--shadow-lg)] p-7 sm:p-8 space-y-5 animate-fade-up"
           >
             <div>
-              <h2 className="text-[22px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+              <h2 className="text-[21px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
                 Welcome back
               </h2>
-              <p className="mt-1 text-[13px] text-black/45">Sign in to your sales workspace · 登录你的销售工作台</p>
+              <p className="mt-1 text-[13px] text-black/45">Sign in to your workspace · 登录你的销售工作台</p>
             </div>
 
             <label className="block">
@@ -139,12 +112,16 @@ export default function LoginPage() {
             >
               {busy ? "Signing in… · 登录中…" : "Sign in · 登录"}
             </button>
-            <p className="text-[11px] text-black/35 text-center">
-              No account? Ask your team admin to create one for you.
-            </p>
+            <p className="text-[11px] text-black/35 text-center">No account? Ask your team admin to create one for you.</p>
           </form>
         </div>
       </div>
+
+      <footer className="px-6 sm:px-10 pb-5 text-[12px] text-black/35 text-center lg:text-left">
+        © {new Date().getFullYear()} GC · AI Sales Team ·{" "}
+        <a href="/privacy" className="hover:text-black/60 transition-colors">Privacy</a> ·{" "}
+        <a href="/terms" className="hover:text-black/60 transition-colors">Terms</a>
+      </footer>
     </main>
   );
 }

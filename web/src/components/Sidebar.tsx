@@ -82,12 +82,13 @@ export function Sidebar({
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
+  // Team (leaderboard + admin) is the boss's master panel — agents don't see it.
   const allGroups: NavGroup[] = isAdmin
     ? [
         ...groups.slice(0, 3),
         { labelKey: "nav.group.team", items: [...groups[3].items, { href: "/admin", labelKey: "nav.admin", icon: AdminIcon }] },
       ]
-    : groups;
+    : groups.slice(0, 3);
 
   const navLink = (item: NavItem) => {
     const active = isActive(item.href);

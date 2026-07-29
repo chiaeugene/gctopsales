@@ -364,6 +364,21 @@ const dict: Record<string, Entry> = {
   "settings.autoconfirm.enable": { en: "Enable AI auto-confirm", zh: "启用 AI 自动确认" },
 };
 
+// --- Late additions (release batch 2) --------------------------------------
+Object.assign(dict, {
+  // Setup done-banner: emphasize it's re-editable forever (overrides earlier key)
+  "setup.done.prefix": {
+    en: "Setup complete, but this chat never closes. New bank account? New promo? Different shipping rule? Just tell GC below, like texting a colleague, and it rewires the brain instantly. You can also fine-tune by hand in ",
+    zh: "设置完成，但这个对话永远不会关闭。换了银行户口？有新促销？运费规则变了？直接在下面告诉 GC，就像发消息给同事一样，大脑会立刻更新。你也可以在",
+  },
+  "settings.useSuggestion": { en: "Use suggestion", zh: "使用建议内容" },
+  "settings.comingSoon": { en: "Releasing soon", zh: "即将推出" },
+  "settings.followups.manualNote": {
+    en: "Auto-sending unlocks when WhatsApp connects. Today, GC drafts follow-ups for you in the Workspace (the Suggest follow-up button) and this max still applies.",
+    zh: "自动发送将在接通 WhatsApp 后开放。目前 GC 会在工作台帮你起草跟进消息（生成跟进消息按钮），上限同样生效。",
+  },
+} satisfies Record<string, Entry>);
+
 export function t(lang: Lang, key: string): string {
   const entry = dict[key];
   if (!entry) return key;

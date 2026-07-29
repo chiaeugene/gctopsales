@@ -325,6 +325,9 @@ function MarketsCard(props: {
   );
 }
 
+// Always fully expanded — collapsed sections got missed by agents. Empty
+// fields show the suggested default as a faded placeholder; one tap on
+// "Use suggestion" drops it into the field as real (editable) text.
 function BrainCard(props: {
   title: string;
   why: string;
@@ -336,14 +339,13 @@ function BrainCard(props: {
 }) {
   const { t } = useT();
   const [values, setValues] = useState(props.values);
-  const [open, setOpen] = useState(Boolean(props.important));
   useEffect(() => setValues(props.values), [props.values]);
 
   const filled = props.fields.filter((f) => (values[f.key] ?? "").trim()).length;
 
   return (
     <Card className="space-y-3">
-      <button type="button" onClick={() => setOpen((v) => !v)} className="w-full text-left">
+      <div>
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-semibold flex items-center gap-2">
             {t(props.title)}
@@ -354,32 +356,40 @@ function BrainCard(props: {
             )}
           </h2>
           <span className="text-xs text-black/40 shrink-0">
-            {filled}/{props.fields.length} {t("settings.filled")} {open ? "▴" : "▾"}
+            {filled}/{props.fields.length} {t("settings.filled")}
           </span>
         </div>
         <p className="text-sm text-black/45 mt-0.5">{t(props.why)}</p>
-      </button>
+      </div>
 
-      {open && (
-        <>
-          <div className="grid md:grid-cols-2 gap-3">
-            {props.fields.map((f) => (
-              <label key={f.key} className="block text-xs">
-                <span className="font-medium text-black/70">{t(f.label)}</span>
-                {f.help && <span className="block text-black/40 mt-0.5">{t(f.help)}</span>}
-                <textarea
-                  value={values[f.key] ?? ""}
-                  onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
-                  rows={3}
-                  placeholder={f.example ? `${t("settings.eg")} ${f.example}` : undefined}
-                  className={inputClass}
-                />
-              </label>
-            ))}
-          </div>
-          <SaveButton saved={props.saved} onClick={() => props.onSave(values)} />
-        </>
-      )}
+      <div className="grid md:grid-cols-2 gap-3">
+        {props.fields.map((f) => {
+          const empty = !(values[f.key] ?? "").trim();
+          return (
+            <label key={f.key} className="block text-xs">
+              <span className="font-medium text-black/70">{t(f.label)}</span>
+              {f.help && <span className="block text-black/40 mt-0.5">{t(f.help)}</span>}
+              <textarea
+                value={values[f.key] ?? ""}
+                onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
+                rows={3}
+                placeholder={f.example ? `${t("settings.eg")} ${f.example}` : undefined}
+                className={inputClass}
+              />
+              {empty && f.example && (
+                <button
+                  type="button"
+                  onClick={() => setValues({ ...values, [f.key]: f.example! })}
+                  className="mt-1 inline-flex items-center gap-1 rounded-full bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] font-medium text-[var(--accent-ink)] hover:bg-[var(--accent-soft-2)] transition-colors"
+                >
+                  ✨ {t("settings.useSuggestion")}
+                </button>
+              )}
+            </label>
+          );
+        })}
+      </div>
+      <SaveButton saved={props.saved} onClick={() => props.onSave(values)} />
     </Card>
   );
 }
@@ -395,8 +405,14 @@ function FollowUpCard(props: {
   const [max, setMax] = useState(props.maxFollowUps);
   return (
     <Card className="space-y-3">
-      <h2 className="font-semibold">{t("settings.followups.title")}</h2>
+      <h2 className="font-semibold flex items-center gap-2">
+        {t("settings.followups.title")}
+        <span className="text-[10px] font-bold uppercase tracking-wide text-sky-700 bg-sky-50 border border-sky-200 rounded-full px-2 py-0.5">
+          {t("settings.comingSoon")}
+        </span>
+      </h2>
       <p className="text-sm text-black/45">{t("settings.followups.desc")}</p>
+      <p className="text-xs text-black/40">{t("settings.followups.manualNote")}</p>
       <div className="flex flex-wrap items-end gap-3">
         <label className="block text-xs">
           <span className="text-black/45">{t("settings.followups.after")}</span>
@@ -479,7 +495,12 @@ function ChannelsCard(props: { channels: Channel[]; onChanged: () => void }) {
     <Card className="space-y-4">
       <button type="button" onClick={() => setOpen((v) => !v)} className="w-full text-left">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="font-semibold">{t("settings.channels.title")}</h2>
+          <h2 className="font-semibold flex items-center gap-2">
+            {t("settings.channels.title")}
+            <span className="text-[10px] font-bold uppercase tracking-wide text-sky-700 bg-sky-50 border border-sky-200 rounded-full px-2 py-0.5">
+              {t("settings.comingSoon")}
+            </span>
+          </h2>
           <span className="text-xs text-black/40">{open ? "▴" : "▾"}</span>
         </div>
         <p className="text-sm text-black/45 mt-0.5">{t("settings.channels.desc")}</p>

@@ -217,6 +217,10 @@ export default function AdminPage() {
         </table>
       </Card>
 
+      <SeedResultsCard />
+
+      <ActivityTreeCard />
+
       <RecentErrorsCard />
     </div>
   );
@@ -389,6 +393,163 @@ function SheetImportCard({ onRegistered }: { onRegistered: () => Promise<void> }
           </Button>
         </>
       )}
+    </Card>
+  );
+}
+
+// One-click distribution of the curated MAE results bank (47 real, grounded
+// customer results across all product lines) to every agent's Results library.
+function SeedResultsCard() {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function seed() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/seed-results", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Seeding failed");
+        return;
+      }
+      setResult(`Added ${json.created} results across ${json.profiles} agent librar${json.profiles === 1 ? "y" : "ies"} (${json.skipped} already present).`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">MAE results bank</h2>
+        <p className="text-sm text-black/45">
+          Push 47 real, source-grounded customer results (BCODE+, Total DX+, BRB, Claríty, Re.WIND, iReason and more —
+          from MAE&apos;s own training material and public reviews) into every agent&apos;s Results library. GC quotes them
+          as social proof at closing moments. Safe to run again — duplicates are skipped and agents&apos; own entries are
+          untouched.
+        </p>
+      </div>
+      {result && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+          <CheckIcon className="w-4 h-4 shrink-0" />
+          {result}
+        </div>
+      )}
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      <Button onClick={seed} disabled={busy}>
+        {busy ? "Seeding…" : "Seed results to all agents"}
+      </Button>
+    </Card>
+  );
+}
+
+type TreeAgent = {
+  profileId: string;
+  name: string;
+  email: string;
+  role: string;
+  storeName: string | null;
+  total: number;
+  paid: number;
+  needsHuman: number;
+  recent: {
+    id: string;
+    customer: string;
+    status: string;
+    converted: boolean;
+    needsHuman: boolean;
+    totalMyr: number | null;
+    leadSource: string | null;
+    updatedAt: string;
+    summary: string | null;
+  }[];
+};
+
+// The "what is going on" tree: each agent expands into their live pipeline.
+function ActivityTreeCard() {
+  const [agents, setAgents] = useState<TreeAgent[]>([]);
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const res = await fetch("/api/admin/overview");
+      if (res.ok) setAgents((await res.json()).agents ?? []);
+    })();
+  }, []);
+
+  return (
+    <Card padding="none">
+      <div className="px-5 py-4 border-b border-black/[0.06]">
+        <h2 className="font-semibold">Team activity</h2>
+        <p className="text-sm text-black/45 mt-0.5">
+          Click an agent to see what&apos;s happening inside their workspace right now.
+        </p>
+      </div>
+      {agents.length === 0 && <p className="px-5 py-4 text-xs text-black/40">Loading team…</p>}
+      <ul className="divide-y divide-black/[0.05]">
+        {agents.map((a) => {
+          const open = openId === a.profileId;
+          return (
+            <li key={a.profileId}>
+              <button
+                onClick={() => setOpenId(open ? null : a.profileId)}
+                className="w-full flex items-center gap-3 px-5 py-3 text-left hover:bg-black/[0.02] transition-colors"
+              >
+                <span className={"text-xs transition-transform " + (open ? "rotate-90" : "")}>▸</span>
+                <span className="min-w-0 flex-1">
+                  <span className="text-sm font-medium">{a.name}</span>
+                  {a.role === "ADMIN" && (
+                    <span className="ml-2 text-[10px] font-bold uppercase text-[var(--accent-ink)] bg-[var(--accent-soft)] rounded-full px-1.5 py-0.5">
+                      admin
+                    </span>
+                  )}
+                  <span className="block text-[11px] text-black/40 truncate">{a.storeName || a.email}</span>
+                </span>
+                <span className="flex items-center gap-3 text-xs shrink-0">
+                  <span className="text-black/45">
+                    <span className="num font-semibold text-black/70">{a.total}</span> chats
+                  </span>
+                  <span className="text-emerald-700">
+                    <span className="num font-semibold">{a.paid}</span> converted
+                  </span>
+                  {a.needsHuman > 0 && (
+                    <span className="text-amber-600">
+                      <span className="num font-semibold">{a.needsHuman}</span> need help
+                    </span>
+                  )}
+                </span>
+              </button>
+              {open && (
+                <div className="px-5 pb-4 pl-12">
+                  {a.recent.length === 0 ? (
+                    <p className="text-xs text-black/35">No conversations yet.</p>
+                  ) : (
+                    <ul className="space-y-1.5">
+                      {a.recent.map((o) => (
+                        <li key={o.id} className="flex items-center gap-2.5 text-xs rounded-lg bg-black/[0.02] px-3 py-2">
+                          <span
+                            className={
+                              "w-1.5 h-1.5 rounded-full shrink-0 " +
+                              (o.converted ? "bg-emerald-500" : o.needsHuman ? "bg-amber-500" : o.status === "Lost" ? "bg-red-400" : "bg-[var(--accent)]")
+                            }
+                          />
+                          <span className="font-medium truncate max-w-[10rem]">{o.customer}</span>
+                          <span className="text-black/45 shrink-0">{o.status}</span>
+                          {o.leadSource && <span className="text-black/35 shrink-0">via {o.leadSource}</span>}
+                          {o.totalMyr ? <span className="num text-black/55 shrink-0">RM{o.totalMyr.toLocaleString()}</span> : null}
+                          <span className="ml-auto text-black/30 shrink-0">{new Date(o.updatedAt).toLocaleDateString()}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </Card>
   );
 }

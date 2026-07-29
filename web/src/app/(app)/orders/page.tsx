@@ -11,20 +11,34 @@ export default async function OrdersPage(props: { searchParams: Promise<{ status
   const profile = await requireProfile();
   const { status } = await props.searchParams;
 
-  const orders = await prisma.order.findMany({
-    where: { profileId: profile.id, ...(status ? { status } : {}) },
-    orderBy: { updatedAt: "desc" },
-    take: 200,
-  });
+  const [orders, stageCounts] = await Promise.all([
+    prisma.order.findMany({
+      where: { profileId: profile.id, ...(status ? { status } : {}) },
+      orderBy: { updatedAt: "desc" },
+      take: 200,
+    }),
+    prisma.order.groupBy({ by: ["status"], where: { profileId: profile.id }, _count: { _all: true } }),
+  ]);
+  const countFor = (s: string) => stageCounts.find((c) => c.status === s)?._count._all ?? 0;
+  const totalCount = stageCounts.reduce((sum, c) => sum + c._count._all, 0);
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Orders & Conversations" />
+      <PageHeader
+        title="Orders & Conversations"
+        subtitle="Your whole pipeline, stage by stage. Every customer sits in exactly one stage — click a stage to work it."
+      />
 
       <div className="flex flex-wrap gap-2 animate-fade-up">
-        <FilterChip href="/orders" label="All" active={!status} />
+        <FilterChip href="/orders" label="All" count={totalCount} active={!status} />
         {ORDER_STATUSES.map((s) => (
-          <FilterChip key={s} href={`/orders?status=${encodeURIComponent(s)}`} label={s} active={status === s} />
+          <FilterChip
+            key={s}
+            href={`/orders?status=${encodeURIComponent(s)}`}
+            label={s}
+            count={countFor(s)}
+            active={status === s}
+          />
         ))}
       </div>
 
@@ -77,17 +91,26 @@ export default async function OrdersPage(props: { searchParams: Promise<{ status
   );
 }
 
-function FilterChip({ href, label, active }: { href: string; label: string; active: boolean }) {
+function FilterChip({ href, label, count, active }: { href: string; label: string; count: number; active: boolean }) {
   return (
     <Link
       href={href}
       className={
-        active
-          ? "rounded-full bg-[var(--ink)] text-white px-3 py-1 text-xs font-medium"
-          : "rounded-full border border-black/[0.08] px-3 py-1 text-xs font-medium text-black/60 hover:bg-black/[0.04] transition-colors"
+        (active
+          ? "bg-[var(--ink)] text-white "
+          : "border border-black/[0.08] bg-white/70 text-black/60 hover:bg-black/[0.04] ") +
+        "rounded-full px-3 py-1.5 text-xs font-medium transition-colors inline-flex items-center gap-1.5"
       }
     >
       {label}
+      <span
+        className={
+          "num rounded-full px-1.5 py-px text-[10px] " +
+          (active ? "bg-white/20 text-white" : count > 0 ? "bg-[var(--accent-soft)] text-[var(--accent-ink)]" : "bg-black/[0.05] text-black/35")
+        }
+      >
+        {count}
+      </span>
     </Link>
   );
 }

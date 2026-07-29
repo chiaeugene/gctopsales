@@ -79,12 +79,30 @@ export default function ConnectPage() {
     <div className="max-w-3xl mx-auto space-y-5">
       <PageHeader
         title="Connect your channels"
-        subtitle={
-          META_APP_CONFIGURED
-            ? "Log in with Facebook and pick your business — no tokens or IDs to copy. One-time, one click per channel."
-            : "Connect WhatsApp, Instagram DM, and Facebook Messenger so GC replies to your customers automatically. You'll paste credentials from your own Meta account — a 5-10 minute one-time setup per channel."
-        }
+        subtitle="Soon GC will reply on your WhatsApp, Instagram DM, and Facebook Messenger completely by itself. Here's what's coming and how to be ready."
       />
+
+      {/* Roadmap framing: auto-connect is a launching-soon feature, the
+          Workspace is today's mode. */}
+      <Card className="space-y-3 !border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40">
+        <h2 className="font-semibold flex items-center gap-2">
+          Auto-reply on your channels
+          <span className="text-[10px] font-bold uppercase tracking-wide text-sky-700 bg-sky-50 border border-sky-200 rounded-full px-2 py-0.5">
+            Releasing soon · 即将推出
+          </span>
+        </h2>
+        <p className="text-sm text-black/55">
+          One-click connection for WhatsApp, Instagram and Messenger is built and waiting on Meta&apos;s business
+          verification of our platform. The moment it clears, you&apos;ll connect each channel in a single click here and
+          GC starts replying to customers automatically, day and night.
+        </p>
+        <p className="text-sm text-black/55">
+          <strong>Until then, nothing is lost:</strong> the{" "}
+          <a href="/playground" className="text-[var(--accent-ink)] underline underline-offset-2">GC Workspace</a> is
+          your cockpit — paste each customer message in, copy GC&apos;s reply back. Same brain, same selling power, just
+          with you as the messenger. Everything GC learns now carries over the day channels go live.
+        </p>
+      </Card>
 
       {META_APP_CONFIGURED && <MetaConnectButtons onConnected={load} />}
 

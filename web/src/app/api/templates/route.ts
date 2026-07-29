@@ -2,6 +2,60 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { chatComplete, extractJson, llmConfigured } from "@/lib/ai/llm";
+import { parseJson } from "@/lib/json";
+import { IdentityBrainSchema, FulfillmentBrainSchema } from "@/lib/ai/schemas";
+
+// GC drafts a practical starter library from THIS agent's brains — usable
+// today as copy-paste snippets, submittable to Meta when WhatsApp connects.
+export async function PUT() {
+  return handle(async () => {
+    const profile = await requireProfile();
+    if (!llmConfigured()) throw new ApiError(503, "AI not configured");
+
+    const identity = IdentityBrainSchema.parse(parseJson(profile.identityBrain, {}));
+    const fulfillment = FulfillmentBrainSchema.parse(parseJson(profile.fulfillmentBrain, {}));
+    const store = identity.storeName || profile.storeName || "our store";
+    const agent = identity.agentName || profile.agentName || "your consultant";
+
+    const raw = await chatComplete({
+      system: `You write WhatsApp message templates for ${store} (MAE Global wellness seller, agent name ${agent}). Create exactly 5 practical templates covering: (1) warm re-introduction to a quiet lead, (2) gentle payment reminder, (3) order shipped/on-the-way update, (4) post-delivery check-in + reorder nudge, (5) current-promo announcement. Rules: warm Malaysian WhatsApp tone, light emoji ok, 2-4 sentences each, use {{1}} for the customer's name and {{2}}/{{3}} for other variable slots where useful, never invent discounts or prices, no dashes as punctuation. Respond ONLY with JSON: {"templates": [{"name": "lowercase_snake_name", "language": "en", "category": "MARKETING"|"UTILITY", "bodyText": "...", "variableHint": "what each {{n}} means"}]}.`,
+      messages: [
+        {
+          role: "user",
+          content: `Shipping policy: ${fulfillment.shippingPolicy || "standard"}. Payment methods: ${fulfillment.paymentMethods?.slice(0, 200) || "bank transfer"}.`,
+        },
+      ],
+      maxTokens: 1800,
+      temperature: 0.6,
+    });
+    const json = extractJson(raw) as {
+      templates?: { name: string; language: string; category: string; bodyText: string; variableHint?: string }[];
+    } | null;
+    if (!json?.templates?.length) throw new ApiError(502, "GC could not draft templates, try again");
+
+    let created = 0;
+    for (const t of json.templates.slice(0, 5)) {
+      const name = t.name.toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 100) || "template";
+      const category = t.category === "UTILITY" ? "UTILITY" : "MARKETING";
+      const exists = await prisma.messageTemplate.findFirst({ where: { profileId: profile.id, name } });
+      if (exists) continue;
+      await prisma.messageTemplate.create({
+        data: {
+          profileId: profile.id,
+          name,
+          language: t.language || "en",
+          category,
+          bodyText: t.bodyText.slice(0, 2000),
+          variableHint: t.variableHint?.slice(0, 500) ?? null,
+          status: "PENDING",
+        },
+      });
+      created++;
+    }
+    return { created };
+  });
+}
 
 export async function GET() {
   return handle(async () => {

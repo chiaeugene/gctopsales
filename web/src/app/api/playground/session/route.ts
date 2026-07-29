@@ -60,6 +60,7 @@ export async function GET(req: Request) {
           totalMyr: order.totalMyr,
           customerName: order.customerName,
           segment: order.segment,
+          leadSource: order.leadSource,
         },
         messages: order.conversation.messages.map((m) => ({
           role: m.role,
@@ -94,9 +95,14 @@ export async function GET(req: Request) {
   });
 }
 
-const PatchSchema = z.object({ orderId: z.string(), name: z.string().min(1).max(80) });
+const PatchSchema = z.object({
+  orderId: z.string(),
+  name: z.string().min(1).max(80).optional(),
+  leadSource: z.string().max(40).nullable().optional(),
+});
 
-// Rename a chat (stored as the order's customerName so the CRM shows it too).
+// Update a chat's customer details (name is the order's customerName so the
+// CRM shows it too; leadSource records where the human lead came from).
 export async function PATCH(req: Request) {
   return handle(async () => {
     const profile = await requireProfile();
@@ -106,7 +112,11 @@ export async function PATCH(req: Request) {
       where: { id: body.data.orderId, profileId: profile.id, source: "PLAYGROUND" },
     });
     if (!order) throw new ApiError(404, "Chat not found");
-    await prisma.order.update({ where: { id: order.id }, data: { customerName: body.data.name.trim() } });
+    const data: Record<string, unknown> = {};
+    if (body.data.name !== undefined) data.customerName = body.data.name.trim();
+    if (body.data.leadSource !== undefined) data.leadSource = body.data.leadSource?.trim() || null;
+    if (Object.keys(data).length === 0) throw new ApiError(400, "Nothing to update");
+    await prisma.order.update({ where: { id: order.id }, data });
     return { ok: true };
   });
 }

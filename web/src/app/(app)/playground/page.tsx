@@ -31,7 +31,10 @@ type OrderState = {
   totalMyr: number | null;
   customerName: string | null;
   segment: string | null;
+  leadSource?: string | null;
 } | null;
+
+const LEAD_SOURCES = ["WhatsApp", "Instagram", "Facebook", "TikTok", "Referral", "Walk-in", "Ads", "Other"];
 
 // GC Workspace: one chat per real customer. The agent pastes the customer's
 // incoming message here, GC replies, the agent copies the reply back into
@@ -195,6 +198,33 @@ export default function PlaygroundPage() {
     }
   }
 
+  // Inline header rename — the name is editable any time, not just at creation.
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+
+  async function saveName() {
+    setEditingName(false);
+    const name = nameDraft.trim();
+    if (!orderId || !name) return;
+    setOrder((o) => (o ? { ...o, customerName: name } : o));
+    await fetch("/api/playground/session", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId, name }),
+    });
+    loadChats();
+  }
+
+  async function saveLeadSource(leadSource: string) {
+    if (!orderId) return;
+    setOrder((o) => (o ? { ...o, leadSource: leadSource || null } : o));
+    await fetch("/api/playground/session", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId, leadSource: leadSource || null }),
+    });
+  }
+
   async function suggestFollowUp() {
     if (!orderId || busy) return;
     setBusy(true);
@@ -308,9 +338,34 @@ export default function PlaygroundPage() {
                 {t("ws.chats")}
               </button>
               <ChatIcon className="w-4 h-4 text-black/40 shrink-0 hidden sm:block" />
-              <div className="font-semibold text-sm truncate">
-                {activeChat ? activeChat.name || t("ws.unnamed") : t("ws.pickChat")}
-              </div>
+              {orderId && editingName ? (
+                <input
+                  autoFocus
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  onBlur={saveName}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveName();
+                    if (e.key === "Escape") setEditingName(false);
+                  }}
+                  className="font-semibold text-sm rounded-lg border border-[var(--accent)] px-2 py-1 outline-none min-w-0 w-40"
+                />
+              ) : (
+                <button
+                  className="font-semibold text-sm truncate text-left group/name inline-flex items-center gap-1.5 min-w-0"
+                  onClick={() => {
+                    if (!orderId) return;
+                    setNameDraft(order?.customerName || activeChat?.name || "");
+                    setEditingName(true);
+                  }}
+                  title={orderId ? "Click to edit the customer's name" : undefined}
+                >
+                  <span className="truncate">
+                    {activeChat ? order?.customerName || activeChat.name || t("ws.unnamed") : t("ws.pickChat")}
+                  </span>
+                  {orderId && <span className="text-[10px] text-black/30 group-hover/name:text-[var(--accent-ink)]">✎</span>}
+                </button>
+              )}
             </div>
             {orderId && !order?.needsHuman && (
               <button
@@ -335,7 +390,7 @@ export default function PlaygroundPage() {
           {/* Mobile order-state accordion */}
           {showOrder && order && (
             <div className="xl:hidden border-b border-black/[0.06] px-4 py-3 bg-black/[0.02]">
-              <OrderPanel order={order} compact />
+              <OrderPanel order={order} compact onLeadSource={saveLeadSource} />
             </div>
           )}
 
@@ -427,7 +482,7 @@ export default function PlaygroundPage() {
         <Card padding="md" className="hidden xl:block w-72 shrink-0 space-y-3 overflow-y-auto">
           <div className="font-semibold text-sm">{t("ws.orderState")}</div>
           {!order && <p className="text-xs text-black/35">{t("ws.orderStateHint")}</p>}
-          {order && <OrderPanel order={order} />}
+          {order && <OrderPanel order={order} onLeadSource={saveLeadSource} />}
         </Card>
       </div>
 
@@ -507,13 +562,38 @@ function MessageBubble({ msg }: { msg: Msg }) {
   );
 }
 
-function OrderPanel({ order, compact }: { order: NonNullable<OrderState>; compact?: boolean }) {
+function OrderPanel({
+  order,
+  compact,
+  onLeadSource,
+}: {
+  order: NonNullable<OrderState>;
+  compact?: boolean;
+  onLeadSource?: (v: string) => void;
+}) {
   return (
     <div className={"space-y-2 text-sm " + (compact ? "text-xs" : "")}>
       <Row label="Status" value={order.status} />
       <Row label="Payment" value={order.paymentStatus} />
       <Row label="Customer" value={order.customerName || "—"} />
       <Row label="Segment" value={order.segment || "—"} />
+      {onLeadSource && (
+        <div className="flex justify-between items-center gap-2">
+          <span className="text-xs text-black/45">Lead from</span>
+          <select
+            value={order.leadSource ?? ""}
+            onChange={(e) => onLeadSource(e.target.value)}
+            className="text-xs rounded-lg border border-black/10 bg-white/80 px-2 py-1 outline-none focus:border-[var(--accent)]"
+          >
+            <option value="">— pick —</option>
+            {LEAD_SOURCES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <Row label="Needs you" value={order.needsHuman ? "YES" : "no"} />
       {order.items.length > 0 && (
         <div className="pt-2 border-t border-black/[0.06]">

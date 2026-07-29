@@ -71,6 +71,39 @@ export default function GymPage() {
           </Button>
         }
       />
+      {/* What this actually is — so sellers trust the number */}
+      {!report && !busy && (
+        <Card className="space-y-3">
+          <h2 className="font-semibold">What the Sales Gym really does</h2>
+          <p className="text-sm text-black/55">
+            This is a full stress test of <strong>your</strong> GC, not a generic quiz. It simulates the 12 hardest
+            customer situations real MAE sellers face, then an independent AI judge grades every single reply against a
+            professional closer&apos;s rubric.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-3 text-xs">
+            <div className="rounded-xl bg-black/[0.02] border border-black/[0.05] p-3">
+              <div className="font-semibold text-[13px] mb-1">1 · The gauntlet</div>
+              &quot;Cheaper on Shopee&quot;, &quot;does it really work?&quot;, &quot;is it a drug?&quot;, pregnancy safety,
+              rebound fear, &quot;let me ask my husband&quot;, silent stalls, rude bargain hunters and more.
+            </div>
+            <div className="rounded-xl bg-black/[0.02] border border-black/[0.05] p-3">
+              <div className="font-semibold text-[13px] mb-1">2 · What it combines</div>
+              Your store settings, your payment and shipping rules, your product catalog, your testimonials, and the
+              selling style GC learned from YOUR training replies — the exact brain that talks to your customers.
+            </div>
+            <div className="rounded-xl bg-black/[0.02] border border-black/[0.05] p-3">
+              <div className="font-semibold text-[13px] mb-1">3 · The score</div>
+              Each scenario is graded 0-10 on empathy, product knowledge, objection handling and closing. 90+ means
+              your GC sells at a top-5% human closer&apos;s level, on your worst day, in three languages.
+            </div>
+          </div>
+          <p className="text-xs text-black/40">
+            Run it after training GC or changing Settings — one click, about a minute, and you&apos;ll see exactly where
+            she got stronger.
+          </p>
+        </Card>
+      )}
+
       {error && <div className="text-sm text-red-600">{error}</div>}
       {busy && (
         <div className="flex items-center gap-2 text-sm text-black/40">

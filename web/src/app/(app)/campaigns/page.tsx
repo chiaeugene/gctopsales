@@ -127,6 +127,38 @@ export default function CampaignsPage() {
 
   const sendableCount = targets?.filter((t) => t.sendable && t.message.trim()).length ?? 0;
 
+  // GC-suggested campaign ideas (the "cook it up for me" flow).
+  type Idea = { title: string; segment: string; offer: string; why: string };
+  const [ideas, setIdeas] = useState<Idea[] | null>(null);
+  const [suggesting, setSuggesting] = useState(false);
+
+  async function suggest() {
+    setSuggesting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "suggest" }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "GC could not suggest right now");
+        return;
+      }
+      setIdeas(json.ideas ?? []);
+    } finally {
+      setSuggesting(false);
+    }
+  }
+
+  function useIdea(i: Idea) {
+    setSegment(i.segment);
+    setOffer(i.offer);
+    setIdeas(null);
+    setTargets(null);
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <PageHeader
@@ -147,6 +179,39 @@ export default function CampaignsPage() {
         </div>
       )}
       {error && <div className="text-sm text-red-600">{error}</div>}
+
+      {/* GC cooks up the campaign — the agent just picks one */}
+      <Card className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40 space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="font-semibold">Let GC cook 🍳</h2>
+            <p className="text-sm text-black/50 mt-0.5">
+              GC studies your quiet leads, past buyers and running promos, then proposes the campaigns most likely to
+              bring money back this week. Pick one and it fills everything below.
+            </p>
+          </div>
+          <Button onClick={suggest} disabled={suggesting} className="shrink-0">
+            {suggesting ? "Cooking…" : ideas ? "Cook again" : "Suggest campaigns"}
+          </Button>
+        </div>
+        {ideas && ideas.length === 0 && (
+          <p className="text-xs text-black/45">Not enough lead history yet — chat with a few customers first, then ask again.</p>
+        )}
+        {ideas && ideas.length > 0 && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {ideas.map((i) => (
+              <button key={i.title} onClick={() => useIdea(i)} className="text-left">
+                <div className="h-full rounded-xl bg-white/80 border border-black/[0.06] p-3.5 hover:border-[var(--accent)]/50 hover:-translate-y-0.5 transition-all">
+                  <div className="text-[13px] font-semibold">{i.title}</div>
+                  <div className="mt-1 text-[11px] text-black/45 line-clamp-3">{i.offer}</div>
+                  <div className="mt-2 text-[11px] text-[var(--accent-ink)] font-medium">{i.why}</div>
+                  <div className="mt-2 text-[11px] font-semibold text-[var(--accent-ink)]">Use this idea →</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </Card>
 
       <Card>
         <div className="space-y-3">
@@ -257,11 +322,36 @@ export default function CampaignsPage() {
                   rows={3}
                   className="w-full rounded-xl border border-black/10 bg-black/[0.02] px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow"
                 />
+                <CopyMsgButton text={t.message} />
               </div>
             </Card>
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+// Manual mode helper: until channels are live, agents copy each personalized
+// message and paste it to the customer themselves.
+function CopyMsgButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-ink)] hover:underline"
+    >
+      {copied ? (
+        <>
+          <CheckIcon className="w-3 h-3" /> Copied, paste it to the customer
+        </>
+      ) : (
+        "Copy message"
+      )}
+    </button>
   );
 }

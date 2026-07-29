@@ -252,6 +252,9 @@ model Order {
   profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   source            String  @default("PLAYGROUND") // PLAYGROUND | WHATSAPP | MESSENGER | INSTAGRAM
+  // Where the human lead actually came from (agent-set in manual mode):
+  // WhatsApp / Instagram / Facebook / TikTok / Referral / Walk-in / Ads / Other
+  leadSource        String?
   externalContactId String? // wa_id / PSID / IGSID — the channel-side identity
   customerName      String?
   phone             String?

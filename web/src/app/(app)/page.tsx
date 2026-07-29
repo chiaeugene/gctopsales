@@ -71,12 +71,13 @@ export default async function DashboardPage() {
       const s = Math.max(stageOrder.indexOf(o.status), paidStage);
       return s >= min;
     }).length;
+  // Each stage links to the Orders pipeline filtered to that stage.
   const funnel = [
-    { label: "Inquiries", value: total },
-    { label: "Qualified", value: reached(1) },
-    { label: "Recommended", value: reached(2) },
-    { label: "Closing", value: reached(3) },
-    { label: "Paid", value: paid },
+    { label: "Inquiries", value: total, href: "/orders" },
+    { label: "Qualified", value: reached(1), href: "/orders?status=Qualifying" },
+    { label: "Recommended", value: reached(2), href: "/orders?status=Recommended" },
+    { label: "Closing", value: reached(3), href: "/orders?status=Closing" },
+    { label: "Paid", value: paid, href: "/orders?status=Payment%20Confirmed" },
   ];
   const winRate = total > 0 ? Math.round((paid / total) * 100) : 0;
 
@@ -171,25 +172,30 @@ export default async function DashboardPage() {
       </section>
 
       <div className="grid lg:grid-cols-2 gap-4">
-        {/* Funnel */}
+        {/* Funnel — every stage is a door into the pipeline */}
         <Card>
-          <div className="font-semibold text-[15px] mb-4 flex items-center gap-2">
+          <div className="font-semibold text-[15px] mb-1 flex items-center gap-2">
             <ChartIcon className="w-4 h-4 text-black/30" />
             Conversion funnel
           </div>
-          <div className="space-y-3">
+          <p className="text-[11px] text-black/35 mb-3.5">Click a stage to open those conversations</p>
+          <div className="space-y-2">
             {funnel.map((f) => {
               const pct = funnel[0].value > 0 ? Math.round((f.value / funnel[0].value) * 100) : 0;
               return (
-                <div key={f.label}>
+                <Link
+                  key={f.label}
+                  href={f.href}
+                  className="block rounded-lg -mx-2 px-2 py-1.5 hover:bg-[var(--accent-soft)]/60 transition-colors group"
+                >
                   <div className="flex justify-between text-xs text-black/45 mb-1">
-                    <span>{f.label}</span>
-                    <span>{f.value} ({pct}%)</span>
+                    <span className="group-hover:text-[var(--accent-ink)] font-medium transition-colors">{f.label} →</span>
+                    <span className="num">{f.value} ({pct}%)</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-black/[0.05] overflow-hidden">
                     <div className="h-full rounded-full bg-[var(--accent)] transition-all duration-700" style={{ width: `${pct}%` }} />
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
