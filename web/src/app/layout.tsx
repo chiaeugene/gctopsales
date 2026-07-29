@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+
+// 2026 type stack: Outfit for display (headings, brand), Inter for UI body,
+// JetBrains Mono for data numerals (.num). All self-hosted via next/font.
+const display = Outfit({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600", "700"] });
+const body = Inter({ subsets: ["latin"], variable: "--font-body" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", weight: ["500", "600"] });
 
 export const metadata: Metadata = {
   title: "GC Top Sales",
@@ -18,7 +25,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body>{children}</body>
     </html>
   );

@@ -45,7 +45,7 @@ export function HeroBanner({
                 key={s.label}
                 className="rounded-2xl bg-white/12 backdrop-blur-md border border-white/20 px-4 py-2.5"
               >
-                <div className="text-lg font-semibold text-white tabular-nums leading-none">{s.value}</div>
+                <div className="num text-lg font-semibold text-white leading-none">{s.value}</div>
                 <div className="text-[11px] text-white/70 mt-1">{s.label}</div>
               </div>
             ))}

@@ -18,8 +18,9 @@ export function Button({
     <button
       {...props}
       className={[
-        "rounded-full px-5 py-2.5 text-sm font-medium transition-colors duration-200",
-        "disabled:opacity-40 disabled:cursor-not-allowed",
+        "rounded-full px-5 py-2.5 text-sm font-medium",
+        "transition-all duration-200 active:scale-[0.98] active:brightness-95",
+        "disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100",
         styles[variant],
         className,
       ].join(" ")}

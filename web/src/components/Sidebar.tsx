@@ -151,7 +151,10 @@ export function Sidebar({
         style={{ background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-ink) 100%)" }}
       />
       <div>
-        <div className="text-[17px] font-semibold tracking-tight">GC Top Sales</div>
+        <div className="text-[17px] font-semibold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+          GC
+          <span className="text-black/35 font-medium"> · AI Sales Team</span>
+        </div>
         <div className="text-[11px] text-black/40 -mt-0.5">{t("nav.tagline")}</div>
       </div>
     </div>
@@ -159,14 +162,14 @@ export function Sidebar({
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 shrink-0 border-r border-black/[0.06] bg-white flex-col">
+      {/* Desktop sidebar — glass over the aurora canvas */}
+      <aside className="hidden lg:flex w-64 shrink-0 border-r border-black/[0.05] glass flex-col">
         {brand}
         {navContent}
       </aside>
 
       {/* Mobile top bar */}
-      <div className="lg:hidden fixed top-0 inset-x-0 z-40 h-14 bg-white/95 backdrop-blur border-b border-black/[0.06] flex items-center gap-3 px-3">
+      <div className="lg:hidden fixed top-0 inset-x-0 z-40 h-14 glass border-b border-black/[0.05] flex items-center gap-3 px-3">
         <button
           onClick={() => setOpen(true)}
           aria-label="Open menu"
@@ -189,7 +192,7 @@ export function Sidebar({
       {open && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <aside className="relative w-72 max-w-[85vw] bg-white h-full shadow-xl flex flex-col animate-fade-up">
+          <aside className="relative w-72 max-w-[85vw] bg-white/90 backdrop-blur-2xl h-full shadow-xl flex flex-col animate-fade-up">
             <div className="flex items-center justify-between pr-3">
               {brand}
               <button onClick={() => setOpen(false)} aria-label="Close menu" className="rounded-lg p-2 hover:bg-black/[0.04] text-black/50">
