@@ -10,7 +10,7 @@ export async function GET() {
     const testimonials = await prisma.testimonial.findMany({
       where: { profileId: profile.id },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-      include: { product: { select: { id: true, name: true } } },
+      include: { product: { select: { id: true, name: true, series: true } } },
       omit: { photoData: true },
     });
     return {
@@ -18,6 +18,7 @@ export async function GET() {
         id: t.id,
         productId: t.productId,
         productName: t.product?.name ?? null,
+        productSeries: t.product?.series ?? null,
         customerName: t.customerName,
         market: t.market,
         resultText: t.resultText,

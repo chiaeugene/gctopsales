@@ -17,8 +17,31 @@ type Testimonial = {
   rating: number | null;
   isActive: boolean;
   photoUrl: string | null;
+  productSeries: string | null;
 };
-type Product = { id: string; name: string };
+type Product = { id: string; name: string; series: string | null };
+
+// Same real MAE product-line photography the catalog uses, so every category
+// here has a visual even before the seller uploads their own customer photos.
+// Deliberately PRODUCT packshots, never scraped photos of real people.
+const SERIES_IMAGE: Record<string, string> = {
+  "BCODE+": "/mae/product-bcode.webp",
+  "Claríty Skincare": "/mae/product-skincare.webp",
+  "Claríty Anti-Aging": "/mae/product-skincare.webp",
+  "Healthcare (Total DX+)": "/mae/product-detox.webp",
+  "BRB (Mental Wellness)": "/mae/product-brb.webp",
+  "Re.WIND Hair": "/mae/product-hair.webp",
+};
+
+const UNGROUPED = "General / brand";
+
+function slug(v: string): string {
+  return v.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+// A category with fewer than this many live results is thin — GC runs out of
+// fresh proof and starts repeating the same story to the same customer.
+const TARGET_PER_CATEGORY = 5;
 
 const inputCls =
   "mt-1.5 w-full rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow";
@@ -36,7 +59,7 @@ export default function TestimonialsPage() {
     const tj = await t.json();
     const pj = await p.json();
     if (t.ok) setItems(tj.testimonials);
-    if (p.ok) setProducts(pj.products.map((x: Product) => ({ id: x.id, name: x.name })));
+    if (p.ok) setProducts(pj.products.map((x: Product) => ({ id: x.id, name: x.name, series: x.series ?? null })));
   }, []);
   useEffect(() => {
     load();
@@ -101,6 +124,31 @@ export default function TestimonialsPage() {
     await load();
   }
 
+  // Group by product SERIES (the category an agent actually thinks in), not by
+  // individual SKU — a BCODE+ story sells any BCODE+ set. Series order follows
+  // the catalog so this page reads the same way the Products page does.
+  const seriesOrder: string[] = [];
+  for (const p of products) {
+    const sr = p.series ?? UNGROUPED;
+    if (!seriesOrder.includes(sr)) seriesOrder.push(sr);
+  }
+  const bySeries = new Map<string, Testimonial[]>();
+  for (const t of items) {
+    const key = t.productSeries ?? (t.productId ? t.productName ?? UNGROUPED : UNGROUPED);
+    if (!bySeries.has(key)) bySeries.set(key, []);
+    bySeries.get(key)!.push(t);
+  }
+  const groups = [...bySeries.entries()]
+    .map(([series, list]) => ({ series, items: list }))
+    .sort((a, b) => {
+      // Catalog order first, then anything unexpected, then General last.
+      if (a.series === UNGROUPED) return 1;
+      if (b.series === UNGROUPED) return -1;
+      const ai = seriesOrder.indexOf(a.series);
+      const bi = seriesOrder.indexOf(b.series);
+      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+    });
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <PageHeader
@@ -116,38 +164,116 @@ export default function TestimonialsPage() {
       />
       {error && <div className="text-sm text-red-600">{error}</div>}
 
-      <div className="space-y-2">
-        {items.length === 0 && <p className="text-sm text-black/35">No testimonials yet — add real customer results to give GC proof to close with.</p>}
-        {items.map((t) => (
-          <Card key={t.id}>
-            <div className="flex items-start justify-between gap-3">
-              {t.photoUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={t.photoUrl} alt="" className="w-14 h-14 rounded-xl object-cover shrink-0 border border-black/[0.06]" />
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="text-sm flex items-center flex-wrap gap-x-1">
-                  <span className="font-medium">{t.customerName || "A customer"}</span>
-                  {t.market && <span className="text-xs text-black/35"> · {t.market}</span>}
-                  {t.productName && <span className="text-xs text-[var(--accent-ink)]"> · {t.productName}</span>}
-                  {t.rating && (
-                    <span className="inline-flex items-center gap-0.5 text-amber-500 ml-1">
-                      {Array.from({ length: t.rating }).map((_, i) => (
-                        <StarIcon key={i} className="w-3 h-3" />
-                      ))}
-                    </span>
-                  )}
-                  {!t.isActive && <Badge tone="danger">hidden</Badge>}
+      {/* Coverage strip — the whole point of grouping: an agent can see at a
+          glance which product they have no proof for. */}
+      {groups.length > 0 && (
+        <Card className="!py-3">
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+            {groups.map((g) => {
+              const live = g.items.filter((x) => x.isActive).length;
+              const thin = live < TARGET_PER_CATEGORY;
+              return (
+                <a
+                  key={g.series}
+                  href={`#cat-${slug(g.series)}`}
+                  className="text-xs inline-flex items-center gap-1.5 hover:underline"
+                >
+                  <span className={thin ? "text-amber-600" : "text-black/55"}>{g.series}</span>
+                  <span
+                    className={
+                      "rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums " +
+                      (thin ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")
+                    }
+                  >
+                    {live}
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
+      <div className="space-y-6">
+        {items.length === 0 && (
+          <p className="text-sm text-black/35">
+            No results yet — add real customer results to give GC proof to close with.
+          </p>
+        )}
+
+        {groups.map((g) => {
+          const live = g.items.filter((x) => x.isActive).length;
+          const img = SERIES_IMAGE[g.series];
+          return (
+            <section key={g.series} id={`cat-${slug(g.series)}`} className="space-y-2 scroll-mt-4">
+              <div className="flex items-center gap-3">
+                {img && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={img}
+                    alt=""
+                    className="w-12 h-12 rounded-xl object-cover shrink-0 border border-black/[0.06] bg-white"
+                  />
+                )}
+                <div className="min-w-0">
+                  <h2 className="text-sm font-semibold tracking-tight truncate">{g.series}</h2>
+                  <p className="text-xs text-black/40">
+                    {live} live {live === 1 ? "result" : "results"}
+                    {live < TARGET_PER_CATEGORY && (
+                      <span className="text-amber-600"> · thin, aim for {TARGET_PER_CATEGORY}</span>
+                    )}
+                  </p>
                 </div>
-                <div className="mt-1 text-sm text-black/60">&ldquo;{t.resultText}&rdquo;</div>
               </div>
-              <div className="flex gap-3 shrink-0">
-                <button onClick={() => setDraft(t)} className="text-xs text-[var(--accent-ink)] hover:underline">Edit</button>
-                <button onClick={() => remove(t.id)} className="text-xs text-red-600 hover:underline">Delete</button>
+
+              <div className="space-y-2">
+                {g.items.map((t) => (
+                  <Card key={t.id}>
+                    <div className="flex items-start justify-between gap-3">
+                      {t.photoUrl && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={t.photoUrl}
+                          alt=""
+                          className="w-14 h-14 rounded-xl object-cover shrink-0 border border-black/[0.06]"
+                        />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm flex items-center flex-wrap gap-x-1">
+                          <span className="font-medium">{t.customerName || "A customer"}</span>
+                          {t.market && <span className="text-xs text-black/35"> · {t.market}</span>}
+                          {t.productName && (
+                            <span className="text-xs text-[var(--accent-ink)]"> · {t.productName}</span>
+                          )}
+                          {t.rating && (
+                            <span className="inline-flex items-center gap-0.5 text-amber-500 ml-1">
+                              {Array.from({ length: t.rating }).map((_, i) => (
+                                <StarIcon key={i} className="w-3 h-3" />
+                              ))}
+                            </span>
+                          )}
+                          {!t.isActive && <Badge tone="danger">hidden</Badge>}
+                        </div>
+                        <div className="mt-1 text-sm text-black/60">&ldquo;{t.resultText}&rdquo;</div>
+                      </div>
+                      <div className="flex gap-3 shrink-0">
+                        <button
+                          onClick={() => setDraft(t)}
+                          className="text-xs text-[var(--accent-ink)] hover:underline"
+                        >
+                          Edit
+                        </button>
+                        <button onClick={() => remove(t.id)} className="text-xs text-red-600 hover:underline">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
               </div>
-            </div>
-          </Card>
-        ))}
+            </section>
+          );
+        })}
       </div>
 
       {draft && (
