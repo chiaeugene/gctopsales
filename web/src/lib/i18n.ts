@@ -249,6 +249,28 @@ const dict: Record<string, Entry> = {
     zh: "更亲切、更健谈。每条讯息最多一个。",
   },
 
+  // Opening questions (discovery menus)
+  "settings.discovery.title": { en: "Opening questions", zh: "开场提问方式" },
+  "settings.discovery.desc": {
+    en: "How GC opens with someone who hasn't said what they need yet.",
+    zh: "当客户还没说清楚需要什么时，GC 要怎么开场。",
+  },
+  "settings.discovery.on.label": { en: "Ask my discovery menus", zh: "使用我的开场提问清单" },
+  "settings.discovery.on.desc": {
+    en: "GC asks the customer to pick their problem from your short list, then sells to that answer. Write the questions on the Discovery page.",
+    zh: "GC 让客户从你的简短清单里选出自己的问题，再针对答案销售。问题在「开场提问」页设定。",
+  },
+  "settings.discovery.off.label": { en: "Just chat naturally", zh: "自然聊天" },
+  "settings.discovery.off.desc": {
+    en: "GC sells conversationally and asks whatever question fits the moment. Your menus are ignored.",
+    zh: "GC 以对话方式销售，随情况提问，不使用你的清单。",
+  },
+  "settings.discovery.noneYet": {
+    en: "You haven't written any discovery menus yet, so this has no effect until you do.",
+    zh: "你还没设定任何开场提问，设定后这个选项才会生效。",
+  },
+  "settings.discovery.manage": { en: "Write your questions", zh: "去设定问题" },
+
   // Brain sections
   "settings.section.fulfillment.title": { en: "Payment & delivery", zh: "收款与配送" },
   "settings.section.fulfillment.why": {

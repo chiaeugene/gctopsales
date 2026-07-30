@@ -17,6 +17,7 @@ export async function GET() {
     });
     return {
       allowLists: profile.allowLists,
+      useDiscoveryMenus: profile.useDiscoveryMenus,
       menus: menus.map((m) => ({
         id: m.id,
         topic: m.topic,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +21,7 @@ type Settings = {
   tone: string;
   allowLists: boolean;
   emojiStyle: string;
+  useDiscoveryMenus: boolean;
   autoConfirmPayments: boolean;
   followUpAfterHours: number | null;
   maxFollowUps: number;
@@ -180,6 +182,12 @@ export default function SettingsPage() {
         emojiStyle={settings.emojiStyle}
         saved={savedCard === "shape"}
         onSave={(v) => save("shape", v)}
+      />
+
+      <DiscoveryCard
+        useDiscoveryMenus={settings.useDiscoveryMenus}
+        saved={savedCard === "discovery"}
+        onSave={(v) => save("discovery", { useDiscoveryMenus: v })}
       />
 
       {BRAIN_SECTIONS.map((sec) => (
@@ -376,6 +384,77 @@ function MessageStyleCard(props: {
       </div>
 
       <SaveButton saved={props.saved} onClick={() => props.onSave({ allowLists, emojiStyle })} />
+    </Card>
+  );
+}
+
+// Opening questions. Separate from message shape on purpose: this decides
+// WHETHER GC opens with the agent's authored menus at all, while allowLists
+// only decides whether those questions come out numbered or in prose.
+const DISCOVERY_OPTIONS = [
+  { value: true, label: "settings.discovery.on.label", desc: "settings.discovery.on.desc" },
+  { value: false, label: "settings.discovery.off.label", desc: "settings.discovery.off.desc" },
+];
+
+function DiscoveryCard(props: { useDiscoveryMenus: boolean; saved: boolean; onSave: (v: boolean) => void }) {
+  const { t } = useT();
+  const [on, setOn] = useState(props.useDiscoveryMenus);
+  const [menuCount, setMenuCount] = useState<number | null>(null);
+  useEffect(() => setOn(props.useDiscoveryMenus), [props.useDiscoveryMenus]);
+
+  // Tell the agent plainly when the switch can't do anything yet, instead of
+  // letting them turn it on and wonder why nothing changed.
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/discovery")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (alive && j) setMenuCount(j.menus.length);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">{t("settings.discovery.title")}</h2>
+        <p className="text-sm text-black/45">{t("settings.discovery.desc")}</p>
+      </div>
+
+      <div className="space-y-2">
+        {DISCOVERY_OPTIONS.map((o) => (
+          <RadioRow
+            key={String(o.value)}
+            name="useDiscoveryMenus"
+            checked={on === o.value}
+            label={o.label}
+            desc={o.desc}
+            onSelect={() => setOn(o.value)}
+          />
+        ))}
+      </div>
+
+      {menuCount === 0 && (
+        <p className="text-xs text-amber-700">
+          {t("settings.discovery.noneYet")}{" "}
+          <Link href="/discovery" className="font-medium text-[var(--accent-ink)] hover:underline">
+            {t("settings.discovery.manage")}
+          </Link>
+        </p>
+      )}
+      {menuCount !== null && menuCount > 0 && (
+        <p className="text-xs text-black/40">
+          {menuCount} {menuCount === 1 ? "menu" : "menus"} written ·{" "}
+          <Link href="/discovery" className="text-[var(--accent-ink)] hover:underline">
+            {t("settings.discovery.manage")}
+          </Link>
+        </p>
+      )}
+
+      <SaveButton saved={props.saved} onClick={() => props.onSave(on)} />
     </Card>
   );
 }

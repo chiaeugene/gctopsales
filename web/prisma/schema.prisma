@@ -65,6 +65,12 @@ model StoreProfile {
   allowLists Boolean @default(false)
   emojiStyle String  @default("light")
 
+  // Whether GC opens with the agent's authored Discovery menus ("which of
+  // these is you? 1. / 2. / 3."). Off = sell conversationally, asking whatever
+  // question fits. Only has any effect if the agent has authored menus, so the
+  // default is on: writing a menu is itself the opt-in.
+  useDiscoveryMenus Boolean @default(true)
+
   // Opt-in: auto-confirm payment when a proof screenshot is vision-verified
   // with high confidence AND the amount exactly matches the order total.
   autoConfirmPayments Boolean @default(false)

@@ -24,6 +24,7 @@ const BLANK: Partial<Menu> = { topic: "", question: "", options: ["", "", ""], i
 export default function DiscoveryPage() {
   const [menus, setMenus] = useState<Menu[]>([]);
   const [allowLists, setAllowLists] = useState(false);
+  const [useMenus, setUseMenus] = useState(true);
   const [draft, setDraft] = useState<Partial<Menu> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -35,6 +36,7 @@ export default function DiscoveryPage() {
     if (res.ok) {
       setMenus(json.menus);
       setAllowLists(json.allowLists);
+      setUseMenus(json.useDiscoveryMenus);
     } else {
       setError(json.error || "Could not load your menus");
     }
@@ -43,6 +45,27 @@ export default function DiscoveryPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Flipping the feature on/off from here, not just from Settings — this is
+  // where an agent is actually looking at their menus and deciding.
+  async function toggleFeature(next: boolean) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ useDiscoveryMenus: next }),
+      });
+      if (!res.ok) {
+        setError((await res.json()).error || "Could not change the setting");
+        return;
+      }
+      setUseMenus(next);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function save(d: Partial<Menu>) {
     setError(null);
@@ -118,22 +141,37 @@ export default function DiscoveryPage() {
 
       {error && <div className="text-sm text-red-600">{error}</div>}
 
-      {/* The library says WHAT to ask; the Settings switch says HOW it looks.
-          Without this, an agent turns lists off and can't tell why the numbers
-          disappeared. */}
-      <Card className="!py-3 text-xs flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span className="text-black/45">Format right now:</span>
-        {allowLists ? (
-          <span className="font-medium">numbered options (1. 2. 3.)</span>
-        ) : (
-          <span className="font-medium">asked in prose, no numbers</span>
+      {/* Two separate questions, and agents conflate them: is the feature ON,
+          and how are the questions FORMATTED. Both answered here. */}
+      <Card className="space-y-2.5">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
+            <div className="text-sm font-semibold">
+              {useMenus ? "GC opens with these menus" : "Menus are switched off"}
+            </div>
+            <p className="text-xs text-black/45 mt-0.5">
+              {useMenus
+                ? "When a customer hasn't said what they need, GC asks the matching menu below."
+                : "GC is selling conversationally and ignoring everything below. Your menus are saved, just not used."}
+            </p>
+          </div>
+          <Button variant="secondary" onClick={() => toggleFeature(!useMenus)} disabled={busy}>
+            {busy ? "…" : useMenus ? "Switch off" : "Switch on"}
+          </Button>
+        </div>
+
+        {useMenus && (
+          <div className="text-xs flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-black/[0.06] pt-2.5">
+            <span className="text-black/45">Format:</span>
+            <span className="font-medium">
+              {allowLists ? "numbered options (1. 2. 3.)" : "asked in prose, no numbers"}
+            </span>
+            <Link href="/settings" className="text-[var(--accent-ink)] hover:underline">
+              change in Settings
+            </Link>
+            <span className="text-black/35">· same questions either way, only the formatting changes</span>
+          </div>
         )}
-        <Link href="/settings" className="text-[var(--accent-ink)] hover:underline">
-          change in Settings
-        </Link>
-        <span className="text-black/35">
-          · the same questions get asked either way, only the formatting changes
-        </span>
       </Card>
 
       {loaded && menus.length === 0 && (
@@ -149,7 +187,7 @@ export default function DiscoveryPage() {
         </Card>
       )}
 
-      <div className="space-y-2">
+      <div className={"space-y-2 transition-opacity " + (useMenus ? "" : "opacity-50")}>
         {menus.map((m) => (
           <Card key={m.id} className="space-y-2">
             <div className="flex items-start justify-between gap-3">

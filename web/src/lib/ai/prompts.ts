@@ -274,7 +274,7 @@ Has the bloating been going on a long time?`
   // 3. Dullness" opening that top MAE agents live on. Train GC teaches it by
   // example and hopes the model imitates it; this makes it explicit, so the
   // agent's exact wording and exact options get used every time.
-  if (discoveryMenus.length) {
+  if (discoveryMenus.length && profile.useDiscoveryMenus) {
     const rendered = discoveryMenus
       .map((m) => {
         const opts = parseJson<string[]>(m.options, []);
