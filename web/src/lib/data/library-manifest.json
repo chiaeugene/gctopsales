@@ -17,17 +17,17 @@
   },
   {
     "kind": "PRICE_CARD",
-    "file": "bcode-bcode-programme-card-tier-1-the-starter-entry-programm.jpg",
-    "label": "BCODE+ programme card, tier 1 — the Starter/entry programme: boxes included plus the free gift block. Website version of the campaign card (2212x2119).",
-    "note": "Send to a first-time BCODE+ buyer who wants the smallest commitment.",
+    "file": "bcode-bcode-metabolic-transformation-programme-card-top-tier.jpg",
+    "label": "BCODE+ METABOLIC TRANSFORMATION PROGRAMME card, top tier — 'BUY 16 FREE 2' with all eighteen boxes shown, FREE 2 boxes of B-ActV/B-VtrA, and the FREE ADVANCED RECODE PROGRAMME kit (Metabolic Reset Map, Reset Club group, 14-day coaching, MAE Premium Bottle 1.5L, B-Smart digital scale, B-Shape measuring tape, Be Fit e-handbook). New users only. 2248x3230.",
+    "note": "Send to a customer with a large goal (>5kg, high visceral fat, postpartum, previous rebounder) or one buying for a household.",
     "productLine": "BCODE+",
     "source": "https://www.maeglobalofficial.com/BCODE"
   },
   {
     "kind": "PRICE_CARD",
-    "file": "bcode-bcode-programme-card-top-tier-the-advanced-recode-larg.jpg",
-    "label": "BCODE+ programme card, top tier — the Advanced Recode / largest-box programme with its free boxes and gift block (2248x3230).",
-    "note": "Send to a customer with a large goal (>5kg, high visceral fat, postpartum) or one buying for a household.",
+    "file": "bcode-bcode-reset-programme-card-buy-4-boxes-showing-b-synn-.jpg",
+    "label": "BCODE+ RESET PROGRAMME card — 'BUY 4 BOXES' showing B-SynN, B-OriG (Beetroot), B-VtrA and B-ActV, plus FREE RESET STARTER KIT (Metabolic Reset Map, Reset Club community group, exclusive 14-day reset coaching access, MAE Premium Bottle 1.5L). New users only, while stocks last. 2212x2119.",
+    "note": "Send to a customer ready to commit to a full 4-box reset but not to the bigger programmes.",
     "productLine": "BCODE+",
     "source": "https://www.maeglobalofficial.com/BCODE"
   },
@@ -65,7 +65,7 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "brb-brb-s-active-ingredient-diagram-nicotinamide-mononucleot.webp",
+    "file": "brb-brb-s-active-ingredient-diagram-nicotinamide-mononucleot.jpg",
     "label": "BRB's active-ingredient diagram: Nicotinamide Mononucleotide (NMN) overlapping THREE ADAPTOGENS — Ashwagandha Extract, Rhodiola Extract, Valerian Root Extract — with each side's stated role.",
     "note": "Send as the mechanism/authority image for BRB, straight after the pain-mirror opener.",
     "productLine": "BRB",
@@ -73,11 +73,19 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "brb-brb-s-eight-claimed-benefits-laid-out-as-an-icon-flow-ar.webp",
+    "file": "brb-brb-s-eight-claimed-benefits-laid-out-as-an-icon-flow-ar.jpg",
     "label": "BRB's eight claimed benefits laid out as an icon flow around the sachet: Boost Performance, Anti-Aging, Improve stress tolerance, Reduce fatigue, Improve sleep quality, Mood Relaxation, Increase athletic endurance, Boost Immune System.",
     "note": "Send early in any BRB conversation — it covers stress, sleep and energy at once so it fits almost every BRB persona.",
     "productLine": "BRB",
     "source": "https://www.maeglobalofficial.com/BRB"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "brb-mae-brb-balance-your-life-in-relaxing-calming-refreshing.jpg",
+    "label": "MAE BRB 'BALANCE YOUR LIFE — In Relaxing, Calming & Refreshing your mind' seesaw infographic (800x800): a tilting balance with Anxiety / Stress / Insomnia weighing down one side against Top Performance / Relieve stress / Balance life on the other, BRB box and sachet bottom-right.",
+    "note": "Strong pain-mirror opener for BRB — the seesaw states the customer's problem and the promise in one square image. Send right after the 'is this you?' opener. Caveat: reseller-hosted Lazada CDN upload.",
+    "productLine": "BRB",
+    "source": "https://www.lazada.com.my/products/mae-brb-ready-stocknmn-3adaptogens-nmn-fast-delivery-i4057313526.html"
   },
   {
     "kind": "REVIEW_CARD",
@@ -137,7 +145,7 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "clar-ty-skin-perfector-bilingual-en-clinical-data-chart-prod.png",
+    "file": "clar-ty-skin-perfector-bilingual-en-clinical-data-chart-prod.jpg",
     "label": "Bilingual EN/繁中 clinical-data chart + product anatomy for MAE Skin Perfector: four labelled bars — 95% yellow & dull skin tones look brighter instantly, 82% satisfied with pore coverage, 81% skin feels moisturized and supple, 77% lightweight formula with lasting radiance — plus callouts for airless pump, 1-2 pumps, shades for all skin tones, touch-up blender. Very high resolution (8000x4500).",
     "note": "Highest-production-value asset found anywhere in this sweep. The percentage bars are MAE's own 'clinical data' framing, so it looks credible and professional. Send to a customer weighing base makeup / complexion products.",
     "productLine": "Claríty (Skin Perfector)",
@@ -145,7 +153,7 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "clar-ty-skin-perfector-chinese-benefit-ingredient-explainer-.png",
+    "file": "clar-ty-skin-perfector-chinese-benefit-ingredient-explainer-.jpg",
     "label": "Chinese benefit/ingredient explainer for Skin Perfector ('重新定義，妳的早晨'): why it replaces four products, its plant oils (大馬士革玫瑰油, 白池花籽油 & 霍霍巴籽油, 牛油果/橄欖/山茶籽), and the dual-head brush-plus-serum design, with two 'X' pain points (不再弄髒雙手 / 不再有刷質).",
     "note": "Portrait format, WhatsApp-native aspect ratio. Traditional Chinese. Pairs well with the clinical-data chart above.",
     "productLine": "Claríty (Skin Perfector)",
@@ -153,7 +161,7 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "clar-ty-anti-aging-second-tall-clar-ty-solution-panel-2400x4.png",
+    "file": "clar-ty-anti-aging-second-tall-clar-ty-solution-panel-2400x4.jpg",
     "label": "Second tall Claríty Solution panel (2400x4498) continuing the anti-aging story and actives.",
     "note": "Same handling as above — crop the one section that answers the customer's question.",
     "productLine": "Claríty Anti-Aging",
@@ -161,7 +169,7 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "clar-ty-anti-aging-the-full-clar-ty-solution-long-form-sales.png",
+    "file": "clar-ty-anti-aging-the-full-clar-ty-solution-long-form-sales.jpg",
     "label": "The full Claríty Solution long-form sales page as one very tall image (2400x6291): the '20 days' claim, the 'vicious cycle of aging' mechanism diagram (oxidation / glycation / inflammation), a six-panel strip of the six visible signs of aging (fine lines, sagging, enlarged pores, dull and uneven skin tone, hyperpigmentation, dryness and roughness) shown as macro skin close-ups, and the 'TRIPLE ANTI-AGING POWER — antioxidation / anti-inflammation / antiglycation' REP1+GLO2 pack shot.",
     "note": "Do not send whole — at 2400x6291 WhatsApp will crush it. Crop the mechanism diagram or the six-signs strip and send that section alone.",
     "productLine": "Claríty Anti-Aging",
@@ -201,7 +209,7 @@
   },
   {
     "kind": "PRODUCT",
-    "file": "clar-ty-anti-aging-clar-ty-solution-rep1-beauty-shot-the-sac.png",
+    "file": "clar-ty-anti-aging-clar-ty-solution-rep1-beauty-shot-the-sac.jpg",
     "label": "Claríty Solution REP1 beauty shot: the sachet and box with a pouring water ribbon and a pear/blossom still-life panel (3093x2124).",
     "note": "Send when introducing REP1 specifically — it looks premium and signals 'soothing/hydrating'.",
     "productLine": "Claríty Anti-Aging",
@@ -217,7 +225,7 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part-2.png",
+    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part-2.jpg",
     "label": "Claríty Skincare Series long-form page part 2 (1600x3232), continuing the product-by-product routine.",
     "note": "Crop the relevant product section before sending.",
     "productLine": "Claríty skincare",
@@ -225,7 +233,7 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part-3.png",
+    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part-3.jpg",
     "label": "Claríty Skincare Series long-form page part 3 (1600x4763). Contains 'MAE SKINCARE GUIDELINES FOR DIFFERENT SKIN TYPES' — a matrix giving Claríty / Hydra Power Serum / Skin Perfector & Air Blur Cushion frequency for Dry, Oily, Combination, Sensitive and Acne-Prone skin, with the tell-tale signs of each skin type.",
     "note": "Crop the skin-type matrix and send it after you have identified the customer's skin type — it makes the recommendation look clinical rather than pushy.",
     "productLine": "Claríty skincare",
@@ -233,11 +241,19 @@
   },
   {
     "kind": "CERT",
-    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part.png",
+    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part.jpg",
     "label": "Claríty Skincare Series long-form page part 1 (1575x8191): the step-by-step routine, Claríty mask 'Deep Cleansing / Skin Barrier Repairing' copy with Calendula Officinalis flower oil and pearl powder called out, the Malaysia Book of Records badge ('Highest Powder Face Mask Sales Value In A Day'), a certification row (GMP, HACCP, ISO, pH5.5, HALAL, Tested By SGS), 'suitable for all skin types, gentle and skin-friendliest pH5.5', then Step 2 Hydra Power Serum.",
     "note": "Extremely tall — crop and send single sections. The Book of Records + certification row crop is the best social-proof asset for Claríty.",
     "productLine": "Claríty skincare",
     "source": "https://www.maeglobalofficial.com/SkinCareSeries"
+  },
+  {
+    "kind": "CERT",
+    "file": "clar-ty-skincare-mae-s-own-clar-ty-certification-board-clari.webp",
+    "label": "MAE's own Claríty certification board ('Clarity — Seaweed with pearl powder'): two SGS pH 5.5 test reports on mae letterhead, the Malaysian COSMETIC NOTIFICATION certificate (Control of Drugs and Cosmetics Regulation 1984, Director of Pharmaceutical Services, Ministry of Health Malaysia, issued to MORANE GLOBAL SDN BHD), and the SEA HALAL certificate (Halal Food Council International). Bottom seal row: GMP, ISO 9001, cruelty-free, Halal, Tested By SGS, pH 5.5.",
+    "note": "The best certification asset for the skincare lines and the counterpart to the BCODE+ trust card — send when a customer asks whether Claríty is halal, notified with KKM, or pH-safe. Caveat: hosted on a reseller's Lazada CDN upload, not MAE's own server, so re-verify before relying on it long term.",
+    "productLine": "Claríty skincare",
+    "source": "https://www.lazada.com.my/products/100-mae-clarity-mask-20-i3688720832.html"
   },
   {
     "kind": "PRICE_CARD",
@@ -265,17 +281,17 @@
   },
   {
     "kind": "PRODUCT",
-    "file": "clar-ty-skincare-clean-cut-out-packshot-of-air-blur-perfecto.jpg",
-    "label": "Clean cut-out packshot of Air Blur Perfector Cushion (01SCS) — retail box with a sachet/bottle beside it on a plain white background, no props.",
-    "note": "Default packshot: send this the moment you name Air Blur Perfector Cushion, and use it in any bundle or comparison message.",
+    "file": "clar-ty-skincare-clar-ty-box-shown-on-a-lilac-podium-the-mix.jpg",
+    "label": "Claríty box shown on a lilac podium — the Mix & Match listing image.",
+    "note": "Send when offering Claríty specifically — it reads as a trial/sample rather than a full retail box.",
     "productLine": "Claríty skincare",
     "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
   },
   {
     "kind": "PRODUCT",
-    "file": "clar-ty-skincare-clean-cut-out-packshot-of-ampoule-mask-01sa.jpg",
-    "label": "Clean cut-out packshot of Ampoule Mask (01SAMM) — retail box with a sachet/bottle beside it on a plain white background, no props.",
-    "note": "Default packshot: send this the moment you name Ampoule Mask, and use it in any bundle or comparison message.",
+    "file": "clar-ty-skincare-clean-cut-out-packshot-of-air-blur-perfecto.jpg",
+    "label": "Clean cut-out packshot of Air Blur Perfector Cushion (01SCS) — retail box with a sachet/bottle beside it on a plain white background, no props.",
+    "note": "Default packshot: send this the moment you name Air Blur Perfector Cushion, and use it in any bundle or comparison message.",
     "productLine": "Claríty skincare",
     "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
   },
@@ -289,7 +305,7 @@
   },
   {
     "kind": "CERT",
-    "file": "general-malaysia-book-of-records-award-badge-as-published-by.webp",
+    "file": "general-malaysia-book-of-records-award-badge-as-published-by.jpg",
     "label": "Malaysia Book of Records award badge as published by MAE (342x270).",
     "note": "Send with the other award badges as third-party social proof when a customer questions whether MAE is a real, established brand.",
     "productLine": "GENERAL",
@@ -297,7 +313,7 @@
   },
   {
     "kind": "CERT",
-    "file": "general-malaysia-health-wellness-brand-awards-badge-264x270.webp",
+    "file": "general-malaysia-health-wellness-brand-awards-badge-264x270.jpg",
     "label": "Malaysia Health & Wellness Brand Awards badge (264x270).",
     "note": "Social proof; BRB won this award.",
     "productLine": "GENERAL",
@@ -313,25 +329,9 @@
   },
   {
     "kind": "CERT",
-    "file": "general-natural-health-readers-choice-award-badge-306x270.webp",
+    "file": "general-natural-health-readers-choice-award-badge-306x270.jpg",
     "label": "Natural Health Readers' Choice award badge (306x270).",
     "note": "Social proof for Total DX+ specifically — it won this award.",
-    "productLine": "GENERAL",
-    "source": "https://www.maeglobalofficial.com/"
-  },
-  {
-    "kind": "CERT",
-    "file": "general-platinum-business-award-badge-210x270.webp",
-    "label": "Platinum Business Award badge (210x270).",
-    "note": "Corporate-credibility social proof.",
-    "productLine": "GENERAL",
-    "source": "https://www.maeglobalofficial.com/"
-  },
-  {
-    "kind": "CERT",
-    "file": "general-soba-star-outstanding-business-awards-badge-225x270.webp",
-    "label": "SOBA (Star Outstanding Business Awards) badge (225x270).",
-    "note": "Corporate-credibility social proof.",
     "productLine": "GENERAL",
     "source": "https://www.maeglobalofficial.com/"
   },
@@ -361,75 +361,78 @@
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "re-wind-is-this-you-hair-problem-card-labelled-dry-and-frizz.jpg",
-    "label": "'Is this you?' hair-problem card — labelled 'Dry and Frizzy' in the page's alt text.",
-    "note": "Pain-mirror opener image. Label taken from the page's alt attribute; the image file itself was not visually inspected, so treat the caption as MAE's, not verified by me.",
+    "file": "re-wind-chinese-language-version-of-the-same-re-wind-active--10.jpg",
+    "label": "Chinese-language version of the same Re.WIND active-ingredient card: 三肽-1 (Tripeptide-1) — \"延缓毛囊衰老\" (Slow down follicle aging).",
+    "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
     "productLine": "Re.WIND",
-    "source": "https://maerewind.com/"
+    "source": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media"
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "re-wind-is-this-you-hair-problem-card-labelled-dull-and-lack.jpg",
-    "label": "'Is this you?' hair-problem card — labelled 'Dull and lacklustre' in the page's alt text.",
-    "note": "Pain-mirror opener image. Label from alt attribute only, not visually verified. Siblings Hair-Problem-02 (Tangled hair), -03 (Coarse hair), -05 (Prone to Breakage) exist at the same path pattern.",
+    "file": "re-wind-chinese-language-version-of-the-same-re-wind-active--8.jpg",
+    "label": "Chinese-language version of the same Re.WIND active-ingredient card: 吡哆醇、泛醇 (Pyridoxine & Panthenol) — \"增强发质和维持头皮健康\" (Strengthening hair quality & maintain scalp health).",
+    "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
     "productLine": "Re.WIND",
-    "source": "https://maerewind.com/"
+    "source": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media"
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "re-wind-eight-step-illustrated-how-to-use-ritual-comb-out-ta.png",
-    "label": "Eight-step illustrated how-to-use ritual: comb out tangles, wet hair, shampoo, squeeze out water, Glow Hair Mask 3-5 min, towel wrap, Collagen Hair Serum + blow-dry, spray Hair Re-active Essence on scalp.",
-    "note": "Send after the sale, or during it to justify the 4-step bundle over a single shampoo. Cute line-art, no real people, zero likeness risk.",
+    "file": "re-wind-chinese-language-version-of-the-same-re-wind-active--2.jpg",
+    "label": "Chinese-language version of the same Re.WIND active-ingredient card: 姜根提取物 (Zingiber Officinale (Ginger) Root Extract) — \"促进毛发生长\" (Promoting hair growth).",
+    "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
     "productLine": "Re.WIND",
-    "source": "https://maerewind.com/"
+    "source": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media"
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "re-wind-re-wind-long-form-page-part-1-1200x7136-the-4-step-s.jpg",
-    "label": "Re.WIND long-form page part 1 (1200x7136): the 4-step system (Cleanse / Repair / Nourish / Re-active) with each product, then 'NATURE & PATENTED INNOVATION' — 10 natural herbal ingredients plus the imported patented 'HAIR COMPLEX 3' (Triticum Aestivum wheat seed extract, Oryza Sativa rice bran extract, Glycine Max soybean seed extract, pressurised hot-water extraction) tagged anti-oxidation / anti-microbial / scalp repair.",
-    "note": "Crop the HAIR COMPLEX 3 flask panel — it is the strongest Re.WIND credibility image. Do not send the full 7136px file.",
+    "file": "re-wind-chinese-language-version-of-the-same-re-wind-active--3.jpg",
+    "label": "Chinese-language version of the same Re.WIND active-ingredient card: 海藻提取物 (Algae Extract) — \"有益于毛囊健康\" (Beneficial for follicle health).",
+    "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
     "productLine": "Re.WIND",
-    "source": "https://www.maeglobalofficial.com/ReWind"
+    "source": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media"
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "re-wind-re-wind-long-form-page-part-2-1200x3328-contains-the.jpg",
-    "label": "Re.WIND long-form page part 2 (1200x3328). Contains: the Hair Re-active Essence star-ingredient panel (Biota Orientalis leaf, Panax Ginseng root, Angelica Polymorpha Sinensis root, Polygonum Multiflorum root); a 'VISIBLE RESULTS CAN BE SEEN' grid of six BEFORE/AFTER pairs (see beforeAfter array — crop these out if you do not want to send them); 'REVITALIZING THE HAIR WITH JUST 1 USE' with +92% Silky & Smooth, +89% Nourishment & Moisture, +85% Hair Strength, +79% Voluminous; and a 'DIRECTION OF USE' eight-step illustrated guide for the whole 4-product ritual.",
-    "note": "The best crops are the +92/+89/+85/+79 stats block and the 8-step DIRECTION OF USE panel. Crop deliberately — the before/after grid sits in the same file.",
+    "file": "re-wind-chinese-language-version-of-the-same-re-wind-active--7.jpg",
+    "label": "Chinese-language version of the same Re.WIND active-ingredient card: 烟酰胺 (Niacinamide) — \"提升头发的外观和质感\" (Improved hair appearance & texture).",
+    "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
     "productLine": "Re.WIND",
-    "source": "https://www.maeglobalofficial.com/ReWind"
+    "source": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media"
   },
   {
     "kind": "INFOGRAPHIC",
-    "file": "re-wind-side-by-side-comparison-of-scalp-balancing-vs-super-.jpg",
-    "label": "Side-by-side comparison of Scalp Balancing vs Super Hydrating Shampoo (which one for oily vs dry scalp), named botanical ingredients, plus six 'free from' badges: silicone, alcohol, SLS/SLES, colour, paraben, mineral oil free.",
-    "note": "The single best Re.WIND asset. Send when the customer asks 'which shampoo is for me?' or raises a chemical/ingredient-safety objection. Wide landscape, reads well in WhatsApp.",
+    "file": "re-wind-chinese-language-version-of-the-same-re-wind-active--9.jpg",
+    "label": "Chinese-language version of the same Re.WIND active-ingredient card: 生物素 (Biotin) — \"预防现代人常见的少年白发\" (Prevents premature graying).",
+    "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
     "productLine": "Re.WIND",
-    "source": "https://maerewind.com/"
-  },
-  {
-    "kind": "INFOGRAPHIC",
-    "file": "re-wind-single-ingredient-explainer-card-anemarrhena-asphode.png",
-    "label": "Single-ingredient explainer card: Anemarrhena Asphodeloides Root Extract — 'Alleviate scalp inflammation'.",
-    "note": "Same transparent-PNG caveat as above. Also note the wording is inflammation-adjacent; prefer the comparison chart for compliance-sensitive conversations.",
-    "productLine": "Re.WIND",
-    "source": "https://maerewind.com/"
-  },
-  {
-    "kind": "INFOGRAPHIC",
-    "file": "re-wind-single-ingredient-explainer-card-urtica-dioica-nettl.png",
-    "label": "Single-ingredient explainer card: Urtica Dioica (Nettle) Leaf Extract — 'Provides vitamins, minerals, and polyphenols to prevent hair loss and enchance hair texture' (typo is MAE's).",
-    "note": "Ingredient-as-authority mini-lesson. CAVEAT: transparent-background PNG with cream text — looks broken on WhatsApp's light bubble. Flatten onto a dark background before sending.",
-    "productLine": "Re.WIND",
-    "source": "https://maerewind.com/"
+    "source": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media"
   },
   {
     "kind": "BEFORE_AFTER",
-    "file": "re-wind-eight-image-before-after-gallery-files-before-after-.jpg",
-    "label": "Eight-image before/after gallery, files Before-After-01 through Before-After-08.",
-    "note": "Restricted — switched off by default, review before enabling",
+    "file": "general-2.jpg",
+    "label": "Re.WIND hair before and after 1 (back of head, no face shown)",
+    "note": "When they ask whether it really works on damaged or frizzy hair. Say results vary between people in the same message.",
     "productLine": "Re.WIND",
-    "source": "https://maerewind.com/"
+    "source": "https://maerewind.com/",
+    "active": true
+  },
+  {
+    "kind": "BEFORE_AFTER",
+    "file": "general-3.jpg",
+    "label": "Re.WIND hair before and after 2 (back of head, no face shown)",
+    "note": "When they ask whether it really works on damaged or frizzy hair. Say results vary between people in the same message.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/",
+    "active": true
+  },
+  {
+    "kind": "BEFORE_AFTER",
+    "file": "general-4.jpg",
+    "label": "Re.WIND hair before and after 3 (back of head, no face shown)",
+    "note": "When they ask whether it really works on damaged or frizzy hair. Say results vary between people in the same message.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/",
+    "active": true
   },
   {
     "kind": "PRICE_CARD",
@@ -470,6 +473,14 @@
     "note": "Default packshot: send this the moment you name Re.WIND Glow Hair Mask, and use it in any bundle or comparison message.",
     "productLine": "Re.WIND",
     "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "OTHER",
+    "file": "re-wind-re-wind-hair-problem-diagnostic-macro-photograph-2-o.jpg",
+    "label": "Re.WIND 'hair problem' diagnostic macro photograph 2 of 5, 1600x1600 square, hair/scalp only.",
+    "note": "Use in the same problem-identification step.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media"
   },
   {
     "kind": "INFOGRAPHIC",
@@ -536,8 +547,16 @@
     "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
   },
   {
+    "kind": "INFOGRAPHIC",
+    "file": "ireason-mae-s-official-8-page-mae-eye-health-series-ireason-.pdf",
+    "label": "MAE's official 8-page 'MAE EYE HEALTH SERIES — iReason' product deck: the lutein/zeaxanthin story, the six trademarked actives and the usage guidance, as image pages.",
+    "note": "The ONLY substantial iReason visual asset that exists anywhere public — MAE publishes no iReason web page and no iReason packshot. Export the individual pages as images and use those for iReason conversations. (Byte-identical to the local copy at research/training-pdfs/ireason_eyehealth.pdf.)",
+    "productLine": "iReason",
+    "source": "https://images.maeglobalofficial.com/images/uploads//TrainingFileUrl/ (MAE's training-file host; the directory returns 403 with no listing, so individual files are reachable only via their exact GUID path)"
+  },
+  {
     "kind": "PRICE_CARD",
-    "file": "ireason-official-mae-campaign-bundle-card-for-ireason-4-mont.png",
+    "file": "ireason-official-mae-campaign-bundle-card-for-ireason-4-mont.jpg",
     "label": "Official MAE campaign/bundle card for \"iReason 4-month Treatment [ B6F2 ]\" (B6F2EH) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
     "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
     "productLine": "iReason",
@@ -545,7 +564,7 @@
   },
   {
     "kind": "PRICE_CARD",
-    "file": "ireason-official-mae-campaign-bundle-card-for-ireason-comple.png",
+    "file": "ireason-official-mae-campaign-bundle-card-for-ireason-comple.jpg",
     "label": "Official MAE campaign/bundle card for \"iReason Complete Treatment [ B3F1 ]\" (B3F1EH) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
     "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
     "productLine": "iReason",

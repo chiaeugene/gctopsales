@@ -1339,6 +1339,556 @@
       "sourcePage": "https://www.maeglobalofficial.com/Products",
       "widthxheight": "1721x431",
       "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "CERT",
+      "productLine": "Claríty skincare",
+      "label": "MAE's own Claríty certification board ('Clarity — Seaweed with pearl powder'): two SGS pH 5.5 test reports on mae letterhead, the Malaysian COSMETIC NOTIFICATION certificate (Control of Drugs and Cosmetics Regulation 1984, Director of Pharmaceutical Services, Ministry of Health Malaysia, issued to MORANE GLOBAL SDN BHD), and the SEA HALAL certificate (Halal Food Council International). Bottom seal row: GMP, ISO 9001, cruelty-free, Halal, Tested By SGS, pH 5.5.",
+      "note": "The best certification asset for the skincare lines and the counterpart to the BCODE+ trust card — send when a customer asks whether Claríty is halal, notified with KKM, or pH-safe. Caveat: hosted on a reseller's Lazada CDN upload, not MAE's own server, so re-verify before relying on it long term.",
+      "url": "https://filebroker-cdn.lazada.com.my/kf/S2c265baa174340b7b65ea7e45ecb85f7D.jpg",
+      "sourcePage": "https://www.lazada.com.my/products/100-mae-clarity-mask-20-i3688720832.html",
+      "widthxheight": "582x582",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "Re.WIND",
+      "label": "MAE's bilingual Re.WIND dual-shampoo key visual (800x800): both pump bottles on a lilac set, with EN/中文 benefit lists — Scalp Balancing Shampoo for oily scalp (long-lasting oil control 持久控油, deep follicle purification 深层净化毛囊, maintain oil-water balance 维持油水平衡, refreshing & voluminous 清爽蓬松) and Super Hydrating Shampoo for dry scalp (deep moisturization 深度保湿, lasting hydration 持久滋润, soothes dry scalp 缓解干燥头皮, strengthen scalp barrier 强化头皮屏障). Footer: 'PLANT-BASED HAIR SHAMPOO — Made with over 90% natural ingredients…'",
+      "note": "The single best Re.WIND asset for WhatsApp: square, bilingual, and it answers 'which shampoo is for me' in one image. Send as soon as the customer describes an oily or dry scalp. Caveat: reseller-hosted Lazada CDN upload.",
+      "url": "https://sg-live-01.slatic.net/p/083574f5dd79df378f3b5e341e5fd65d.jpg",
+      "sourcePage": "https://www.lazada.sg/products/mae-rewind-scalp-balancing-shampoo-for-oily-hair-300ml-i2986962074.html",
+      "widthxheight": "800x800",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "BRB",
+      "label": "MAE BRB 'BALANCE YOUR LIFE — In Relaxing, Calming & Refreshing your mind' seesaw infographic (800x800): a tilting balance with Anxiety / Stress / Insomnia weighing down one side against Top Performance / Relieve stress / Balance life on the other, BRB box and sachet bottom-right.",
+      "note": "Strong pain-mirror opener for BRB — the seesaw states the customer's problem and the promise in one square image. Send right after the 'is this you?' opener. Caveat: reseller-hosted Lazada CDN upload.",
+      "url": "https://sg-test-11.slatic.net/p/8038d50ed26d1cc2275bdd97a7f65a8b.jpg",
+      "sourcePage": "https://www.lazada.com.my/products/mae-brb-ready-stocknmn-3adaptogens-nmn-fast-delivery-i4057313526.html",
+      "widthxheight": "800x800",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "BRB",
+      "label": "MAE BRB bilingual lifestyle packshot (800x800): the 15-sachet BRB box on cloud props against a periwinkle sky, scripted 'Your Daily Booster' plus 平衡情绪 · 缓解压力 · 提升状态. The box's own ingredient line (Nicotinamide Mononucleotide (NMN), Valerian Root Extract & Ashwagandha Extract) and 'Formulated in USA' are legible.",
+      "note": "Use as the BRB packshot for Chinese-speaking customers — the Mandarin tagline does the positioning for you. Caveat: reseller-hosted Lazada CDN upload.",
+      "url": "https://sg-test-11.slatic.net/p/f93918446a707297c6e271ba6a0fa2df.jpg",
+      "sourcePage": "https://www.lazada.com.my/products/mae-brb-ready-stocknmn-3adaptogens-nmn-fast-delivery-i4057313526.html",
+      "widthxheight": "800x800",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "Claríty Anti-Aging",
+      "label": "Claríty Solution REP1 packshot (1065x1014 PNG, near-white background): the lilac REP1 carton marked 'Repairing & Soothing Essence Activator / KOREA' styled with a halved pear, a daisy and scattered calendula petals.",
+      "note": "High-resolution clean REP1 packshot, larger than the catalogue version — good when you need REP1 on its own. Caveat: hosted by HKTVmall on a listing labelled 'Parallel Import'.",
+      "url": "https://cdn-media.hktvmall.com/hktv-mms/HKTV/mms/uploadProductImage/530a/5cbb/2162/RFRozEkisX20260302225844_1200.png",
+      "sourcePage": "https://www.hktvmall.com/hktv/en/main/Your-Favor/s/S8018001/Beauty-Health/Skin-Care/p/S8018001_S_MAE-003",
+      "widthxheight": "1065x1014",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Anemarrhena Asphodeloides Root Extract — \"Alleviate scalp inflammation\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (alleviate scalp inflammation). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-01.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 知母根提取物 (Anemarrhena Asphodeloides Root Extract) — \"减轻头皮炎症\" (Alleviate scalp inflammation).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-01.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Zingiber Officinale (Ginger) Root Extract — \"Promoting hair growth\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (promoting hair growth). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-02.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 姜根提取物 (Zingiber Officinale (Ginger) Root Extract) — \"促进毛发生长\" (Promoting hair growth).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-02.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Algae Extract — \"Beneficial for follicle health\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (beneficial for follicle health). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-03.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 海藻提取物 (Algae Extract) — \"有益于毛囊健康\" (Beneficial for follicle health).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-03.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Urtica dioica — \"Making hair strong & less prone to hair loss\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (making hair strong & less prone to hair loss). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-04.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 荨麻 (Urtica dioica) — \"强健发质不易脱发\" (Making hair strong & less prone to hair loss).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-04.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Sesamum Indicum Seed Extract — \"Promote hair growth\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (promote hair growth). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-05.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 芝麻籽提取物 (Sesamum Indicum Seed Extract) — \"促进头发生长\" (Promote hair growth).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-05.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Arginine — \"Follicles & stimulating hair growth\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (follicles & stimulating hair growth). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-06.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 精氨酸 (Arginine) — \"刺激毛发生长\" (Follicles & stimulating hair growth).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-06.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Niacinamide — \"Improved hair appearance & texture\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (improved hair appearance & texture). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-07.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 烟酰胺 (Niacinamide) — \"提升头发的外观和质感\" (Improved hair appearance & texture).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-07.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Pyridoxine & Panthenol — \"Strengthening hair quality & maintain scalp health\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (strengthening hair quality & maintain scalp health). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-08.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 吡哆醇、泛醇 (Pyridoxine & Panthenol) — \"增强发质和维持头皮健康\" (Strengthening hair quality & maintain scalp health).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-08.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Biotin — \"Prevents premature graying\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (prevents premature graying). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-09.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 生物素 (Biotin) — \"预防现代人常见的少年白发\" (Prevents premature graying).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-09.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single Re.WIND active-ingredient card (English): Tripeptide-1 — \"Slow down follicle aging\". Circular ingredient photo over a transparent background.",
+      "note": "Send the one card that matches the customer's stated hair complaint (slow down follicle aging). Transparent PNG — flatten onto white before sending or WhatsApp will render the background black.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-10.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Chinese-language version of the same Re.WIND active-ingredient card: 三肽-1 (Tripeptide-1) — \"延缓毛囊衰老\" (Slow down follicle aging).",
+      "note": "Use for Mandarin-speaking customers instead of the English card. Transparent PNG — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN_2-10.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND herbal-extract card: Aesculus Hippocastanum (Horse Chestnut) Seed Extract — \"Effectively helps strengthen hair follicles and combat hair loss.\"",
+      "note": "Transparent PNG; flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-05.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND herbal-extract card: Equisetum Arvense Extract — \"Stimulates hair growth & enhances blood circulation, resulting in healthier hair follicles.\"",
+      "note": "Transparent PNG; flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-02-1.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND herbal-extract card: Urtica Dioica (Nettle) Leaf Extract — \"Provides vitamins, minerals, and polyphenols to prevent hair loss and enhance hair texture.\"",
+      "note": "Transparent PNG; flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-03.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND herbal-extract card: Avena Strigosa Seed Extract — \"Contains water-retaining elements like amino acids that help hold onto its natural moisture.\"",
+      "note": "Transparent PNG; flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-04.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND herbal-extract card: Aesculus Hippocastanum (Horse Chestnut) Seed Extract, Chinese version: 欧洲七叶树籽提取物 — 有效帮助加强毛囊并对抗脱发",
+      "note": "Chinese-language card — use for Mandarin-speaking customers. Transparent PNG; flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN-01.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND herbal-extract card: Equisetum Arvense Extract, Chinese version: 麻尾草提取物 — 促进生长和增强血液循环，从而使头发毛囊更健康",
+      "note": "Chinese-language card — use for Mandarin-speaking customers. Transparent PNG; flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN-02.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND herbal-extract card: Urtica Dioica (Nettle) Leaf Extract, Chinese version: 荨麻提取物 — 为头发提供维生素、矿物质和多酚，有助于预防脱发以及增强头发质地",
+      "note": "Chinese-language card — use for Mandarin-speaking customers. Transparent PNG; flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN-03.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND herbal-extract card: Avena Strigosa Seed Extract, Chinese version: 糙伏毛燕麦籽提取物 — 含有氨基酸等保湿元素，帮助头发保持水分",
+      "note": "Chinese-language card — use for Mandarin-speaking customers. Transparent PNG; flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-CN-04.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1200",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Two-up Re.WIND herbal-extract card: Aesculus Hippocastanum (Horse Chestnut) Seed Extract (\"strengthen hair follicles and combat hair loss\") alongside Equisetum Arvense Extract (\"stimulates hair growth & enhances blood circulation\"). Wide 1600x608 strip.",
+      "note": "Handy when you want two ingredients in one image instead of two separate sends. Transparent PNG — flatten onto white.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-01-2.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x608",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Two-up Re.WIND herbal-extract card: Urtica Dioica (Nettle) Leaf Extract alongside Avena Strigosa Seed Extract, with their benefit lines. Wide 1600x608 strip.",
+      "note": "Pairs the anti-hair-loss and the moisture ingredient in one image. Transparent PNG — flatten onto white.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-02.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x608",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "The complete Re.WIND 8-step ritual as illustrated line icons on one 1600x900 landscape card: comb out tangles / wet hair thoroughly / wash with Scalp-Balancing or Super Hydrating Shampoo / squeeze out excess water / apply Glow Hair Mask, leave 3-5 mins and rinse / wrap hair in a towel / apply Collagen Hair Serum and blow-dry / spray Hair Re-active Essence on the scalp and massage until absorbed.",
+      "note": "Send immediately after a Re.WIND purchase, and to anyone asking 'how do I actually use all four products'. This is the standalone version of the panel buried in the tall website infographic — much better for WhatsApp. Transparent PNG; flatten onto white.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Direction-of-use-01-1.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x900",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Second Re.WIND direction-of-use card, 1600x900 landscape companion to the 8-step guide.",
+      "note": "Send alongside the 8-step card when walking a new customer through the routine. Transparent PNG; flatten onto white.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Direction-of-use-02.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x900",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Square 1600x1600 macro photograph of dry, frizzy, damaged hair — one of MAE's five Re.WIND 'hair problem' diagnostic images. No person identifiable, hair only.",
+      "note": "Send when helping a customer identify their hair problem. Diagnostic, not a before/after.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Hair-Problem-01-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND 'hair problem' diagnostic macro photograph 2 of 5, 1600x1600 square, hair/scalp only.",
+      "note": "Use in the same problem-identification step.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Hair-Problem-02-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND 'hair problem' diagnostic macro photograph 3 of 5, 1600x1600 square, hair/scalp only.",
+      "note": "Use in the same problem-identification step.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Hair-Problem-03-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND 'hair problem' diagnostic macro photograph 4 of 5, 1600x1600 square, hair/scalp only.",
+      "note": "Use in the same problem-identification step.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Hair-Problem-04-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND 'hair problem' diagnostic macro photograph 5 of 5, 1600x1600 square, hair/scalp only.",
+      "note": "Use in the same problem-identification step.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Hair-Problem-05-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "Re.WIND",
+      "label": "High-resolution cut-out packshot of the Re.WIND Scalp Balancing Shampoo pump bottle (1600x2362, transparent background), amber bottle with mae(R) and 'Full - Voluminous - Glossy'.",
+      "note": "Best-quality standalone shampoo bottle image available. Transparent PNG — MUST be flattened onto white before sending or it will appear on a black background in WhatsApp.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/IMG_1713.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x2362",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "Re.WIND",
+      "label": "High-resolution cut-out packshot of a second Re.WIND bottle (1600x2362, transparent background).",
+      "note": "Same handling as above — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/IMG_1714.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x2362",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "Re.WIND",
+      "label": "High-resolution cut-out packshot of a third Re.WIND bottle (1600x2362, transparent background).",
+      "note": "Same handling as above — flatten onto white first.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/IMG_1715.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x2362",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND product cut-out packshot, 1401x2001 transparent PNG.",
+      "note": "Flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/IMG_0832.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1401x2001",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND product cut-out packshot, 1401x2001 transparent PNG.",
+      "note": "Flatten onto white before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/IMG_0833.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1401x2001",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "PRODUCT",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND lifestyle/brand photograph, 1600x900 landscape.",
+      "note": "Use as a header image for a Re.WIND conversation.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/MAE-Rewind-Photo-01-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x900",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND microsite hero/slider artwork, 1600x900 landscape.",
+      "note": "Header image for a Re.WIND conversation.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Untitled-2-09-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x900",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND microsite banner artwork (English), 1600x901 landscape.",
+      "note": "Header image for a Re.WIND conversation.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/12-4-05_out-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x901",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND microsite banner artwork, CHINESE-language version 1, 1600x901 landscape.",
+      "note": "Header image for a Mandarin-speaking Re.WIND conversation.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/2-4-05-华语-01-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x901",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND microsite banner artwork, CHINESE-language version 2, 1600x901 landscape.",
+      "note": "Header image for a Mandarin-speaking Re.WIND conversation.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/2-4-05-华语-02-scaled.jpg",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x901",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "OTHER",
+      "productLine": "Re.WIND",
+      "label": "Re.WIND wordmark logo, white, 1600x439 transparent PNG.",
+      "note": "For overlays; not a customer-facing asset on its own.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/cropped-MAE-Rewind-Logo-White.png",
+      "sourcePage": "https://maerewind.com/ (English) / https://maerewind.com/cn/ (Chinese) — MAE's dedicated Re.WIND microsite; media library enumerated via https://maerewind.com/wp-json/wp/v2/media",
+      "widthxheight": "1600x439",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "CERT",
+      "productLine": "Re.WIND",
+      "label": "MAE's own bilingual 15-page 'COSMETIC NOTIFICATION' compliance deck on mae letterhead, covering all five Re.WIND products. Each product gets its NPRA notification note (Control of Drugs and Cosmetics Regulation 1984, Regulation 18A(2), Director of Pharmaceutical Services, Ministry of Health Malaysia) with the real notification number, followed by two SGS test-report pages (arsenic and total aerobic microbial count, both N.D.). Footer on each: 'Confirming registration & NPRA, KKM compliance / 获得马来西亚卫生部表明已成功备案并符合 NPRA 法规' plus GMP, cruelty-free, Silicon Free, SLS & SLES Free and Paraben Free seals. Manufacturer and company details are deliberately redacted.",
+      "note": "The only real NPRA/KKM registration document I could reach, and the strongest possible answer to 'is this registered with KKM'. WARNING: every notification's validity period ended in 2025 (23/09/2025 or 15/10/2025) and is therefore EXPIRED as of today — do not send it as proof of current registration without asking MAE for the renewed version. Also a 23 MB PDF: extract the single relevant page as an image rather than sending the whole file on WhatsApp.",
+      "url": "https://images.maeglobalofficial.com/images/uploads//TrainingFileUrl/a70b86ed-6dba-48a5-8477-049daa2c78ee/img_20250312104746.pdf",
+      "sourcePage": "https://images.maeglobalofficial.com/images/uploads//TrainingFileUrl/ (MAE's training-file host; the directory returns 403 with no listing, so individual files are reachable only via their exact GUID path)",
+      "widthxheight": "15-page PDF",
+      "confidence": "certain the URL is a direct image"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "iReason",
+      "label": "MAE's official 8-page 'MAE EYE HEALTH SERIES — iReason' product deck: the lutein/zeaxanthin story, the six trademarked actives and the usage guidance, as image pages.",
+      "note": "The ONLY substantial iReason visual asset that exists anywhere public — MAE publishes no iReason web page and no iReason packshot. Export the individual pages as images and use those for iReason conversations. (Byte-identical to the local copy at research/training-pdfs/ireason_eyehealth.pdf.)",
+      "url": "https://images.maeglobalofficial.com/images/uploads//TrainingFileUrl/52ee792b-545a-43ec-b927-101e96cad5e9/img_20240718225210.pdf",
+      "sourcePage": "https://images.maeglobalofficial.com/images/uploads//TrainingFileUrl/ (MAE's training-file host; the directory returns 403 with no listing, so individual files are reachable only via their exact GUID path)",
+      "widthxheight": "8-page PDF",
+      "confidence": "certain the URL is a direct image"
     }
   ],
   "beforeAfter": [
@@ -1363,6 +1913,116 @@
       "widthxheight": "2400x6291 (the strip is one band within it)",
       "confidence": "certain the URL is a direct image",
       "advice": "NOT a before/after — it is a 'problem states' diagnostic strip, and it is listed here only so it is not mistaken for one. Safe to crop and use to help a customer self-identify their concern."
+    },
+    {
+      "what": "Re.WIND 'Viable Results' before/after image 1 of 8, published on MAE's own Re.WIND microsite maerewind.com.",
+      "shows": "A side-by-side BEFORE | AFTER pair on a cream branded backdrop, labelled in serif capitals. The panels are shot from BEHIND the subject — hair, shoulders and upper back only. Frizzy/dull hair on the left, smooth/glossy hair on the right.",
+      "identifiable": "NO — shot from behind. No face, no name, no tag, no caption identifying anyone. Shoulders and clothing are visible but nothing that identifies a person.",
+      "publisher": "MAE's Re.WIND microsite (maerewind.com), which carries MAE branding, the mae(R) logo and the same official Re.WIND artwork as maeglobalofficial.com. NOTE: the site carries no MAE GLOBAL SDN BHD registration statement, so corporate ownership is a strong inference from the branding and shared artwork, NOT documented — confirm with MAE before treating these as corporate-approved.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-01-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image",
+      "advice": "Together with the grid inside the website infographic, this is the lowest-risk before/after material available: anonymised by camera angle, brand-templated, and published by MAE itself. If the user wants before/after at all, use these eight rather than anything from the agent layer. Still attach MAE's own 'Results may vary' disclaimer, and confirm ownership of maerewind.com with MAE first."
+    },
+    {
+      "what": "Re.WIND 'Viable Results' before/after image 2 of 8, published on MAE's own Re.WIND microsite maerewind.com.",
+      "shows": "A side-by-side BEFORE | AFTER pair on a cream branded backdrop, labelled in serif capitals. The panels are shot from BEHIND the subject — hair, shoulders and upper back only. Frizzy/dull hair on the left, smooth/glossy hair on the right.",
+      "identifiable": "NO — shot from behind. No face, no name, no tag, no caption identifying anyone. Shoulders and clothing are visible but nothing that identifies a person.",
+      "publisher": "MAE's Re.WIND microsite (maerewind.com), which carries MAE branding, the mae(R) logo and the same official Re.WIND artwork as maeglobalofficial.com. NOTE: the site carries no MAE GLOBAL SDN BHD registration statement, so corporate ownership is a strong inference from the branding and shared artwork, NOT documented — confirm with MAE before treating these as corporate-approved.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-02-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image",
+      "advice": "Together with the grid inside the website infographic, this is the lowest-risk before/after material available: anonymised by camera angle, brand-templated, and published by MAE itself. If the user wants before/after at all, use these eight rather than anything from the agent layer. Still attach MAE's own 'Results may vary' disclaimer, and confirm ownership of maerewind.com with MAE first."
+    },
+    {
+      "what": "Re.WIND 'Viable Results' before/after image 3 of 8, published on MAE's own Re.WIND microsite maerewind.com.",
+      "shows": "A side-by-side BEFORE | AFTER pair on a cream branded backdrop, labelled in serif capitals. The panels are shot from BEHIND the subject — hair, shoulders and upper back only. Frizzy/dull hair on the left, smooth/glossy hair on the right.",
+      "identifiable": "NO — shot from behind. No face, no name, no tag, no caption identifying anyone. Shoulders and clothing are visible but nothing that identifies a person.",
+      "publisher": "MAE's Re.WIND microsite (maerewind.com), which carries MAE branding, the mae(R) logo and the same official Re.WIND artwork as maeglobalofficial.com. NOTE: the site carries no MAE GLOBAL SDN BHD registration statement, so corporate ownership is a strong inference from the branding and shared artwork, NOT documented — confirm with MAE before treating these as corporate-approved.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-03-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image",
+      "advice": "Together with the grid inside the website infographic, this is the lowest-risk before/after material available: anonymised by camera angle, brand-templated, and published by MAE itself. If the user wants before/after at all, use these eight rather than anything from the agent layer. Still attach MAE's own 'Results may vary' disclaimer, and confirm ownership of maerewind.com with MAE first."
+    },
+    {
+      "what": "Re.WIND 'Viable Results' before/after image 4 of 8, published on MAE's own Re.WIND microsite maerewind.com.",
+      "shows": "A side-by-side BEFORE | AFTER pair on a cream branded backdrop, labelled in serif capitals. The panels are shot from BEHIND the subject — hair, shoulders and upper back only. Frizzy/dull hair on the left, smooth/glossy hair on the right.",
+      "identifiable": "NO — shot from behind. No face, no name, no tag, no caption identifying anyone. Shoulders and clothing are visible but nothing that identifies a person.",
+      "publisher": "MAE's Re.WIND microsite (maerewind.com), which carries MAE branding, the mae(R) logo and the same official Re.WIND artwork as maeglobalofficial.com. NOTE: the site carries no MAE GLOBAL SDN BHD registration statement, so corporate ownership is a strong inference from the branding and shared artwork, NOT documented — confirm with MAE before treating these as corporate-approved.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-04-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image",
+      "advice": "Together with the grid inside the website infographic, this is the lowest-risk before/after material available: anonymised by camera angle, brand-templated, and published by MAE itself. If the user wants before/after at all, use these eight rather than anything from the agent layer. Still attach MAE's own 'Results may vary' disclaimer, and confirm ownership of maerewind.com with MAE first."
+    },
+    {
+      "what": "Re.WIND 'Viable Results' before/after image 5 of 8, published on MAE's own Re.WIND microsite maerewind.com.",
+      "shows": "A side-by-side BEFORE | AFTER pair on a cream branded backdrop, labelled in serif capitals. The panels are shot from BEHIND the subject — hair, shoulders and upper back only. Frizzy/dull hair on the left, smooth/glossy hair on the right.",
+      "identifiable": "NO — shot from behind. No face, no name, no tag, no caption identifying anyone. Shoulders and clothing are visible but nothing that identifies a person.",
+      "publisher": "MAE's Re.WIND microsite (maerewind.com), which carries MAE branding, the mae(R) logo and the same official Re.WIND artwork as maeglobalofficial.com. NOTE: the site carries no MAE GLOBAL SDN BHD registration statement, so corporate ownership is a strong inference from the branding and shared artwork, NOT documented — confirm with MAE before treating these as corporate-approved.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-05-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image",
+      "advice": "Together with the grid inside the website infographic, this is the lowest-risk before/after material available: anonymised by camera angle, brand-templated, and published by MAE itself. If the user wants before/after at all, use these eight rather than anything from the agent layer. Still attach MAE's own 'Results may vary' disclaimer, and confirm ownership of maerewind.com with MAE first."
+    },
+    {
+      "what": "Re.WIND 'Viable Results' before/after image 6 of 8, published on MAE's own Re.WIND microsite maerewind.com.",
+      "shows": "A side-by-side BEFORE | AFTER pair on a cream branded backdrop, labelled in serif capitals. The panels are shot from BEHIND the subject — hair, shoulders and upper back only. Frizzy/dull hair on the left, smooth/glossy hair on the right.",
+      "identifiable": "NO — shot from behind. No face, no name, no tag, no caption identifying anyone. Shoulders and clothing are visible but nothing that identifies a person.",
+      "publisher": "MAE's Re.WIND microsite (maerewind.com), which carries MAE branding, the mae(R) logo and the same official Re.WIND artwork as maeglobalofficial.com. NOTE: the site carries no MAE GLOBAL SDN BHD registration statement, so corporate ownership is a strong inference from the branding and shared artwork, NOT documented — confirm with MAE before treating these as corporate-approved.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-06-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image",
+      "advice": "Together with the grid inside the website infographic, this is the lowest-risk before/after material available: anonymised by camera angle, brand-templated, and published by MAE itself. If the user wants before/after at all, use these eight rather than anything from the agent layer. Still attach MAE's own 'Results may vary' disclaimer, and confirm ownership of maerewind.com with MAE first."
+    },
+    {
+      "what": "Re.WIND 'Viable Results' before/after image 7 of 8, published on MAE's own Re.WIND microsite maerewind.com.",
+      "shows": "A side-by-side BEFORE | AFTER pair on a cream branded backdrop, labelled in serif capitals. The panels are shot from BEHIND the subject — hair, shoulders and upper back only. Frizzy/dull hair on the left, smooth/glossy hair on the right.",
+      "identifiable": "NO — shot from behind. No face, no name, no tag, no caption identifying anyone. Shoulders and clothing are visible but nothing that identifies a person.",
+      "publisher": "MAE's Re.WIND microsite (maerewind.com), which carries MAE branding, the mae(R) logo and the same official Re.WIND artwork as maeglobalofficial.com. NOTE: the site carries no MAE GLOBAL SDN BHD registration statement, so corporate ownership is a strong inference from the branding and shared artwork, NOT documented — confirm with MAE before treating these as corporate-approved.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-07-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image",
+      "advice": "Together with the grid inside the website infographic, this is the lowest-risk before/after material available: anonymised by camera angle, brand-templated, and published by MAE itself. If the user wants before/after at all, use these eight rather than anything from the agent layer. Still attach MAE's own 'Results may vary' disclaimer, and confirm ownership of maerewind.com with MAE first."
+    },
+    {
+      "what": "Re.WIND 'Viable Results' before/after image 8 of 8, published on MAE's own Re.WIND microsite maerewind.com.",
+      "shows": "A side-by-side BEFORE | AFTER pair on a cream branded backdrop, labelled in serif capitals. The panels are shot from BEHIND the subject — hair, shoulders and upper back only. Frizzy/dull hair on the left, smooth/glossy hair on the right.",
+      "identifiable": "NO — shot from behind. No face, no name, no tag, no caption identifying anyone. Shoulders and clothing are visible but nothing that identifies a person.",
+      "publisher": "MAE's Re.WIND microsite (maerewind.com), which carries MAE branding, the mae(R) logo and the same official Re.WIND artwork as maeglobalofficial.com. NOTE: the site carries no MAE GLOBAL SDN BHD registration statement, so corporate ownership is a strong inference from the branding and shared artwork, NOT documented — confirm with MAE before treating these as corporate-approved.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-08-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "widthxheight": "1600x1600",
+      "confidence": "certain the URL is a direct image",
+      "advice": "Together with the grid inside the website infographic, this is the lowest-risk before/after material available: anonymised by camera angle, brand-templated, and published by MAE itself. If the user wants before/after at all, use these eight rather than anything from the agent layer. Still attach MAE's own 'Results may vary' disclaimer, and confirm ownership of maerewind.com with MAE first."
+    },
+    {
+      "what": "Agent-published before/after collages — NOT approved assets. Flagged as a risk, not as an inventory item.",
+      "shows": "MAE's Hong Kong general agent (hildachung.shop, self-described Mae香港官方總代理) runs a 真實好評見證區 testimonial section carrying before/after collages built on MAE-styled templates and stamped with the mae(R) logo. Examples found include a full frontal-face before/after, and a 'Customer Review' grid quoting 'RECOVER UP TO 98%', '90%' and '99%'. MAE's own official Xiaohongshu account (user 6332c7da000000002303f56e, redId maeglobal) also posts customer-result content with full, unobscured faces, one badged 真实顾客反馈 ('real customer feedback').",
+      "identifiable": "YES — fully identifiable. Frontal faces, unobscured, in several cases alongside the posting agent's handle.",
+      "publisher": "Individual agents/distributors, plus MAE's official Xiaohongshu account. NOT maeglobalofficial.com.",
+      "url": null,
+      "sourcePage": "https://hildachung.shop/ and https://www.xiaohongshu.com/user/profile/6332c7da000000002303f56e",
+      "widthxheight": null,
+      "confidence": "unsure",
+      "advice": "DO NOT auto-import any of this. Three separate problems: (1) identifiable faces with no documented model release — personality-rights and PDPA exposure; (2) the mae(R) logo on agent-built templates makes unapproved material look brand-approved, so reusing it launders an agent's claim into MAE's voice; (3) the hard numbers ('RECOVER UP TO 98%', '100%有效絕不反彈') are agent-authored, not corporate, and are the kind of quantified efficacy claim Malaysian advertising rules treat harshly. Xiaohongshu CDN URLs also carry a timestamp path segment and expire, so they are not stable assets even setting the ethics aside."
+    },
+    {
+      "what": "A former OFFICIAL iReason before/after section that MAE has since removed.",
+      "shows": "The archived iReason page had a section 'THE COMPREHENSIVE SOLUTIONS FOR EYE PROBLEMS' with six labelled Before/After pairs at /images/eye/ireason/beforeafter/eye1..6.png.",
+      "identifiable": "UNKNOWN — the HTML was archived but the six image files 404 both live and in the Wayback Machine, so the content could not be inspected.",
+      "publisher": "MAE Global corporate (historical).",
+      "url": null,
+      "sourcePage": "https://web.archive.org/web/20240909041201/https://maeglobalofficial.com/EyeHealthSeries/IReason",
+      "widthxheight": null,
+      "confidence": "unsure",
+      "advice": "Recorded for completeness only — the images are unrecoverable. Worth noting that MAE deliberately took this section down, which is a signal about its current appetite for eye-health before/after claims. Do not try to reconstruct it."
     }
   ]
 }

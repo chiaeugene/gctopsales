@@ -22,6 +22,10 @@ export type LibraryManifestEntry = {
   // Which product series this belongs to, or "GENERAL" for brand-wide assets
   // like a company halal certificate.
   productLine: string;
+  // Explicitly reviewed and cleared for GC to send. Only set on before/after
+  // assets that were actually opened and checked; everything else relies on the
+  // kind-based default below.
+  active?: boolean;
 };
 
 const MIME_BY_EXT: Record<string, string> = {
@@ -107,7 +111,7 @@ export async function pushLibraryAssets(prisma: PrismaClient): Promise<LibraryPu
           // visuals representing changes in the human body and Singapore treats
           // them as a disease-treatment claim, so an agent has to switch these on
           // deliberately rather than inherit them silently. Everything else is on.
-          isActive: e.kind !== "BEFORE_AFTER",
+          isActive: e.active ?? e.kind !== "BEFORE_AFTER",
           sortOrder: sort++,
         },
       });
