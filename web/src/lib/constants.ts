@@ -63,6 +63,8 @@ export const MARKET_INFO: Record<
     localVoice: string;
     // Payment rails buyers in this market actually expect to be offered.
     paymentRails: string;
+    // How sellers here actually address a customer they don't know yet.
+    addressTerms: string;
     // Market-specific selling and compliance switches (see
     // research/SEA_CHAT_COMMERCE.md). These are legal/consumer-protection
     // facts, not style preferences.
@@ -78,6 +80,10 @@ export const MARKET_INFO: Record<
       "FREE delivery nationwide (no minimum); processed in 1-3 working days, delivered ~5-7 business days; self-pickup at Puchong HQ / Miri / Penang. Free shipping is also a MAE Club member perk.",
     languages: "English (Manglish), Mandarin, Bahasa Malaysia, or rojak mix",
     paymentRails: "DuitNow QR / DuitNow transfer, FPX online banking, Touch 'n Go eWallet, and COD where the agent offers it. Atome instalments suit the bigger programmes (and Atome is marketed as Shariah-compliant, which matters to many Malaysian buyers).",
+    addressTerms:
+      "English/Manglish: \"dear\" is the everyday Malaysian seller default and is safe for anyone; \"sis\" or \"bro\" once the chat is genuinely warm; \"boss\" plays well with men. " +
+      "Malay: \"kak\" for a woman and \"abang\"/\"bang\" for a man are warm and respectful; \"dik\" for someone clearly younger; \"puan\"/\"encik\"/\"cik\" when they write formally. " +
+      "Mandarin: \"亲\" is the standard Chinese-ecommerce address and is safe for anyone; \"美女\" is very common and lands as friendly (not flirty) with a female customer in a beauty or wellness chat; \"姐\" for someone older or more senior. Never \"亲爱的\" — too intimate from a seller.",
     compliance:
       "PRICE MUST BE GIVEN ON FIRST ASK. Malaysian e-commerce regulations require a seller to display the full price including taxes and delivery, plus business name and registration number. 'PM for price' is the exact practice the ministry declared illegal (penalties up to RM50,000 and/or 3 years). Halal: name the certifying body if certified, and NEVER imply certification that doesn't exist — marketing something as halal without valid certification is itself the offence. Cite the NPRA MAL registration number when asked about safety, but never claim registration means the product works. Buyers here routinely check a seller's bank account against the police mule-account database before paying, so a bare account number reads as a scam.",
     localVoice:
@@ -92,6 +98,9 @@ export const MARKET_INFO: Record<
       "Served from the Malaysia & Brunei store. Cross-border delivery to Brunei — confirm the delivery method, fee and timing (and whether COD is available) with the agent; don't promise free local delivery.",
     languages: "Malay (dominant), English, some Mandarin",
     paymentRails: "Confirm with the agent — cross-border from the Malaysia store. Do not promise a rail you haven't confirmed.",
+    addressTerms:
+      "Lean formal and respectful, more than Malaysia. Malay: \"kak\", \"abang\", and \"puan\"/\"encik\" are the safe choices. " +
+      "English: \"dear\" is fine; avoid \"sis\"/\"bro\" until they use that register first. Mandarin: \"亲\".",
     compliance:
       "Halal is a GATE here, not a bonus: treat proof of halal status as a precondition, not a selling point to mention later. Malay-dominant and more formal than Malaysia. Keep imagery conservative. Health products crossing the border sit under Ministry of Health import rules, so never promise customs-free or same-day delivery.",
     localVoice:
@@ -108,6 +117,9 @@ export const MARKET_INFO: Record<
     localVoice:
       "Sound like a friendly Singaporean seller. English = Singlish flavour where it fits: 'lah', 'leh', 'lor', 'sia', 'can can', 'okay lah', 'quite good sia' — natural but not overdone. Mandarin = Singaporean-Chinese style (simplified, crisp, mixes in English words). Malay is uncommon for this customer base — don't default to it. Singaporeans are a bit more fast-paced and value-conscious; be efficient and warm.",
     paymentRails: "PayNow is what Singapore buyers expect. Offer it by name rather than saying 'bank transfer'.",
+    addressTerms:
+      "The most restrained of the markets. Use their NAME if you have it, otherwise no address term at all is perfectly normal here. " +
+      "\"Dear\" occasionally is acceptable; \"sis\"/\"babe\" reads as pushy to a Singaporean buyer and should be avoided unless they use it first. Mandarin: \"亲\" is fine.",
     compliance:
       "STRICTEST claim rules of all the markets. HSA does not pre-approve health supplements, so 'HSA-approved' or 'HSA-registered' is itself a false claim — never say it. HSA also names '100% safe', 'clinically proven' and fast-result promises as misleading. Before/after testimonials that reference a condition are treated as prohibited disease-treatment claims. Keep the register restrained: no 'sis'/'dear', no stacked urgency, lighter on emoji than Malaysia.",
   },
