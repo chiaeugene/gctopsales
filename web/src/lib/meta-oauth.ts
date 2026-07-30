@@ -225,6 +225,33 @@ export async function createMessageTemplate(
   return { ok: true, status: json?.status ?? "PENDING", metaId: json?.id };
 }
 
+// Reads the real template list (and Meta's real approval statuses) from the
+// agent's WhatsApp Business Account. This is the only trustworthy source of
+// "is this template approved?" — never let a human type that in.
+export async function fetchMessageTemplates(
+  wabaId: string,
+  accessToken: string
+): Promise<{ ok: boolean; templates: { name: string; language: string; status: string }[]; detail?: string }> {
+  const url = new URL(`https://graph.facebook.com/${apiVersion()}/${wabaId}/message_templates`);
+  url.searchParams.set("fields", "name,language,status,category");
+  url.searchParams.set("limit", "200");
+  url.searchParams.set("access_token", accessToken);
+
+  const res = await fetch(url.toString());
+  const json = (await res.json().catch(() => null)) as {
+    data?: { name?: string; language?: string; status?: string }[];
+    error?: { message?: string };
+  } | null;
+  if (!res.ok) return { ok: false, templates: [], detail: json?.error?.message ?? `HTTP ${res.status}` };
+
+  return {
+    ok: true,
+    templates: (json?.data ?? [])
+      .filter((t) => t.name)
+      .map((t) => ({ name: String(t.name), language: String(t.language ?? ""), status: String(t.status ?? "PENDING") })),
+  };
+}
+
 // Discovers which WhatsApp Business Accounts a token actually has rights over,
 // by asking Meta to introspect the token. Embedded Signup / Business Login
 // tokens carry "granular_scopes" listing the exact WABA ids they were granted

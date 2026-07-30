@@ -45,6 +45,8 @@ export default function TemplatesPage() {
         category: d.category || "MARKETING",
         bodyText: d.bodyText,
         variableHint: d.variableHint || null,
+        // Status is never chosen by a human — it comes from Meta via
+        // Submit to WhatsApp / Refresh statuses.
         status: d.status || "PENDING",
       }),
     });
@@ -64,6 +66,29 @@ export default function TemplatesPage() {
 
   const [submitting, setSubmitting] = useState<string | null>(null);
   const [submitMsg, setSubmitMsg] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+
+  // Pull real approval statuses from Meta (the only source of truth) and
+  // import any templates that exist on the WhatsApp account but not here.
+  async function syncStatuses() {
+    setSyncing(true);
+    setSubmitMsg(null);
+    setError(null);
+    try {
+      const res = await fetch("/api/templates/sync", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Could not read statuses from WhatsApp");
+        return;
+      }
+      setSubmitMsg(
+        `Checked ${json.checked} template${json.checked === 1 ? "" : "s"} on WhatsApp · ${json.updated} status update${json.updated === 1 ? "" : "s"}${json.imported ? `, ${json.imported} imported` : ""}.`
+      );
+      await load();
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   // Sends the template to Meta for approval on the agent's own WhatsApp
   // Business Account (whatsapp_business_management).
@@ -119,7 +144,16 @@ export default function TemplatesPage() {
             same templates get submitted to Meta and GC sends them automatically to cold leads.
           </>
         }
-        action={<Button onClick={() => setDraft({ language: "en", category: "MARKETING", status: "PENDING" })}>+ Add template</Button>}
+        action={
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={syncStatuses} disabled={syncing}>
+              {syncing ? "Checking…" : "Refresh statuses"}
+            </Button>
+            <Button onClick={() => setDraft({ language: "en", category: "MARKETING", status: "PENDING" })}>
+              + Add template
+            </Button>
+          </div>
+        }
       />
       {error && <div className="text-sm text-red-600">{error}</div>}
       {submitMsg && (
@@ -198,17 +232,16 @@ export default function TemplatesPage() {
                   <option>UTILITY</option>
                 </select>
               </label>
-              <label className="block text-xs">
-                <span className="text-black/45">Meta approval status</span>
-                <select value={draft.status ?? "PENDING"} onChange={(e) => setDraft({ ...draft, status: e.target.value })} className={inputCls}>
-                  <option>PENDING</option>
-                  <option>APPROVED</option>
-                  <option>REJECTED</option>
-                </select>
-              </label>
+              <div className="block text-xs">
+                <span className="text-black/45">Approval status</span>
+                <div className="mt-1.5 rounded-xl border border-black/10 bg-black/[0.03] px-3.5 py-2.5 text-sm text-black/50">
+                  {draft.status ?? "PENDING"}
+                  <span className="block text-[11px] text-black/35">Set by WhatsApp, not editable</span>
+                </div>
+              </div>
             </div>
             <label className="block text-xs">
-              <span className="text-black/45">Body (use {"{{1}}"}, {"{{2}}"} for variables — must match Meta exactly)</span>
+              <span className="text-black/45">Body (use {"{{1}}"}, {"{{2}}"} for variables)</span>
               <textarea value={draft.bodyText ?? ""} onChange={(e) => setDraft({ ...draft, bodyText: e.target.value })} rows={4} placeholder="Hi {{1}}! Our July promo is on: {{2}}. Reply to grab it." className={inputCls} />
             </label>
             <label className="block text-xs">
