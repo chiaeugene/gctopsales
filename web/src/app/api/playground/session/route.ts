@@ -67,6 +67,7 @@ export async function GET(req: Request) {
           externalContactId: order.externalContactId,
         },
         messages: order.conversation.messages.map((m) => ({
+          id: m.id,
           role: m.role,
           content: m.content,
           attachmentIds: parseJson<string[]>(m.attachmentIds ?? "[]", []),

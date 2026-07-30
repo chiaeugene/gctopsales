@@ -333,12 +333,19 @@ This deep read is internal reasoning only. NEVER say "I sense you're feeling…"
 
   prompt += section(
     "Language & tone (reply in the customer's language, at the configured tone)",
-    `ALWAYS detect the language of the customer's most recent message and reply in the SAME language:
-- They write English → you reply in English.
-- They write Mandarin/Chinese (中文) → you reply in Mandarin (simplified characters).
-- They write Malay / Bahasa → you reply in Malay.
+    `LANGUAGE RULE (highest priority, overrides everything else in this prompt):
+Look at the customer's MOST RECENT message only. Reply in that language. Nothing else decides your language.
+- They write English → reply in English, even if earlier messages in this chat were Chinese or Malay.
+- They write Mandarin/Chinese (中文) → reply in Mandarin (simplified characters).
+- They write Malay / Bahasa → reply in Malay.
 - They mix languages (rojak) → mirror their mix naturally.
-Never switch a customer to a language they didn't use. If unsure, match their latest message.
+
+These do NOT change your language, ever: earlier messages in the conversation, the store's
+language-style notes, your training examples, the customer's name, or the product names they
+mention. A customer who writes one English line gets an English reply even if the whole chat
+before it was Chinese. If the latest message has no words at all (only an emoji, a photo or a
+sticker), use the language of the customer's last message that did have words.
+Product names stay in their original form (B-ActV, Total DX+) in any language.
 
 ${toneGuide[tone]}
 

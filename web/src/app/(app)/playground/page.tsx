@@ -13,7 +13,7 @@ function quietDays(updatedAt: string): number {
   return Math.floor((Date.now() - new Date(updatedAt).getTime()) / 86_400_000);
 }
 
-type Msg = { role: "CUSTOMER" | "GC" | "SYSTEM" | "AGENT"; content: string; attachmentIds?: string[] };
+type Msg = { id?: string; role: "CUSTOMER" | "GC" | "SYSTEM" | "AGENT"; content: string; attachmentIds?: string[] };
 type Chat = {
   orderId: string;
   name: string | null;
@@ -179,6 +179,29 @@ export default function PlaygroundPage() {
       setOrder(null);
     }
     await loadChats();
+  }
+
+  // Remove a message from GC's memory of this conversation. GC re-reads recent
+  // history before every reply, so pulling a bad exchange stops it influencing
+  // the next answers. It does NOT unsend anything already on WhatsApp.
+  async function deleteMessage(id: string) {
+    if (
+      !confirm(
+        "Remove this message from GC's memory?\n\nGC will no longer use it when writing future replies. If it was already delivered on WhatsApp, the customer still has their copy — delete it in WhatsApp too if you need that."
+      )
+    )
+      return;
+    const res = await fetch("/api/messages", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (!res.ok) {
+      setError((await res.json()).error || "Could not remove the message");
+      return;
+    }
+    setMessages((m) => m.filter((x) => x.id !== id));
+    loadChats();
   }
 
   // On a LIVE channel chat the agent is talking to a real customer, so typing
@@ -544,7 +567,12 @@ export default function PlaygroundPage() {
                   <p className="text-sm text-black/35 text-center mt-10 px-4">{t("ws.firstMessageHint")}</p>
                 )}
                 {messages.map((m, i) => (
-                  <MessageBubble key={i} msg={m} live={isLive(order?.source ?? activeChat?.source)} />
+                  <MessageBubble
+                    key={m.id ?? i}
+                    msg={m}
+                    live={isLive(order?.source ?? activeChat?.source)}
+                    onDelete={m.id ? () => deleteMessage(m.id!) : undefined}
+                  />
                 ))}
                 {busy && <div className="text-xs text-black/35">{t("ws.typing")}</div>}
                 <div ref={bottomRef} />
@@ -649,7 +677,7 @@ export default function PlaygroundPage() {
   );
 }
 
-function MessageBubble({ msg, live }: { msg: Msg; live?: boolean }) {
+function MessageBubble({ msg, live, onDelete }: { msg: Msg; live?: boolean; onDelete?: () => void }) {
   const { t } = useT();
   const [copied, setCopied] = useState(false);
   if (msg.role === "SYSTEM") {
@@ -663,7 +691,7 @@ function MessageBubble({ msg, live }: { msg: Msg; live?: boolean }) {
   }
   const isCustomer = msg.role === "CUSTOMER";
   return (
-    <div className={isCustomer ? "flex justify-end" : "flex justify-start"}>
+    <div className={"group/msg " + (isCustomer ? "flex justify-end" : "flex justify-start")}>
       <div
         className={
           isCustomer
@@ -672,6 +700,18 @@ function MessageBubble({ msg, live }: { msg: Msg; live?: boolean }) {
         }
       >
         {msg.role === "AGENT" && <div className="text-[10px] text-black/35 mb-0.5">You</div>}
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            title="Remove this message from GC's memory"
+            className={
+              "float-right ml-2 -mr-1 -mt-0.5 text-[13px] leading-none opacity-0 group-hover/msg:opacity-60 hover:!opacity-100 transition-opacity " +
+              (isCustomer ? "text-white" : "text-black/50")
+            }
+          >
+            ×
+          </button>
+        )}
         {msg.content}
         {msg.attachmentIds && msg.attachmentIds.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
