@@ -218,6 +218,7 @@ export default function AdminPage() {
       </Card>
 
       <SeedResultsCard />
+      <ProductPhotosCard />
 
       <ActivityTreeCard />
 
@@ -440,7 +441,7 @@ function SeedResultsCard() {
       <div>
         <h2 className="font-semibold">MAE results bank</h2>
         <p className="text-sm text-black/45">
-          Push 47 real, source-grounded customer results (BCODE+, Total DX+, BRB, Claríty, Re.WIND, iReason and more —
+          Push 55 real, source-grounded customer results (BCODE+, Total DX+, BRB, Claríty, Re.WIND, iReason and more —
           from MAE&apos;s own training material and public reviews) into every agent&apos;s Results library. GC quotes them
           as social proof at closing moments. Safe to run again — duplicates are skipped and agents&apos; own entries are
           untouched.
@@ -455,6 +456,59 @@ function SeedResultsCard() {
       {error && <div className="text-sm text-red-600">{error}</div>}
       <Button onClick={seed} disabled={busy}>
         {busy ? "Seeding…" : "Seed results to all agents"}
+      </Button>
+    </Card>
+  );
+}
+
+// Products with no photo were the single biggest credibility hole: GC was quoting
+// RM488 with no visual at all, which reads as a scam to a chat buyer.
+function ProductPhotosCard() {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function push() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/push-product-photos", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Push failed");
+        return;
+      }
+      const parts = [`Added a photo to ${json.created} product${json.created === 1 ? "" : "s"}.`];
+      if (json.alreadyHad) parts.push(`${json.alreadyHad} already had one and were left alone.`);
+      if (json.unmappedSeries?.length) {
+        parts.push(`No photo mapped for: ${json.unmappedSeries.join(", ")} — upload one on the Products page.`);
+      }
+      setResult(parts.join(" "));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">Product photos GC can send</h2>
+        <p className="text-sm text-black/45">
+          GC can only send pictures that exist in the catalogue. Any product without one gets quoted with no visual at
+          all, which is the fastest way to lose a chat buyer at this price. This gives every product the official MAE
+          product-line photo as a floor. Replace them with your own, better shots per SKU on the Products page. Safe to
+          run again — products that already have a photo are untouched.
+        </p>
+      </div>
+      {result && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+          <CheckIcon className="w-4 h-4 shrink-0" />
+          {result}
+        </div>
+      )}
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      <Button onClick={push} disabled={busy}>
+        {busy ? "Pushing…" : "Give every product a photo"}
       </Button>
     </Card>
   );

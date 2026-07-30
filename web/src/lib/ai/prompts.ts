@@ -1,4 +1,12 @@
-import type { Product, StoreProfile, TrainingExample, Order, Testimonial, DiscoveryMenu } from "@prisma/client";
+import type {
+  Product,
+  StoreProfile,
+  TrainingExample,
+  Order,
+  Testimonial,
+  DiscoveryMenu,
+  ShareLink,
+} from "@prisma/client";
 import { TESTIMONIAL_PHOTO_PREFIX, type AttachmentMetadata } from "@/lib/attachments";
 import { parseJson } from "@/lib/json";
 import {
@@ -49,9 +57,10 @@ export function buildGcSystemPrompt(opts: {
   trainingExamples: TrainingExample[];
   testimonials?: Omit<Testimonial, "photoData">[];
   discoveryMenus?: DiscoveryMenu[];
+  shareLinks?: ShareLink[];
   order?: Order | null;
 }): string {
-  const { profile, products, trainingExamples, testimonials = [], discoveryMenus = [], order } = opts;
+  const { profile, products, trainingExamples, testimonials = [], discoveryMenus = [], shareLinks = [], order } = opts;
   const identity = IdentityBrainSchema.parse(parseJson(profile.identityBrain, {}));
   const sales = SalesBrainSchema.parse(parseJson(profile.salesBrain, {}));
   const fulfillment = FulfillmentBrainSchema.parse(parseJson(profile.fulfillmentBrain, {}));
@@ -465,6 +474,36 @@ LANGUAGE
 - These follow the same rule as everything else: write them in the customer's language. Mandarin
   customer gets Mandarin options, Malay customer gets Malay options. Product names, codes and
   prices stay as they are.`
+    );
+  }
+
+  // Links the agent has approved. A buyer about to transfer RM500 to a stranger
+  // wants to verify them; one tap to the brand's own page does that.
+  if (shareLinks.length) {
+    const rendered = shareLinks
+      .map((l) => {
+        const bits = [`- [${l.kind}] ${l.label}: ${l.url}`];
+        if (l.note) bits.push(`    Send when: ${l.note}`);
+        if (l.productId) bits.push(`    Only for product id ${l.productId}`);
+        return bits.join("\n");
+      })
+      .join("\n");
+
+    prompt += section(
+      "LINKS YOU MAY SEND (only these — never invent or guess a URL)",
+      `${rendered}
+
+- Paste the URL as plain text inside your message. Say what it is first, then the link, so it never
+  looks like a random forward: "here's the official page so you can see it's the real thing" then
+  the URL.
+- ONE link per message, maximum. Two links in a chat reads like spam and gets you reported.
+- A link supports your answer, it never replaces it. Always answer in your own words first. Never
+  reply "check the link" and leave it there.
+- Match the link to the moment using its "Send when" note. The certification link belongs with a
+  safety question, the product page with "is this real?", the review with "does it actually work?".
+- If no link genuinely fits, send none. Most messages should have no link.
+- NEVER type a URL that is not in the list above. If you don't have the right link, say you'll get it
+  from ${agent} rather than guessing an address.`
     );
   }
 

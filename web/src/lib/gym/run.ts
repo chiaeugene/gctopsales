@@ -31,7 +31,7 @@ export type GymReport = {
 export async function runGym(profile: StoreProfile): Promise<GymReport> {
   if (!llmConfigured()) throw new LlmNotConfiguredError();
 
-  const [products, trainingExamples, testimonials, discoveryMenus] = await Promise.all([
+  const [products, trainingExamples, testimonials, discoveryMenus, shareLinks] = await Promise.all([
     prisma.product.findMany({
       where: { profileId: profile.id, isActive: true },
       orderBy: { sortOrder: "asc" },
@@ -42,9 +42,10 @@ export async function runGym(profile: StoreProfile): Promise<GymReport> {
     prisma.trainingExample.findMany({ where: { profileId: profile.id }, orderBy: { createdAt: "desc" }, take: 12 }),
     prisma.testimonial.findMany({ where: { profileId: profile.id, isActive: true }, take: 40, omit: { photoData: true } }),
     prisma.discoveryMenu.findMany({ where: { profileId: profile.id, isActive: true }, orderBy: { sortOrder: "asc" } }),
+    prisma.shareLink.findMany({ where: { profileId: profile.id, isActive: true }, orderBy: { sortOrder: "asc" } }),
   ]);
 
-  const system = buildGcSystemPrompt({ profile, products, trainingExamples, testimonials, discoveryMenus, order: null });
+  const system = buildGcSystemPrompt({ profile, products, trainingExamples, testimonials, discoveryMenus, shareLinks, order: null });
 
   // Run scenarios in small batches, not all 12 at once — each scenario fires
   // several model calls (GC replies + judge samples), so full parallelism

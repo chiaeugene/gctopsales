@@ -64,7 +64,7 @@ export async function generateGcReply(opts: {
     throw new Error("Order is in human takeover; GC will not auto-reply.");
   }
 
-  const [products, trainingExamples, testimonials, discoveryMenus, history] = await Promise.all([
+  const [products, trainingExamples, testimonials, discoveryMenus, shareLinks, history] = await Promise.all([
     prisma.product.findMany({
       where: { profileId: profile.id, isActive: true },
       orderBy: { sortOrder: "asc" },
@@ -92,6 +92,10 @@ export async function generateGcReply(opts: {
       where: { profileId: profile.id, isActive: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     }),
+    prisma.shareLink.findMany({
+      where: { profileId: profile.id, isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    }),
     prisma.message.findMany({
       where: { conversationId },
       // Customer + reply rows are written in one transaction and share a
@@ -101,7 +105,7 @@ export async function generateGcReply(opts: {
     }),
   ]);
 
-  const system = buildGcSystemPrompt({ profile, products, trainingExamples, testimonials, discoveryMenus, order });
+  const system = buildGcSystemPrompt({ profile, products, trainingExamples, testimonials, discoveryMenus, shareLinks, order });
 
   const messages: ChatMessage[] = [];
   for (const m of history) {

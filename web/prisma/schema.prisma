@@ -91,6 +91,7 @@ model StoreProfile {
   testimonials     Testimonial[]
   templates        MessageTemplate[]
   discoveryMenus   DiscoveryMenu[]
+  shareLinks       ShareLink[]
 }
 
 // One connected messaging channel for a tenant. Manual credentials phase:
@@ -386,6 +387,37 @@ model DiscoveryMenu {
   // Optional: what GC should do with each answer, e.g. which product a given
   // choice points to. Free text, injected alongside the menu.
   followUpNote String?
+
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+}
+
+// A link the agent has approved GC to send in chat: the official product page,
+// a review video, a certification PDF, a catalogue. Buyers of a RM500 product
+// want to verify the seller is real before paying, and a link to the brand's own
+// site does that in one tap.
+//
+// `note` is the important field — it tells GC WHEN this link earns its place,
+// so links get sent at the useful moment instead of sprayed at everyone.
+model ShareLink {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  label String // what GC calls it, e.g. "Official MAE product page"
+  url   String
+  // PRODUCT | REVIEW | CERT | CATALOG | VIDEO | SHOP | OTHER — lets GC pick the
+  // right kind of proof for the objection in front of it.
+  kind  String @default("OTHER")
+  note  String? // when to send it, in the agent's own words
+
+  // Optional: tie the link to one product so GC only offers it in context.
+  productId String?
 
   isActive  Boolean @default(true)
   sortOrder Int     @default(0)
