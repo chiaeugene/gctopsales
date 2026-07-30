@@ -97,3 +97,35 @@ export function humanizeReply(text: string): string {
 
   return out;
 }
+
+// Emoji actually used as message decoration. Deliberately narrow — this must not
+// touch emoji inside a customer's quoted text or a product name.
+const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2764}\u{FE0F}]/gu;
+
+export function firstEmoji(text: string): string | null {
+  const m = (text || "").match(EMOJI_RE);
+  return m ? m[0] : null;
+}
+
+// Removes emoji that the previous reply already used, so GC cannot sign off with
+// the same one every message. Testing found 💜 closing nearly every message in a
+// conversation, which reads more robotic than no emoji at all.
+//
+// Only strips the REPEATED character; any different emoji in the reply survives,
+// so GC keeps its warmth and just loses the tic.
+export function stripRepeatedEmoji(reply: string, previousReply: string | null): string {
+  if (!reply || !previousReply) return reply;
+  const prev = firstEmoji(previousReply);
+  if (!prev) return reply;
+  if (!reply.includes(prev)) return reply;
+
+  return (
+    reply
+      .split(prev)
+      .join("")
+      // Tidy the space the emoji left behind.
+      .replace(/[ \t]{2,}/g, " ")
+      .replace(/[ \t]+([,.!?\n])/g, "$1")
+      .replace(/[ \t]+$/gm, "")
+  );
+}
