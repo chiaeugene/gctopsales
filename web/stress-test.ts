@@ -202,7 +202,11 @@ async function main() {
   let retriesNeeded = 0;
   let gcTurns = 0;
 
-  for (const p of PERSONAS) {
+  // PERSONA=ready-buyer runs a single scenario, for quick targeted re-checks
+  // instead of the full 100-message sweep.
+  const only = process.env.PERSONA;
+  const personas = only ? PERSONAS.filter((x) => x.id === only) : PERSONAS;
+  for (const p of personas) {
     const lines: string[] = [];
     const history: ChatMessage[] = [];
     let customerMsg = p.opener;
@@ -243,7 +247,6 @@ async function main() {
           ],
           maxTokens: 4000,
           temperature: 0.3,
-          prefill: '{"reply":',
         });
         parsed = EngineOutputSchema.safeParse(extractJson(retryRaw));
       }
@@ -317,7 +320,7 @@ Output a terse bulleted list. Each bullet: PROBLEM_TAG then one sentence then a 
   }
 
   const out: string[] = [];
-  out.push(`# GC stress test — ${PERSONAS.length} personas, ${totalMessages} messages\n`);
+  out.push(`# GC stress test — ${personas.length} personas, ${totalMessages} messages\n`);
   const retryPct = Math.round((retriesNeeded / Math.max(1, gcTurns)) * 100);
   out.push(
     `JSON contract needed a retry on ${retriesNeeded} of ${gcTurns} replies (${retryPct}%). ` +
