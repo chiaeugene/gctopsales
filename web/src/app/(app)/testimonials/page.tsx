@@ -34,10 +34,6 @@ const SERIES_IMAGE: Record<string, string> = {
 
 const UNGROUPED = "General / brand";
 
-function slug(v: string): string {
-  return v.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
-
 // A category with fewer than this many live results is thin — GC runs out of
 // fresh proof and starts repeating the same story to the same customer.
 const TARGET_PER_CATEGORY = 5;

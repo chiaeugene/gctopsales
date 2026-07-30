@@ -4,7 +4,6 @@ import { use, useCallback, useEffect, useState } from "react";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/constants";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import { AlertIcon, CheckIcon } from "@/components/ui/icons";
 
 type OrderDetail = {

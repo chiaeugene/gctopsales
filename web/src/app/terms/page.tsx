@@ -26,7 +26,7 @@ export default function TermsPage() {
           <h2 className="text-lg font-semibold">What GC Top Sales does</h2>
           <p className="text-sm text-black/75">
             GC Top Sales lets an agent connect their own WhatsApp Business number, Facebook Page, and/or
-            Instagram professional account, and uses an AI assistant ("GC") to hold sales conversations,
+            Instagram professional account, and uses an AI assistant (&ldquo;GC&rdquo;) to hold sales conversations,
             answer questions about MAE Global products, and help confirm and track orders on the agent&apos;s
             behalf.
           </p>
@@ -54,7 +54,7 @@ export default function TermsPage() {
         <section className="space-y-2">
           <h2 className="text-lg font-semibold">No warranty</h2>
           <p className="text-sm text-black/75">
-            GC Top Sales is provided "as is," without warranty of any kind. We do not guarantee
+            GC Top Sales is provided &ldquo;as is,&rdquo; without warranty of any kind. We do not guarantee
             uninterrupted availability of messaging channels, which depend on third-party platforms
             (Meta) outside our control.
           </p>

@@ -16,8 +16,8 @@ export default function PrivacyPage() {
 
         <section className="space-y-3 text-sm leading-relaxed text-black/75">
           <p>
-            GC Top Sales ("GC", "we", "us") is a sales-assistant platform operated by Asterisk and Hashtag,
-            used by independent MAE Global agents ("agents") to run AI-assisted sales conversations with
+            GC Top Sales (&ldquo;GC&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is a sales-assistant platform operated by Asterisk and Hashtag,
+            used by independent MAE Global agents (&ldquo;agents&rdquo;) to run AI-assisted sales conversations with
             their own customers over WhatsApp, Facebook Messenger, and Instagram Direct. This policy
             explains what data we collect, why, and how you can control it.
           </p>

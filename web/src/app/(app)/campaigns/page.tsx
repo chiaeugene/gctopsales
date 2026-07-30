@@ -152,7 +152,7 @@ export default function CampaignsPage() {
     }
   }
 
-  function useIdea(i: Idea) {
+  function applyIdea(i: Idea) {
     setSegment(i.segment);
     setOffer(i.offer);
     setIdeas(null);
@@ -200,7 +200,7 @@ export default function CampaignsPage() {
         {ideas && ideas.length > 0 && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {ideas.map((i) => (
-              <button key={i.title} onClick={() => useIdea(i)} className="text-left">
+              <button key={i.title} onClick={() => applyIdea(i)} className="text-left">
                 <div className="h-full rounded-xl bg-white/80 border border-black/[0.06] p-3.5 hover:border-[var(--accent)]/50 hover:-translate-y-0.5 transition-all">
                   <div className="text-[13px] font-semibold">{i.title}</div>
                   <div className="mt-1 text-[11px] text-black/45 line-clamp-3">{i.offer}</div>
