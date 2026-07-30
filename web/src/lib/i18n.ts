@@ -366,6 +366,11 @@ const dict: Record<string, Entry> = {
 
 // --- Late additions (release batch 2) --------------------------------------
 Object.assign(dict, {
+  // Workspace is now a unified inbox: live channel chats + practice chats.
+  "ws.subtitle": {
+    en: "Every customer in one place. Live WhatsApp / IG / Messenger chats appear here automatically (GC replies on its own), and you can still start a practice chat to paste messages in by hand.",
+    zh: "所有客户集中一处。WhatsApp / IG / Messenger 的真实对话会自动出现在这里（GC 会自己回复），你也可以新建练习对话手动贴消息。",
+  },
   // Setup done-banner: emphasize it's re-editable forever (overrides earlier key)
   "setup.done.prefix": {
     en: "Setup complete, but this chat never closes. New bank account? New promo? Different shipping rule? Just tell GC below, like texting a colleague, and it rewires the brain instantly. You can also fine-tune by hand in ",

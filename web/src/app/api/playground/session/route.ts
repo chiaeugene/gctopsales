@@ -41,8 +41,10 @@ export async function GET(req: Request) {
     const orderId = url.searchParams.get("orderId");
 
     if (orderId) {
+      // Any source: the Workspace is the unified inbox for practice chats AND
+      // live channel conversations.
       const order = await prisma.order.findFirst({
-        where: { id: orderId, profileId: profile.id, source: "PLAYGROUND" },
+        where: { id: orderId, profileId: profile.id },
         include: {
           conversation: {
             include: { messages: { orderBy: [{ createdAt: "asc" }, { id: "asc" }] } },
@@ -61,6 +63,8 @@ export async function GET(req: Request) {
           customerName: order.customerName,
           segment: order.segment,
           leadSource: order.leadSource,
+          source: order.source,
+          externalContactId: order.externalContactId,
         },
         messages: order.conversation.messages.map((m) => ({
           role: m.role,
@@ -70,10 +74,11 @@ export async function GET(req: Request) {
       };
     }
 
+    // Every conversation, practice or live, newest first.
     const orders = await prisma.order.findMany({
-      where: { profileId: profile.id, source: "PLAYGROUND" },
+      where: { profileId: profile.id, conversation: { isNot: null } },
       orderBy: { updatedAt: "desc" },
-      take: 50,
+      take: 80,
       include: {
         conversation: {
           include: {
@@ -85,10 +90,11 @@ export async function GET(req: Request) {
     return {
       chats: orders.map((o) => ({
         orderId: o.id,
-        name: o.customerName,
+        name: o.customerName ?? (o.source !== "PLAYGROUND" ? o.externalContactId : null),
         status: o.status,
         needsHuman: o.needsHuman,
         updatedAt: o.updatedAt,
+        source: o.source,
         lastMessage: o.conversation?.messages[0]?.content?.slice(0, 80) ?? null,
       })),
     };
@@ -108,8 +114,10 @@ export async function PATCH(req: Request) {
     const profile = await requireProfile();
     const body = PatchSchema.safeParse(await req.json());
     if (!body.success) throw new ApiError(400, "Invalid payload");
+    // Renaming/tagging works for live channel chats too (a real customer's
+    // name is exactly what an agent wants to fill in).
     const order = await prisma.order.findFirst({
-      where: { id: body.data.orderId, profileId: profile.id, source: "PLAYGROUND" },
+      where: { id: body.data.orderId, profileId: profile.id },
     });
     if (!order) throw new ApiError(404, "Chat not found");
     const data: Record<string, unknown> = {};

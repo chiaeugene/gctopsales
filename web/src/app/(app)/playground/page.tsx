@@ -21,6 +21,16 @@ type Chat = {
   needsHuman: boolean;
   updatedAt: string;
   lastMessage: string | null;
+  source: string;
+};
+
+// A live channel chat is a real customer on WhatsApp/IG/Messenger; PLAYGROUND
+// chats are the agent's own practice/copy-paste threads.
+const isLive = (source?: string) => Boolean(source) && source !== "PLAYGROUND";
+const CHANNEL_LABEL: Record<string, string> = {
+  WHATSAPP: "WhatsApp",
+  MESSENGER: "Messenger",
+  INSTAGRAM: "Instagram",
 };
 type OrderState = {
   id: string;
@@ -32,6 +42,8 @@ type OrderState = {
   customerName: string | null;
   segment: string | null;
   leadSource?: string | null;
+  source?: string;
+  externalContactId?: string | null;
 } | null;
 
 const LEAD_SOURCES = ["WhatsApp", "Instagram", "Facebook", "TikTok", "Referral", "Walk-in", "Ads", "Other"];
@@ -138,11 +150,64 @@ export default function PlaygroundPage() {
     await loadChats();
   }
 
+  // On a LIVE channel chat the agent is talking to a real customer, so typing
+  // must deliver to them (and pause GC), not simulate a customer message.
+  async function sendAsAgent(text: string) {
+    if (!orderId) return;
+    setMessages((m) => [...m, { role: "AGENT", content: text }]);
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/orders/${orderId}/takeover`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "take", message: text }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Could not send to the customer");
+        return;
+      }
+      setOrder((o) => (o ? { ...o, needsHuman: true } : o));
+      loadChats();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Hand the conversation back to GC; it answers any unreplied customer message.
+  async function handBackToGc() {
+    if (!orderId || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/orders/${orderId}/takeover`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "release" }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Could not hand back");
+        return;
+      }
+      if (json.reply) setMessages((m) => [...m, { role: "GC", content: json.reply }]);
+      setOrder((o) => (o ? { ...o, needsHuman: false } : o));
+      loadChats();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function send(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || busy || !orderId) return;
     const text = input.trim();
     setInput("");
+    if (isLive(order?.source ?? activeChat?.source)) {
+      await sendAsAgent(text);
+      return;
+    }
     setMessages((m) => [...m, { role: "CUSTOMER", content: text }]);
     setBusy(true);
     setError(null);
@@ -277,7 +342,15 @@ export default function PlaygroundPage() {
             onClick={() => openChat(c.orderId)}
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-medium truncate">{c.name || t("ws.unnamed")}</span>
+              <span className="text-sm font-medium truncate flex items-center gap-1.5 min-w-0">
+                {isLive(c.source) && (
+                  <span
+                    className="shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-500"
+                    title={`Live on ${CHANNEL_LABEL[c.source] ?? c.source}`}
+                  />
+                )}
+                <span className="truncate">{c.name || t("ws.unnamed")}</span>
+              </span>
               <span className="shrink-0 flex items-center gap-1.5">
                 {quietDays(c.updatedAt) >= 1 && !c.needsHuman && (
                   <span className="text-[10px] font-semibold text-amber-600">
@@ -289,7 +362,12 @@ export default function PlaygroundPage() {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] text-black/40 truncate">{c.lastMessage || c.status}</span>
+              <span className="text-[11px] text-black/40 truncate">
+                {isLive(c.source) && (
+                  <span className="text-emerald-700 font-medium">{CHANNEL_LABEL[c.source] ?? c.source} · </span>
+                )}
+                {c.lastMessage || c.status}
+              </span>
               <span className="hidden group-hover:flex gap-1.5 shrink-0">
                 <button
                   onClick={(e) => {
@@ -387,6 +465,29 @@ export default function PlaygroundPage() {
             )}
           </div>
 
+          {/* Live-channel banner: this is a real customer, GC is autonomous */}
+          {orderId && isLive(order?.source ?? activeChat?.source) && (
+            <div className="border-b border-emerald-200 bg-emerald-50/70 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-emerald-900">
+                <strong>Live on {CHANNEL_LABEL[(order?.source ?? activeChat?.source) as string] ?? "channel"}</strong>
+                {order?.externalContactId ? ` · ${order.externalContactId}` : ""}
+                {" — "}
+                {order?.needsHuman
+                  ? "you are handling this chat, GC is paused."
+                  : "GC is replying automatically. Anything you type goes to the customer and pauses GC."}
+              </span>
+              {order?.needsHuman && (
+                <button
+                  onClick={handBackToGc}
+                  disabled={busy}
+                  className="shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
+                >
+                  Let GC take over again
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Mobile order-state accordion */}
           {showOrder && order && (
             <div className="xl:hidden border-b border-black/[0.06] px-4 py-3 bg-black/[0.02]">
@@ -408,7 +509,7 @@ export default function PlaygroundPage() {
                   <p className="text-sm text-black/35 text-center mt-10 px-4">{t("ws.firstMessageHint")}</p>
                 )}
                 {messages.map((m, i) => (
-                  <MessageBubble key={i} msg={m} />
+                  <MessageBubble key={i} msg={m} live={isLive(order?.source ?? activeChat?.source)} />
                 ))}
                 {busy && <div className="text-xs text-black/35">{t("ws.typing")}</div>}
                 <div ref={bottomRef} />
@@ -428,6 +529,7 @@ export default function PlaygroundPage() {
                     e.target.value = "";
                   }}
                 />
+                {!isLive(order?.source ?? activeChat?.source) && (
                 <button
                   type="button"
                   title="Customer sent a photo (e.g. payment proof) — upload it here"
@@ -437,6 +539,7 @@ export default function PlaygroundPage() {
                 >
                   📷
                 </button>
+                )}
                 <input
                   ref={voiceRef}
                   type="file"
@@ -448,6 +551,7 @@ export default function PlaygroundPage() {
                     e.target.value = "";
                   }}
                 />
+                {!isLive(order?.source ?? activeChat?.source) && (
                 <button
                   type="button"
                   title="Customer sent a voice note — upload the audio file"
@@ -457,6 +561,7 @@ export default function PlaygroundPage() {
                 >
                   🎤
                 </button>
+                )}
                 <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -467,7 +572,11 @@ export default function PlaygroundPage() {
                     }
                   }}
                   rows={1}
-                  placeholder={t("ws.pasteMessage")}
+                  placeholder={
+                    isLive(order?.source ?? activeChat?.source)
+                      ? "Type a message to send to this customer…"
+                      : t("ws.pasteMessage")
+                  }
                   className="flex-1 resize-none rounded-xl border border-black/10 px-3 sm:px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
                 />
                 <Button type="submit" disabled={busy || !input.trim()}>
@@ -505,7 +614,7 @@ export default function PlaygroundPage() {
   );
 }
 
-function MessageBubble({ msg }: { msg: Msg }) {
+function MessageBubble({ msg, live }: { msg: Msg; live?: boolean }) {
   const { t } = useT();
   const [copied, setCopied] = useState(false);
   if (msg.role === "SYSTEM") {
@@ -527,6 +636,7 @@ function MessageBubble({ msg }: { msg: Msg }) {
             : "max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-bl-md bg-black/[0.04] px-3.5 sm:px-4 py-2.5 text-sm whitespace-pre-wrap"
         }
       >
+        {msg.role === "AGENT" && <div className="text-[10px] text-black/35 mb-0.5">You</div>}
         {msg.content}
         {msg.attachmentIds && msg.attachmentIds.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
@@ -536,7 +646,12 @@ function MessageBubble({ msg }: { msg: Msg }) {
             ))}
           </div>
         )}
-        {!isCustomer && (
+        {/* On a live channel GC already delivered this to the customer, so
+            there is nothing to copy — say so instead. */}
+        {!isCustomer && msg.role === "GC" && live && (
+          <div className="mt-1.5 -mb-0.5 text-[11px] text-emerald-700">✓ sent to customer automatically</div>
+        )}
+        {!isCustomer && !(msg.role === "GC" && live) && msg.role !== "AGENT" && (
           <div className="mt-1.5 -mb-0.5">
             <button
               onClick={() => {
