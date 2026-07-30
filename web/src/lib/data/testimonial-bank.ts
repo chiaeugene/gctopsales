@@ -389,5 +389,96 @@ export const TESTIMONIAL_BANK: BankEntry[] = [
     "market": "MY",
     "resultText": "I do all 4 steps the way my agent taught, shampoo, mask, then essence. Doing the whole ritual works so much better than just switching shampoo.",
     "rating": 5
+  },
+  {
+    "category": "Claríty",
+    "customerName": "Blackhead-prone reviewer (Malaysia)",
+    "market": "MY",
+    "resultText": "Although it hasn't completely disappeared, I have seen obvious improvement. Clarity is really good — I don't need to squeeze too hard, the blackheads will disappear on their own.",
+    "rating": 4
+  },
+  {
+    "category": "Claríty",
+    "customerName": "Two-box user (Malaysia)",
+    "market": "MY",
+    "resultText": "When I used Clarity for the first time, I could feel my face finally breathing. It has a cooling effect. Then I continued to use two boxes — now my skin is basically in a stable state.",
+    "rating": 5
+  },
+  {
+    "category": "Claríty",
+    "customerName": "Jiahui, Lemon8 reviewer (Singapore)",
+    "market": "SG",
+    "resultText": "My experience showed that my skin felt calmer, less oily in the T-zone, and naturally radiant.",
+    "rating": 4
+  },
+  {
+    "category": "Claríty",
+    "customerName": "Sherlyn, Lemon8 reviewer (Singapore)",
+    "market": "SG",
+    "resultText": "I've been using the MAE Clarity Masks for a while, and the 6th Anniversary Limited Edition Mint Mask truly stands out — it really improves my skin texture over time.",
+    "rating": 5
+  },
+  {
+    "category": "Claríty",
+    "customerName": "Hilda, MAE Hong Kong agent (own before/after)",
+    "market": "HK",
+    "resultText": "剛開始用的時候我只是覺得很冰涼舒服，到後來我看到了我的皮膚漸漸好起來 — 痘印慢慢平下去、皮膚開始穩定下來、黑頭粉刺變少，毛孔也變小變乾淨。",
+    "rating": 5
+  },
+  {
+    "category": "BRB",
+    "customerName": "One-course (4-box) user (Malaysia)",
+    "market": "MY",
+    "resultText": "坚持吃了一个疗程4盒BRB后，真的有效提高我的睡眠质量，还被朋友说脸上的气色很好、不再暗沉发黄！最重要还是另一半说我的脾气越来越好了。",
+    "rating": 5
+  },
+  {
+    "category": "BRB",
+    "customerName": "Ex-coffee-dependent office worker (Hong Kong)",
+    "market": "HK",
+    "resultText": "不用1天兩杯咖啡提神！！！",
+    "rating": 5
+  },
+  {
+    "category": "BRB",
+    "customerName": "Office worker (Hong Kong)",
+    "market": "HK",
+    "resultText": "上班不容易累了，精神狀態也變好了！！！",
+    "rating": 5
+  },
+  {
+    "category": "BRB",
+    "customerName": "Tense-headed professional (Hong Kong)",
+    "market": "HK",
+    "resultText": "感覺整個人很放鬆，頭腦沒那麼緊繃！！！",
+    "rating": 5
+  },
+  {
+    "category": "BRB",
+    "customerName": "Light sleeper (Hong Kong)",
+    "market": "HK",
+    "resultText": "睡到很沉很深，偶爾會被吵醒但是還是能繼續睡回去！！！",
+    "rating": 5
+  },
+  {
+    "category": "Total DX+",
+    "customerName": "Frequent traveller who feared detox drinks (Hong Kong)",
+    "market": "HK",
+    "resultText": "許多人都會害怕喝排毒，不管在旅行還是工作會造成許多不方便等等，我曾經也是 — 自從遇上Total DX絕對沒有任何擔心！！",
+    "rating": 5
+  },
+  {
+    "category": "Re.WIND",
+    "customerName": "Jiahui, Lemon8 reviewer (Singapore)",
+    "market": "SG",
+    "resultText": "Using the entire MAE Re.WIND collection, I noticed significantly smoother texture and improved manageability — the Glow Hair Mask works wonders as a 3-minute deep repair treatment.",
+    "rating": 5
+  },
+  {
+    "category": "Re.WIND",
+    "customerName": "Oily-scalp Lemon8 reviewer (Singapore)",
+    "market": "SG",
+    "resultText": "Starting with the Scalp Balancing Shampoo, it gently cleanses while maintaining scalp health, which I found essential for reducing oiliness and buildup.",
+    "rating": 4
   }
 ];

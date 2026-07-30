@@ -1,0 +1,170 @@
+{
+  "_meta": {
+    "harvested": "2026-07-30",
+    "note": "Every URL below returned HTTP 200 with an image/* content-type when checked on 2026-07-30. Items marked confidence 'certain' were additionally downloaded and visually inspected. maerewind.com is MAE's own Re.WIND brand microsite (separate domain from maeglobalofficial.com); hildachung.shop is MAE's official Hong Kong agent shop (agent-run). Neither is a maeglobalofficial.com product page.",
+    "warning_facebook_cdn": "Facebook/Instagram scontent.*.fbcdn.net image URLs are signed and expire (the ones seen this session carried oe= values equating to ~26 Aug 2026). They are NOT durable — download immediately or re-harvest. For that reason no fbcdn URL is listed as a stable asset below; the Claríty review cards from Facebook are described in MAE_SOCIAL_NOTES.md instead."
+  },
+
+  "infographics": [
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Side-by-side comparison of Scalp Balancing vs Super Hydrating Shampoo (which one for oily vs dry scalp), named botanical ingredients, plus six 'free from' badges: silicone, alcohol, SLS/SLES, colour, paraben, mineral oil free.",
+      "note": "The single best Re.WIND asset. Send when the customer asks 'which shampoo is for me?' or raises a chemical/ingredient-safety objection. Wide landscape, reads well in WhatsApp.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Untitled-2-09-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Eight-step illustrated how-to-use ritual: comb out tangles, wet hair, shampoo, squeeze out water, Glow Hair Mask 3-5 min, towel wrap, Collagen Hair Serum + blow-dry, spray Hair Re-active Essence on scalp.",
+      "note": "Send after the sale, or during it to justify the 4-step bundle over a single shampoo. Cute line-art, no real people, zero likeness risk.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Direction-of-use-01-1.png",
+      "sourcePage": "https://maerewind.com/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single-ingredient explainer card: Urtica Dioica (Nettle) Leaf Extract — 'Provides vitamins, minerals, and polyphenols to prevent hair loss and enchance hair texture' (typo is MAE's).",
+      "note": "Ingredient-as-authority mini-lesson. CAVEAT: transparent-background PNG with cream text — looks broken on WhatsApp's light bubble. Flatten onto a dark background before sending.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient-03.png",
+      "sourcePage": "https://maerewind.com/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "Single-ingredient explainer card: Anemarrhena Asphodeloides Root Extract — 'Alleviate scalp inflammation'.",
+      "note": "Same transparent-PNG caveat as above. Also note the wording is inflammation-adjacent; prefer the comparison chart for compliance-sensitive conversations.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Ingredient_2-01.png",
+      "sourcePage": "https://maerewind.com/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "'Is this you?' hair-problem card — labelled 'Dry and Frizzy' in the page's alt text.",
+      "note": "Pain-mirror opener image. Label taken from the page's alt attribute; the image file itself was not visually inspected, so treat the caption as MAE's, not verified by me.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Hair-Problem-01-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "confidence": "unsure"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Re.WIND",
+      "label": "'Is this you?' hair-problem card — labelled 'Dull and lacklustre' in the page's alt text.",
+      "note": "Pain-mirror opener image. Label from alt attribute only, not visually verified. Siblings Hair-Problem-02 (Tangled hair), -03 (Coarse hair), -05 (Prone to Breakage) exist at the same path pattern.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Hair-Problem-04-scaled.jpg",
+      "sourcePage": "https://maerewind.com/",
+      "confidence": "unsure"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "BRB",
+      "label": "BRB mechanism / ingredient wheel: five ingredients each with its stated benefit — 南非醉茄 Ashwagandha (增强抗压能力), NMN (加快修复细胞), 氧化镁 magnesium oxide (放松肌肉 & 促进睡眠), 红景天 Rhodiola (缓解焦虑情绪), 缬草根 Valerian root (提高睡眠质量). Headline '压力紧绷睡不着?'. Carries brand ambassador Venus Gan (颜薇恩) with her signature and the label 'MAE BRB 代言人'.",
+      "note": "Best single BRB asset — mechanism lesson plus celebrity social proof in one image. Send to the stressed/insomnia persona right after mirroring their symptoms. Simplified Chinese, so MY/SG Chinese-speaking customers.",
+      "url": "https://hildachung.shop/wp-content/uploads/2024/01/IMG_5077.jpg",
+      "sourcePage": "https://hildachung.shop/product/brb/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Total DX+",
+      "label": "Explainer: '人體為什麼會缺乏酵素?' (why the body becomes enzyme-deficient) — three numbered causes (age + work stress overusing enzymes, over-refined/over-cooked food and poor diet, environmental pollution and bad habits) above a Total DX+ product flat-lay.",
+      "note": "The problem-framing image for Total DX+. Send before pricing to build the 'why you need a detox drink at all' case. Traditional Chinese (HK asset) — a simplified version was not found.",
+      "url": "https://hildachung.shop/wp-content/uploads/2025/08/photo_2025-08-11_16-36-38.jpg",
+      "sourcePage": "https://hildachung.shop/product/mae-total-dx%e8%be%a3%e6%9c%a8%e9%85%b5%e7%b4%a0%ef%bd%9c%e6%ba%ab%e5%92%8c%e6%8e%92%e6%af%92%e8%81%96%e5%93%81-%ef%bd%9c%e6%b2%92%e6%9c%89%e4%ba%86%e5%ae%83%ef%bc%8c%e9%9b%a3%e6%80%aa%e4%bd%a0/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Claríty (Skin Perfector)",
+      "label": "Bilingual EN/繁中 clinical-data chart + product anatomy for MAE Skin Perfector: four labelled bars — 95% yellow & dull skin tones look brighter instantly, 82% satisfied with pore coverage, 81% skin feels moisturized and supple, 77% lightweight formula with lasting radiance — plus callouts for airless pump, 1-2 pumps, shades for all skin tones, touch-up blender. Very high resolution (8000x4500).",
+      "note": "Highest-production-value asset found anywhere in this sweep. The percentage bars are MAE's own 'clinical data' framing, so it looks credible and professional. Send to a customer weighing base makeup / complexion products.",
+      "url": "https://hildachung.shop/wp-content/uploads/2024/01/img_20211027110905.pdf.png",
+      "sourcePage": "https://hildachung.shop/product/maeskinperfector/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Claríty (Skin Perfector)",
+      "label": "Chinese benefit/ingredient explainer for Skin Perfector ('重新定義，妳的早晨'): why it replaces four products, its plant oils (大馬士革玫瑰油, 白池花籽油 & 霍霍巴籽油, 牛油果/橄欖/山茶籽), and the dual-head brush-plus-serum design, with two 'X' pain points (不再弄髒雙手 / 不再有刷質).",
+      "note": "Portrait format, WhatsApp-native aspect ratio. Traditional Chinese. Pairs well with the clinical-data chart above.",
+      "url": "https://hildachung.shop/wp-content/uploads/2024/01/11pm-10.png",
+      "sourcePage": "https://hildachung.shop/product/maeskinperfector/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "INFOGRAPHIC",
+      "productLine": "Claríty",
+      "label": "'LESS IS MORE' concept graphic — 保養肌膚的STEP ONE；解決肌膚的根源問題 / 用多都不如用對 找到肌膚真正所需 / 不是越多層護膚步驟 皮膚效果才越好, over two Claríty flat-lay photos.",
+      "note": "Not a mechanism or ingredient chart — it's a philosophy/objection-handling graphic for the customer who says 'I already have a 7-step routine'. Included because it is genuinely useful, but it is the weakest 'infographic' here.",
+      "url": "https://hildachung.shop/wp-content/uploads/2023/11/IMG_4446-scaled.jpeg",
+      "sourcePage": "https://hildachung.shop/product/maeclaritymask/",
+      "confidence": "certain"
+    }
+  ],
+
+  "reviewCards": [
+    {
+      "kind": "REVIEW_CARD",
+      "productLine": "BRB",
+      "label": "Full-length BRB customer testimonial card headed '顾客真实反馈 — 气色好！脾气也变好了！': symptom laundry-list (越夜越精神, 睡不着刷IG, 发噩梦, 3秒流泪, 隔天头晕, 肌肤暗沉发黄) then the day-3 result and the 4-box result.",
+      "note": "Not an explainer — a testimonial graphic. Extremely on-message for the BRB stressed-mum / high-pressure persona. The two quotes inside it are also transcribed into mae-social-testimonials.json.",
+      "url": "https://hildachung.shop/wp-content/uploads/2024/01/IMG_0733.jpg",
+      "sourcePage": "https://hildachung.shop/product/brb/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "REVIEW_CARD",
+      "productLine": "Total DX+",
+      "label": "Total DX+ 'Your daily detox drink' story card with a first-person quote about having feared detox drinks while travelling/working.",
+      "note": "Testimonial graphic, not an explainer. Quote transcribed into mae-social-testimonials.json.",
+      "url": "https://hildachung.shop/wp-content/uploads/2025/08/photo_2025-08-11_16-36-40.jpg",
+      "sourcePage": "https://hildachung.shop/product/mae-total-dx%e8%be%a3%e6%9c%a8%e9%85%b5%e7%b4%a0%ef%bd%9c%e6%ba%ab%e5%92%8c%e6%8e%92%e6%af%92%e8%81%96%e5%93%81-%ef%bd%9c%e6%b2%92%e6%9c%89%e4%ba%86%e5%ae%83%ef%bc%8c%e9%9b%a3%e6%80%aa%e4%bd%a0/",
+      "confidence": "certain"
+    }
+  ],
+
+  "beforeAfter": [
+    {
+      "kind": "BEFORE_AFTER",
+      "productLine": "Re.WIND",
+      "label": "Eight-image before/after gallery, files Before-After-01 through Before-After-08.",
+      "count": 8,
+      "identifiable": false,
+      "identifiabilityDetail": "Verified by inspecting 01, 04 and 07: all are shot from BEHIND the subject. No faces, no eyes, no distinguishing features — only the back of the head and hair, mid-length to long. Subjects are unidentifiable. Backgrounds are ordinary (bathroom mirror, garden, salon) and contain nothing that identifies anyone. Images 02, 03, 05, 06, 08 follow the identical template (same cream border, same BEFORE/AFTER serif captions) and are near-certainly the same format, but were not individually inspected.",
+      "disclaimer": "NONE. No results-may-vary / individual-results wording appears in the images or anywhere on the hosting page.",
+      "url": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-01-scaled.jpg",
+      "urlPattern": "https://maerewind.com/wp-content/uploads/2023/11/Before-After-0N-scaled.jpg for N=1..8",
+      "sourcePage": "https://maerewind.com/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "BEFORE_AFTER",
+      "productLine": "Claríty",
+      "label": "Single Claríty acne/pigmentation before-after, headed '6盒Clarity — 廢話少講！店主親證效果！' (shop owner personally proving the result).",
+      "count": 1,
+      "identifiable": true,
+      "identifiabilityDetail": "FULLY IDENTIFIABLE. Two close-up frontal face photographs of the same woman — full face, both eyes, mouth, nose, freckles and acne clearly visible. She is not anonymised in any way, and the graphic itself names her: it is captioned with the Instagram handle @Mae.Hongkong.hilda and the domain www.Hildachung.shop, i.e. the MAE Hong Kong agent Hilda Chung showing her own face. Depicts active acne, post-acne marks and freckles in the 'before'.",
+      "disclaimer": "NONE. No results-may-vary wording in the image or on the product page.",
+      "url": "https://hildachung.shop/wp-content/uploads/2023/11/Before-and-After-Instagram-Post-1.png",
+      "sourcePage": "https://hildachung.shop/product/maeclaritymask/",
+      "confidence": "certain"
+    },
+    {
+      "kind": "BEFORE_AFTER",
+      "productLine": "Re.WIND",
+      "label": "Lemon8 post opening with '👀 Look at the before and after!' — hair before/after images.",
+      "count": null,
+      "identifiable": null,
+      "identifiabilityDetail": "Could not verify. The post text confirms before/after imagery exists, but Lemon8 did not expose the post's own image files to me (only a signed avatar URL). Most likely the same back-of-head brand assets as the maerewind.com gallery, but this is an inference, not an observation.",
+      "disclaimer": "unknown",
+      "url": null,
+      "sourcePage": "https://www.lemon8-app.com/@jiahuimae/7556921051339391489?region=sg",
+      "confidence": "unsure"
+    }
+  ]
+}
