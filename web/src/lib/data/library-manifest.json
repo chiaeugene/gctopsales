@@ -1,1 +1,562 @@
-[]
+[
+  {
+    "kind": "CERT",
+    "file": "bcode-mae-s-official-trust-compliance-card-six-free-from-cla.webp",
+    "label": "MAE's official trust/compliance card: six free-from claims (Hormone Free, GMO Free, No Artificial Flavours & Colours, Preservatives Free, No Added Prohibited Substances, Suitable For Vegetarians), the regulatory disclaimer, and a row of certification marks — Tested By SGS, GMP, HACCP Certified, ISO 22000 Food Safety, and HALAL (Halal Food Council International, Malaysia & Asia Region).",
+    "note": "The single highest-value certification image on the whole site. Send whenever a customer asks 'is it safe / is it halal / is it certified', especially MY and BN buyers. Note it is branded to BCODE+ but the certification set is the one MAE quotes for its supplement range.",
+    "productLine": "BCODE+",
+    "source": "https://www.maeglobalofficial.com/BCODE"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "bcode-bcode-metabolic-transformation-programme-card-buy-8-fr.jpg",
+    "label": "BCODE+ METABOLIC TRANSFORMATION PROGRAMME card — 'BUY 8 FREE 1', the nine boxes shown, plus FREE 1 box of B-ActV/B-VtrA and the FREE Metabolic Activation Kit (Metabolic Reset Map, Reset Club community group, 14-day reset coaching, MAE Premium Bottle 1.5L, B-Smart digital scale, B-Shape measuring tape, Be Fit e-handbook). New users only.",
+    "note": "Send to a committed buyer with a real weight goal — this card does the selling because the free coaching kit is visible.",
+    "productLine": "BCODE+",
+    "source": "https://www.maeglobalofficial.com/BCODE"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "bcode-bcode-programme-card-tier-1-the-starter-entry-programm.jpg",
+    "label": "BCODE+ programme card, tier 1 — the Starter/entry programme: boxes included plus the free gift block. Website version of the campaign card (2212x2119).",
+    "note": "Send to a first-time BCODE+ buyer who wants the smallest commitment.",
+    "productLine": "BCODE+",
+    "source": "https://www.maeglobalofficial.com/BCODE"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "bcode-bcode-programme-card-top-tier-the-advanced-recode-larg.jpg",
+    "label": "BCODE+ programme card, top tier — the Advanced Recode / largest-box programme with its free boxes and gift block (2248x3230).",
+    "note": "Send to a customer with a large goal (>5kg, high visceral fat, postpartum) or one buying for a household.",
+    "productLine": "BCODE+",
+    "source": "https://www.maeglobalofficial.com/BCODE"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "bcode-all-five-bcode-sachets-fanned-out-on-a-pale-lilac-surf.webp",
+    "label": "All five BCODE+ sachets fanned out on a pale lilac surface — B-OriG Chocolate, B-VtrA, B-OriG Beetroot, B-SynN, B-ActV — showing the colour-coding of each code.",
+    "note": "Send as the opening 'this is the system' image for BCODE+, before you explain which codes the customer actually needs.",
+    "productLine": "BCODE+",
+    "source": "https://www.maeglobalofficial.com/BCODE"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "bcode-b-actv-retail-box-high-resolution-three-quarter-view-1.jpg",
+    "label": "B-ActV retail box, high-resolution three-quarter view (1308x1755).",
+    "note": "Use when you need a large, clean B-ActV box image on its own.",
+    "productLine": "BCODE+",
+    "source": "https://www.maeglobalofficial.com/BCODE"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "brb-brb-dual-mode-system-the-perfect-day-night-essential-day.webp",
+    "label": "BRB 'DUAL MODE SYSTEM — The Perfect Day & Night Essential': DAY = boost productivity at work / stay energetic, NIGHT = better sleep and relaxation.",
+    "note": "Send when the customer asks 'when do I take it' or objects that a sleep product would make them drowsy at work.",
+    "productLine": "BRB",
+    "source": "https://www.maeglobalofficial.com/BRB"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "brb-brb-mechanism-ingredient-wheel-five-ingredients-each-wit.jpg",
+    "label": "BRB mechanism / ingredient wheel: five ingredients each with its stated benefit — 南非醉茄 Ashwagandha (增强抗压能力), NMN (加快修复细胞), 氧化镁 magnesium oxide (放松肌肉 & 促进睡眠), 红景天 Rhodiola (缓解焦虑情绪), 缬草根 Valerian root (提高睡眠质量). Headline '压力紧绷睡不着?'. Carries brand ambassador Venus Gan (颜薇恩) with her signature and the label 'MAE BRB 代言人'.",
+    "note": "Best single BRB asset — mechanism lesson plus celebrity social proof in one image. Send to the stressed/insomnia persona right after mirroring their symptoms. Simplified Chinese, so MY/SG Chinese-speaking customers.",
+    "productLine": "BRB",
+    "source": "https://hildachung.shop/product/brb/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "brb-brb-s-active-ingredient-diagram-nicotinamide-mononucleot.webp",
+    "label": "BRB's active-ingredient diagram: Nicotinamide Mononucleotide (NMN) overlapping THREE ADAPTOGENS — Ashwagandha Extract, Rhodiola Extract, Valerian Root Extract — with each side's stated role.",
+    "note": "Send as the mechanism/authority image for BRB, straight after the pain-mirror opener.",
+    "productLine": "BRB",
+    "source": "https://www.maeglobalofficial.com/BRB"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "brb-brb-s-eight-claimed-benefits-laid-out-as-an-icon-flow-ar.webp",
+    "label": "BRB's eight claimed benefits laid out as an icon flow around the sachet: Boost Performance, Anti-Aging, Improve stress tolerance, Reduce fatigue, Improve sleep quality, Mood Relaxation, Increase athletic endurance, Boost Immune System.",
+    "note": "Send early in any BRB conversation — it covers stress, sleep and energy at once so it fits almost every BRB persona.",
+    "productLine": "BRB",
+    "source": "https://www.maeglobalofficial.com/BRB"
+  },
+  {
+    "kind": "REVIEW_CARD",
+    "file": "brb-full-length-brb-customer-testimonial-card-headed-symptom.jpg",
+    "label": "Full-length BRB customer testimonial card headed '顾客真实反馈 — 气色好！脾气也变好了！': symptom laundry-list (越夜越精神, 睡不着刷IG, 发噩梦, 3秒流泪, 隔天头晕, 肌肤暗沉发黄) then the day-3 result and the 4-box result.",
+    "note": "Not an explainer — a testimonial graphic. Extremely on-message for the BRB stressed-mum / high-pressure persona. The two quotes inside it are also transcribed into mae-social-testimonials.json.",
+    "productLine": "BRB",
+    "source": "https://hildachung.shop/product/brb/"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "brb-official-mae-campaign-bundle-card-for-brb-3-box-bundle-b.png",
+    "label": "Official MAE campaign/bundle card for \"BRB 3-Box Bundle\" (B3F2MH) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "BRB",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "brb-official-mae-campaign-bundle-card-for-brb-maintenance-pr-2.jpg",
+    "label": "Official MAE campaign/bundle card for \"BRB Maintenance Programme  [ B8F2 ]\" (B8F2MH) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "BRB",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "brb-official-mae-campaign-bundle-card-for-brb-maintenance-pr.jpg",
+    "label": "Official MAE campaign/bundle card for \"BRB Maintenance Programme [ B4F1 ]\" (B4F1MH) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "BRB",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "brb-clean-cut-out-packshot-of-brb-01fbrb-retail-box-with-a-s.jpg",
+    "label": "Clean cut-out packshot of BRB (01FBRB) — retail box with a sachet/bottle beside it on a plain white background, no props.",
+    "note": "Default packshot: send this the moment you name BRB, and use it in any bundle or comparison message.",
+    "productLine": "BRB",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "brb-hero-packshot-of-brb-f04brb-retail-box-styled-with-its-s.jpg",
+    "label": "Hero packshot of BRB (F04BRB) — retail box styled with its signature raw ingredients as props.",
+    "note": "Send when you are telling the ingredient/mechanism story for BRB and want one image that shows both the pack and what is in it.",
+    "productLine": "BRB",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "clar-ty-less-is-more-concept-graphic-step-one-over-two-clar-.jpg",
+    "label": "'LESS IS MORE' concept graphic — 保養肌膚的STEP ONE；解決肌膚的根源問題 / 用多都不如用對 找到肌膚真正所需 / 不是越多層護膚步驟 皮膚效果才越好, over two Claríty flat-lay photos.",
+    "note": "Not a mechanism or ingredient chart — it's a philosophy/objection-handling graphic for the customer who says 'I already have a 7-step routine'. Included because it is genuinely useful, but it is the weakest 'infographic' here.",
+    "productLine": "Claríty",
+    "source": "https://hildachung.shop/product/maeclaritymask/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "clar-ty-skin-perfector-bilingual-en-clinical-data-chart-prod.png",
+    "label": "Bilingual EN/繁中 clinical-data chart + product anatomy for MAE Skin Perfector: four labelled bars — 95% yellow & dull skin tones look brighter instantly, 82% satisfied with pore coverage, 81% skin feels moisturized and supple, 77% lightweight formula with lasting radiance — plus callouts for airless pump, 1-2 pumps, shades for all skin tones, touch-up blender. Very high resolution (8000x4500).",
+    "note": "Highest-production-value asset found anywhere in this sweep. The percentage bars are MAE's own 'clinical data' framing, so it looks credible and professional. Send to a customer weighing base makeup / complexion products.",
+    "productLine": "Claríty (Skin Perfector)",
+    "source": "https://hildachung.shop/product/maeskinperfector/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "clar-ty-skin-perfector-chinese-benefit-ingredient-explainer-.png",
+    "label": "Chinese benefit/ingredient explainer for Skin Perfector ('重新定義，妳的早晨'): why it replaces four products, its plant oils (大馬士革玫瑰油, 白池花籽油 & 霍霍巴籽油, 牛油果/橄欖/山茶籽), and the dual-head brush-plus-serum design, with two 'X' pain points (不再弄髒雙手 / 不再有刷質).",
+    "note": "Portrait format, WhatsApp-native aspect ratio. Traditional Chinese. Pairs well with the clinical-data chart above.",
+    "productLine": "Claríty (Skin Perfector)",
+    "source": "https://hildachung.shop/product/maeskinperfector/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "clar-ty-anti-aging-second-tall-clar-ty-solution-panel-2400x4.png",
+    "label": "Second tall Claríty Solution panel (2400x4498) continuing the anti-aging story and actives.",
+    "note": "Same handling as above — crop the one section that answers the customer's question.",
+    "productLine": "Claríty Anti-Aging",
+    "source": "https://www.maeglobalofficial.com/ClaritySolution"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "clar-ty-anti-aging-the-full-clar-ty-solution-long-form-sales.png",
+    "label": "The full Claríty Solution long-form sales page as one very tall image (2400x6291): the '20 days' claim, the 'vicious cycle of aging' mechanism diagram (oxidation / glycation / inflammation), a six-panel strip of the six visible signs of aging (fine lines, sagging, enlarged pores, dull and uneven skin tone, hyperpigmentation, dryness and roughness) shown as macro skin close-ups, and the 'TRIPLE ANTI-AGING POWER — antioxidation / anti-inflammation / antiglycation' REP1+GLO2 pack shot.",
+    "note": "Do not send whole — at 2400x6291 WhatsApp will crush it. Crop the mechanism diagram or the six-signs strip and send that section alone.",
+    "productLine": "Claríty Anti-Aging",
+    "source": "https://www.maeglobalofficial.com/ClaritySolution"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "clar-ty-anti-aging-official-mae-campaign-bundle-card-for-ant-4.jpg",
+    "label": "Official MAE campaign/bundle card for \"Anti-aging Series 12-Box Bundle\" (CLSD) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Claríty Anti-Aging",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "clar-ty-anti-aging-official-mae-campaign-bundle-card-for-ant.png",
+    "label": "Official MAE campaign/bundle card for \"Anti-aging Series 2-Box Bundle\" (CLSA) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Claríty Anti-Aging",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "clar-ty-anti-aging-official-mae-campaign-bundle-card-for-ant-2.jpg",
+    "label": "Official MAE campaign/bundle card for \"Anti-aging Series 3-Box Bundle\" (CLSB) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Claríty Anti-Aging",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "clar-ty-anti-aging-clar-ty-solution-glo2-beauty-shot-1582x12.webp",
+    "label": "Claríty Solution GLO2 beauty shot (1582x1259).",
+    "note": "Send when introducing GLO2 specifically (vitamin C / glow story).",
+    "productLine": "Claríty Anti-Aging",
+    "source": "https://www.maeglobalofficial.com/ClaritySolution"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "clar-ty-anti-aging-clar-ty-solution-rep1-beauty-shot-the-sac.png",
+    "label": "Claríty Solution REP1 beauty shot: the sachet and box with a pouring water ribbon and a pear/blossom still-life panel (3093x2124).",
+    "note": "Send when introducing REP1 specifically — it looks premium and signals 'soothing/hydrating'.",
+    "productLine": "Claríty Anti-Aging",
+    "source": "https://www.maeglobalofficial.com/ClaritySolution"
+  },
+  {
+    "kind": "OTHER",
+    "file": "clar-ty-anti-aging-directions-for-use-multi-use-guide-header.webp",
+    "label": "'Directions For Use — Multi-use Guide' header image: two models resting with the GLO2 and REP1 boxes (1207x764). Header art, not the actual step instructions.",
+    "note": "Use as a lead-in image before you type out the usage steps; it does not contain the steps itself.",
+    "productLine": "Claríty Anti-Aging",
+    "source": "https://www.maeglobalofficial.com/ClaritySolution"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part-2.png",
+    "label": "Claríty Skincare Series long-form page part 2 (1600x3232), continuing the product-by-product routine.",
+    "note": "Crop the relevant product section before sending.",
+    "productLine": "Claríty skincare",
+    "source": "https://www.maeglobalofficial.com/SkinCareSeries"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part-3.png",
+    "label": "Claríty Skincare Series long-form page part 3 (1600x4763). Contains 'MAE SKINCARE GUIDELINES FOR DIFFERENT SKIN TYPES' — a matrix giving Claríty / Hydra Power Serum / Skin Perfector & Air Blur Cushion frequency for Dry, Oily, Combination, Sensitive and Acne-Prone skin, with the tell-tale signs of each skin type.",
+    "note": "Crop the skin-type matrix and send it after you have identified the customer's skin type — it makes the recommendation look clinical rather than pushy.",
+    "productLine": "Claríty skincare",
+    "source": "https://www.maeglobalofficial.com/SkinCareSeries"
+  },
+  {
+    "kind": "CERT",
+    "file": "clar-ty-skincare-clar-ty-skincare-series-long-form-page-part.png",
+    "label": "Claríty Skincare Series long-form page part 1 (1575x8191): the step-by-step routine, Claríty mask 'Deep Cleansing / Skin Barrier Repairing' copy with Calendula Officinalis flower oil and pearl powder called out, the Malaysia Book of Records badge ('Highest Powder Face Mask Sales Value In A Day'), a certification row (GMP, HACCP, ISO, pH5.5, HALAL, Tested By SGS), 'suitable for all skin types, gentle and skin-friendliest pH5.5', then Step 2 Hydra Power Serum.",
+    "note": "Extremely tall — crop and send single sections. The Book of Records + certification row crop is the best social-proof asset for Claríty.",
+    "productLine": "Claríty skincare",
+    "source": "https://www.maeglobalofficial.com/SkinCareSeries"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "clar-ty-skincare-official-mae-campaign-bundle-card-for-ampou.jpg",
+    "label": "Official MAE campaign/bundle card for \"Ampoule Boost 3-Box Bundle\" (SET3AMM) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Claríty skincare",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "clar-ty-skincare-official-mae-campaign-bundle-card-for-ampou-2.jpg",
+    "label": "Official MAE campaign/bundle card for \"Ampoule Boost 9-Box Bundle\" (SET9AMM) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Claríty skincare",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "clar-ty-skincare-official-mae-campaign-bundle-card-for-clar--6.jpg",
+    "label": "Official MAE campaign/bundle card for \"Claríty 2-Box Bundle\" (SET2CL) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Claríty skincare",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "clar-ty-skincare-clean-cut-out-packshot-of-air-blur-perfecto.jpg",
+    "label": "Clean cut-out packshot of Air Blur Perfector Cushion (01SCS) — retail box with a sachet/bottle beside it on a plain white background, no props.",
+    "note": "Default packshot: send this the moment you name Air Blur Perfector Cushion, and use it in any bundle or comparison message.",
+    "productLine": "Claríty skincare",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "clar-ty-skincare-clean-cut-out-packshot-of-ampoule-mask-01sa.jpg",
+    "label": "Clean cut-out packshot of Ampoule Mask (01SAMM) — retail box with a sachet/bottle beside it on a plain white background, no props.",
+    "note": "Default packshot: send this the moment you name Ampoule Mask, and use it in any bundle or comparison message.",
+    "productLine": "Claríty skincare",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "OTHER",
+    "file": "clar-ty-skincare-official-mae-image-for-clar-ty-toner-pad-cl.jpg",
+    "label": "Official MAE image for \"Claríty Toner Pad / Cleansing Sponge\" (GIFT).",
+    "note": "Send only when this specific item, gift or package is what the customer asked about.",
+    "productLine": "Claríty skincare",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "CERT",
+    "file": "general-malaysia-book-of-records-award-badge-as-published-by.webp",
+    "label": "Malaysia Book of Records award badge as published by MAE (342x270).",
+    "note": "Send with the other award badges as third-party social proof when a customer questions whether MAE is a real, established brand.",
+    "productLine": "GENERAL",
+    "source": "https://www.maeglobalofficial.com/"
+  },
+  {
+    "kind": "CERT",
+    "file": "general-malaysia-health-wellness-brand-awards-badge-264x270.webp",
+    "label": "Malaysia Health & Wellness Brand Awards badge (264x270).",
+    "note": "Social proof; BRB won this award.",
+    "productLine": "GENERAL",
+    "source": "https://www.maeglobalofficial.com/"
+  },
+  {
+    "kind": "CERT",
+    "file": "general-nanyang-award-media-badge-396x270.webp",
+    "label": "Nanyang (南洋) award/media badge (396x270).",
+    "note": "Corporate-credibility social proof for Chinese-speaking customers.",
+    "productLine": "GENERAL",
+    "source": "https://www.maeglobalofficial.com/"
+  },
+  {
+    "kind": "CERT",
+    "file": "general-natural-health-readers-choice-award-badge-306x270.webp",
+    "label": "Natural Health Readers' Choice award badge (306x270).",
+    "note": "Social proof for Total DX+ specifically — it won this award.",
+    "productLine": "GENERAL",
+    "source": "https://www.maeglobalofficial.com/"
+  },
+  {
+    "kind": "CERT",
+    "file": "general-platinum-business-award-badge-210x270.webp",
+    "label": "Platinum Business Award badge (210x270).",
+    "note": "Corporate-credibility social proof.",
+    "productLine": "GENERAL",
+    "source": "https://www.maeglobalofficial.com/"
+  },
+  {
+    "kind": "CERT",
+    "file": "general-soba-star-outstanding-business-awards-badge-225x270.webp",
+    "label": "SOBA (Star Outstanding Business Awards) badge (225x270).",
+    "note": "Corporate-credibility social proof.",
+    "productLine": "GENERAL",
+    "source": "https://www.maeglobalofficial.com/"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "general-official-mae-campaign-bundle-card-for-mae-star-distr.jpg",
+    "label": "Official MAE campaign/bundle card for \"MAE Star Distributor\" (NSDD) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "GENERAL",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "general-official-mae-campaign-bundle-card-for-mae-star-execu.jpg",
+    "label": "Official MAE campaign/bundle card for \"MAE Star Executive\" (NNSE) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "GENERAL",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "general-official-mae-campaign-bundle-card-for-mae-super-plat.jpg",
+    "label": "Official MAE campaign/bundle card for \"MAE Super Platinum\" (NSPP) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "GENERAL",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "re-wind-is-this-you-hair-problem-card-labelled-dry-and-frizz.jpg",
+    "label": "'Is this you?' hair-problem card — labelled 'Dry and Frizzy' in the page's alt text.",
+    "note": "Pain-mirror opener image. Label taken from the page's alt attribute; the image file itself was not visually inspected, so treat the caption as MAE's, not verified by me.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "re-wind-is-this-you-hair-problem-card-labelled-dull-and-lack.jpg",
+    "label": "'Is this you?' hair-problem card — labelled 'Dull and lacklustre' in the page's alt text.",
+    "note": "Pain-mirror opener image. Label from alt attribute only, not visually verified. Siblings Hair-Problem-02 (Tangled hair), -03 (Coarse hair), -05 (Prone to Breakage) exist at the same path pattern.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "re-wind-eight-step-illustrated-how-to-use-ritual-comb-out-ta.png",
+    "label": "Eight-step illustrated how-to-use ritual: comb out tangles, wet hair, shampoo, squeeze out water, Glow Hair Mask 3-5 min, towel wrap, Collagen Hair Serum + blow-dry, spray Hair Re-active Essence on scalp.",
+    "note": "Send after the sale, or during it to justify the 4-step bundle over a single shampoo. Cute line-art, no real people, zero likeness risk.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "re-wind-re-wind-long-form-page-part-1-1200x7136-the-4-step-s.jpg",
+    "label": "Re.WIND long-form page part 1 (1200x7136): the 4-step system (Cleanse / Repair / Nourish / Re-active) with each product, then 'NATURE & PATENTED INNOVATION' — 10 natural herbal ingredients plus the imported patented 'HAIR COMPLEX 3' (Triticum Aestivum wheat seed extract, Oryza Sativa rice bran extract, Glycine Max soybean seed extract, pressurised hot-water extraction) tagged anti-oxidation / anti-microbial / scalp repair.",
+    "note": "Crop the HAIR COMPLEX 3 flask panel — it is the strongest Re.WIND credibility image. Do not send the full 7136px file.",
+    "productLine": "Re.WIND",
+    "source": "https://www.maeglobalofficial.com/ReWind"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "re-wind-re-wind-long-form-page-part-2-1200x3328-contains-the.jpg",
+    "label": "Re.WIND long-form page part 2 (1200x3328). Contains: the Hair Re-active Essence star-ingredient panel (Biota Orientalis leaf, Panax Ginseng root, Angelica Polymorpha Sinensis root, Polygonum Multiflorum root); a 'VISIBLE RESULTS CAN BE SEEN' grid of six BEFORE/AFTER pairs (see beforeAfter array — crop these out if you do not want to send them); 'REVITALIZING THE HAIR WITH JUST 1 USE' with +92% Silky & Smooth, +89% Nourishment & Moisture, +85% Hair Strength, +79% Voluminous; and a 'DIRECTION OF USE' eight-step illustrated guide for the whole 4-product ritual.",
+    "note": "The best crops are the +92/+89/+85/+79 stats block and the 8-step DIRECTION OF USE panel. Crop deliberately — the before/after grid sits in the same file.",
+    "productLine": "Re.WIND",
+    "source": "https://www.maeglobalofficial.com/ReWind"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "re-wind-side-by-side-comparison-of-scalp-balancing-vs-super-.jpg",
+    "label": "Side-by-side comparison of Scalp Balancing vs Super Hydrating Shampoo (which one for oily vs dry scalp), named botanical ingredients, plus six 'free from' badges: silicone, alcohol, SLS/SLES, colour, paraben, mineral oil free.",
+    "note": "The single best Re.WIND asset. Send when the customer asks 'which shampoo is for me?' or raises a chemical/ingredient-safety objection. Wide landscape, reads well in WhatsApp.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "re-wind-single-ingredient-explainer-card-anemarrhena-asphode.png",
+    "label": "Single-ingredient explainer card: Anemarrhena Asphodeloides Root Extract — 'Alleviate scalp inflammation'.",
+    "note": "Same transparent-PNG caveat as above. Also note the wording is inflammation-adjacent; prefer the comparison chart for compliance-sensitive conversations.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "re-wind-single-ingredient-explainer-card-urtica-dioica-nettl.png",
+    "label": "Single-ingredient explainer card: Urtica Dioica (Nettle) Leaf Extract — 'Provides vitamins, minerals, and polyphenols to prevent hair loss and enchance hair texture' (typo is MAE's).",
+    "note": "Ingredient-as-authority mini-lesson. CAVEAT: transparent-background PNG with cream text — looks broken on WhatsApp's light bubble. Flatten onto a dark background before sending.",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/"
+  },
+  {
+    "kind": "BEFORE_AFTER",
+    "file": "re-wind-eight-image-before-after-gallery-files-before-after-.jpg",
+    "label": "Eight-image before/after gallery, files Before-After-01 through Before-After-08.",
+    "note": "Restricted — switched off by default, review before enabling",
+    "productLine": "Re.WIND",
+    "source": "https://maerewind.com/"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "re-wind-official-mae-campaign-bundle-card-for-re-wind-2-box-.png",
+    "label": "Official MAE campaign/bundle card for \"Re.WIND 2-Box Bundle\" (SET2RWA) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Re.WIND",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "re-wind-official-mae-campaign-bundle-card-for-re-wind-mainte.jpg",
+    "label": "Official MAE campaign/bundle card for \"Re.WIND Maintenance Programme [ B6F2 ]\" (B6F2RW) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Re.WIND",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "re-wind-official-mae-campaign-bundle-card-for-re-wind-b3f1-b.jpg",
+    "label": "Official MAE campaign/bundle card for \"Re.WIND [ B3F1 ]\" (B3F1RWA) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Re.WIND",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "re-wind-clean-cut-out-packshot-of-re-wind-collagen-hair-seru.jpg",
+    "label": "Clean cut-out packshot of Re.WIND Collagen Hair Serum (01RHS) — retail box with a sachet/bottle beside it on a plain white background, no props.",
+    "note": "Default packshot: send this the moment you name Re.WIND Collagen Hair Serum, and use it in any bundle or comparison message.",
+    "productLine": "Re.WIND",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "re-wind-clean-cut-out-packshot-of-re-wind-glow-hair-mask-01r.jpg",
+    "label": "Clean cut-out packshot of Re.WIND Glow Hair Mask (01RHM) — retail box with a sachet/bottle beside it on a plain white background, no props.",
+    "note": "Default packshot: send this the moment you name Re.WIND Glow Hair Mask, and use it in any bundle or comparison message.",
+    "productLine": "Re.WIND",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "INFOGRAPHIC",
+    "file": "total-dx-explainer-why-the-body-becomes-enzyme-deficient-thr.jpg",
+    "label": "Explainer: '人體為什麼會缺乏酵素?' (why the body becomes enzyme-deficient) — three numbered causes (age + work stress overusing enzymes, over-refined/over-cooked food and poor diet, environmental pollution and bad habits) above a Total DX+ product flat-lay.",
+    "note": "The problem-framing image for Total DX+. Send before pricing to build the 'why you need a detox drink at all' case. Traditional Chinese (HK asset) — a simplified version was not found.",
+    "productLine": "Total DX+",
+    "source": "https://hildachung.shop/product/mae-total-dx%e8%be%a3%e6%9c%a8%e9%85%b5%e7%b4%a0%ef%bd%9c%e6%ba%ab%e5%92%8c%e6%8e%92%e6%af%92%e8%81%96%e5%93%81-%ef%bd%9c%e6%b2%92%e6%9c%89%e4%ba%86%e5%ae%83%ef%bc%8c%e9%9b%a3%e6%80%aa%e4%bd%a0/"
+  },
+  {
+    "kind": "REVIEW_CARD",
+    "file": "total-dx-total-dx-your-daily-detox-drink-story-card-with-a-f.jpg",
+    "label": "Total DX+ 'Your daily detox drink' story card with a first-person quote about having feared detox drinks while travelling/working.",
+    "note": "Testimonial graphic, not an explainer. Quote transcribed into mae-social-testimonials.json.",
+    "productLine": "Total DX+",
+    "source": "https://hildachung.shop/product/mae-total-dx%e8%be%a3%e6%9c%a8%e9%85%b5%e7%b4%a0%ef%bd%9c%e6%ba%ab%e5%92%8c%e6%8e%92%e6%af%92%e8%81%96%e5%93%81-%ef%bd%9c%e6%b2%92%e6%9c%89%e4%ba%86%e5%ae%83%ef%bc%8c%e9%9b%a3%e6%80%aa%e4%bd%a0/"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "total-dx-official-mae-campaign-bundle-card-for-healthcare-ma-2.jpg",
+    "label": "Official MAE campaign/bundle card for \"Healthcare Maintenance Programme  [ B8F2 ]\" (B8F2HC) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Total DX+",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "total-dx-official-mae-campaign-bundle-card-for-healthcare-ma.jpg",
+    "label": "Official MAE campaign/bundle card for \"Healthcare Maintenance Programme [ B4F1 ]\" (B4F1HC) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Total DX+",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "total-dx-official-mae-campaign-bundle-card-for-healthcare-se.jpg",
+    "label": "Official MAE campaign/bundle card for \"Healthcare Series 3-Box Bundle\" (B3F2HC) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "Total DX+",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "total-dx-clean-cut-out-packshot-of-total-dx-01fdx-retail-box.jpg",
+    "label": "Clean cut-out packshot of Total DX+ (01FDX) — retail box with a sachet/bottle beside it on a plain white background, no props.",
+    "note": "Default packshot: send this the moment you name Total DX+, and use it in any bundle or comparison message.",
+    "productLine": "Total DX+",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "total-dx-hero-packshot-of-total-dx-f01dx-retail-box-styled-w.jpg",
+    "label": "Hero packshot of Total DX+ (F01DX) — retail box styled with its signature raw ingredients as props.",
+    "note": "Send when you are telling the ingredient/mechanism story for Total DX+ and want one image that shows both the pack and what is in it.",
+    "productLine": "Total DX+",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRODUCT",
+    "file": "total-em-hero-packshot-of-total-em-f02em-retail-box-styled-w.jpg",
+    "label": "Hero packshot of Total EM+ (F02EM) — retail box styled with its signature raw ingredients as props.",
+    "note": "Send when you are telling the ingredient/mechanism story for Total EM+ and want one image that shows both the pack and what is in it.",
+    "productLine": "Total EM+",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "ireason-official-mae-campaign-bundle-card-for-ireason-4-mont.png",
+    "label": "Official MAE campaign/bundle card for \"iReason 4-month Treatment [ B6F2 ]\" (B6F2EH) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "iReason",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "ireason-official-mae-campaign-bundle-card-for-ireason-comple.png",
+    "label": "Official MAE campaign/bundle card for \"iReason Complete Treatment [ B3F1 ]\" (B3F1EH) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "iReason",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  },
+  {
+    "kind": "PRICE_CARD",
+    "file": "ireason-official-mae-campaign-bundle-card-for-ireason-trial-.jpg",
+    "label": "Official MAE campaign/bundle card for \"iReason Trial Package [ 2 Boxes ]\" (SET2IR) — shows the buy-X-free-Y structure, the boxes included, and the free gifts / PWP add-ons. Artwork only, no prices printed.",
+    "note": "Send when the customer has chosen a line and you are presenting the bundle ladder; quote member vs retail price in the message text since the card carries no prices.",
+    "productLine": "iReason",
+    "source": "https://api.maeglobalofficial.com/ProductCategory/category-names/MALAYSIA (public catalogue API behind https://www.maeglobalofficial.com/Products)"
+  }
+]
