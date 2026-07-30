@@ -176,6 +176,55 @@ export async function registerPhoneNumber(phoneNumberId: string, accessToken: st
   return { ok: false, detail: msg };
 }
 
+// Creates a real WhatsApp message template on the agent's WhatsApp Business
+// Account (this is what whatsapp_business_management is for). Meta reviews the
+// template and it becomes sendable once APPROVED — that's the only compliant
+// way to reach a customer after the 24h service window closes.
+//
+// Variable placeholders ({{1}}, {{2}}…) MUST ship with example values or Meta
+// rejects the template outright, so we synthesize sensible ones.
+const TEMPLATE_EXAMPLES = ["Aisyah", "Total DX+", "1-2 working days", "RM188", "Maybank"];
+
+export async function createMessageTemplate(
+  wabaId: string,
+  accessToken: string,
+  tpl: { name: string; language: string; category: string; bodyText: string }
+): Promise<{ ok: boolean; status?: string; metaId?: string; detail?: string }> {
+  const varCount = new Set((tpl.bodyText.match(/\{\{\s*\d+\s*\}\}/g) ?? []).map((m) => m.replace(/\D/g, ""))).size;
+  const body: Record<string, unknown> = {
+    name: tpl.name,
+    language: tpl.language || "en",
+    category: tpl.category === "UTILITY" ? "UTILITY" : "MARKETING",
+    components: [
+      {
+        type: "BODY",
+        text: tpl.bodyText,
+        ...(varCount > 0
+          ? {
+              example: {
+                body_text: [Array.from({ length: varCount }, (_, i) => TEMPLATE_EXAMPLES[i] ?? "Sample")],
+              },
+            }
+          : {}),
+      },
+    ],
+  };
+
+  const res = await fetch(`https://graph.facebook.com/${apiVersion()}/${wabaId}/message_templates`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(body),
+  });
+  const json = (await res.json().catch(() => null)) as {
+    id?: string;
+    status?: string;
+    error?: { message?: string };
+  } | null;
+
+  if (!res.ok) return { ok: false, detail: json?.error?.message ?? `HTTP ${res.status}` };
+  return { ok: true, status: json?.status ?? "PENDING", metaId: json?.id };
+}
+
 // Discovers which WhatsApp Business Accounts a token actually has rights over,
 // by asking Meta to introspect the token. Embedded Signup / Business Login
 // tokens carry "granular_scopes" listing the exact WABA ids they were granted

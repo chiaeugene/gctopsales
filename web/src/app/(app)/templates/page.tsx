@@ -62,6 +62,35 @@ export default function TemplatesPage() {
     await load();
   }
 
+  const [submitting, setSubmitting] = useState<string | null>(null);
+  const [submitMsg, setSubmitMsg] = useState<string | null>(null);
+
+  // Sends the template to Meta for approval on the agent's own WhatsApp
+  // Business Account (whatsapp_business_management).
+  async function submitToMeta(t: Template) {
+    setSubmitting(t.id);
+    setSubmitMsg(null);
+    setError(null);
+    try {
+      const res = await fetch("/api/templates/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: t.id }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Meta rejected the template");
+        return;
+      }
+      setSubmitMsg(
+        `"${t.name}" submitted to WhatsApp · status ${json.status}. Meta usually reviews within minutes to a few hours.`
+      );
+      await load();
+    } finally {
+      setSubmitting(null);
+    }
+  }
+
   const [generating, setGenerating] = useState(false);
   async function generate() {
     setGenerating(true);
@@ -93,6 +122,9 @@ export default function TemplatesPage() {
         action={<Button onClick={() => setDraft({ language: "en", category: "MARKETING", status: "PENDING" })}>+ Add template</Button>}
       />
       {error && <div className="text-sm text-red-600">{error}</div>}
+      {submitMsg && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{submitMsg}</div>
+      )}
 
       {/* GC drafts the starter library from this agent's own brains */}
       <Card className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40 flex flex-wrap items-center justify-between gap-3">
@@ -126,6 +158,14 @@ export default function TemplatesPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <StatusBadge status={t.status} />
+                  <button
+                    onClick={() => submitToMeta(t)}
+                    disabled={submitting === t.id}
+                    className="text-xs font-medium text-[var(--accent-ink)] hover:underline disabled:opacity-40"
+                    title="Create this template on your WhatsApp Business Account for Meta approval"
+                  >
+                    {submitting === t.id ? "Submitting…" : "Submit to WhatsApp"}
+                  </button>
                   <button onClick={() => setDraft(t)} className="text-xs text-[var(--accent-ink)] hover:underline">Edit</button>
                   <button onClick={() => remove(t.id)} className="text-xs text-red-600 hover:underline">Delete</button>
                 </div>
