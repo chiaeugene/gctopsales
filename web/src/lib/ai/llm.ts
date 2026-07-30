@@ -57,8 +57,13 @@ export async function chatComplete(opts: {
   // as a cacheable block. Without this each customer message re-pays full input
   // price for the entire catalogue, proof library and playbook — which is what
   // exhausted the API credit. Cache hits bill at a small fraction of that.
+  // 1-HOUR ttl, not the 5-minute default, and the difference is the whole point
+  // on WhatsApp. Customers reply minutes or hours apart, so a 5-minute cache
+  // would miss on most turns — and a miss costs a cache WRITE (1.25x base input),
+  // which is worse than not caching at all. A 1h write costs 2x once, then every
+  // message from every customer of this agent for the next hour reads at 0.1x.
   const system: Anthropic.TextBlockParam[] = [
-    { type: "text", text: opts.system, cache_control: { type: "ephemeral" } },
+    { type: "text", text: opts.system, cache_control: { type: "ephemeral", ttl: "1h" } },
   ];
 
   let res = await client.messages.create({
