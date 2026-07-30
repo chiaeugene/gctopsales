@@ -1,4 +1,5 @@
 import { resolveSendableAttachmentMeta, signAttachmentId, type SendableFileMeta } from "@/lib/attachments";
+import { splitIntoBubbles } from "@/lib/ai/humanize";
 
 // Facebook Messenger + Instagram DM Send API client. Both channels share the
 // same Send API shape (POST /{page-id}/messages with a page access token);
@@ -16,7 +17,16 @@ function apiVersion(): string {
   return process.env.META_API_VERSION || "v21.0";
 }
 
+// Same human texting rhythm as WhatsApp: blank lines become separate bubbles.
 export async function sendMetaText(creds: MetaMessagingCreds, recipientId: string, text: string): Promise<void> {
+  const bubbles = splitIntoBubbles(text);
+  for (let i = 0; i < bubbles.length; i++) {
+    if (i > 0) await new Promise((r) => setTimeout(r, 700));
+    await sendOneMetaText(creds, recipientId, bubbles[i]);
+  }
+}
+
+async function sendOneMetaText(creds: MetaMessagingCreds, recipientId: string, text: string): Promise<void> {
   try {
     const res = await fetch(
       `https://graph.facebook.com/${apiVersion()}/${creds.pageId}/messages?access_token=${encodeURIComponent(creds.accessToken)}`,

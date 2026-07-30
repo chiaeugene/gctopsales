@@ -1,4 +1,5 @@
 import { resolveSendableAttachment, type SendableFile } from "@/lib/attachments";
+import { splitIntoBubbles } from "@/lib/ai/humanize";
 
 // WhatsApp Cloud API client. Multi-tenant: every call takes the tenant's own
 // credentials (from their ChannelConnection row) — there is no global token.
@@ -21,7 +22,18 @@ function apiBase(phoneNumberId: string): string {
   return `https://graph.facebook.com/${apiVersion()}/${phoneNumberId}`;
 }
 
+// Sends a reply the way a person texts: blank lines in the reply become
+// separate WhatsApp bubbles (max 3), with a short pause between them, instead
+// of one intimidating wall of text.
 export async function sendWhatsAppText(creds: WhatsAppCreds, to: string, text: string): Promise<void> {
+  const bubbles = splitIntoBubbles(text);
+  for (let i = 0; i < bubbles.length; i++) {
+    if (i > 0) await new Promise((r) => setTimeout(r, 700)); // human typing rhythm
+    await sendOneWhatsAppText(creds, to, bubbles[i]);
+  }
+}
+
+async function sendOneWhatsAppText(creds: WhatsAppCreds, to: string, text: string): Promise<void> {
   try {
     const res = await fetch(`${apiBase(creds.phoneNumberId)}/messages`, {
       method: "POST",

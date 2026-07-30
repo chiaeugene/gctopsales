@@ -19,6 +19,38 @@ function separatorFor(before: string, after: string): string {
   return ", ";
 }
 
+// Splits a reply into separate WhatsApp bubbles on blank lines, the way a real
+// person texts (several short messages instead of one wall). Research on
+// WhatsApp response rates is blunt about this: replies under ~100 characters
+// get the most engagement, long paragraphs get skimmed, and Meta throttles
+// senders whose messages don't earn replies — so shape affects deliverability,
+// not just conversion.
+const MAX_BUBBLES = 3;
+
+export function splitIntoBubbles(text: string): string[] {
+  const trimmed = (text ?? "").trim();
+  if (!trimmed) return [];
+
+  const parts = trimmed
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (parts.length <= 1) return [trimmed];
+
+  const bubbles: string[] = [];
+  for (const part of parts) {
+    // Trailing scraps ("Ok?", a lone emoji) ride along with the previous
+    // bubble rather than becoming their own ping. Kept low so a meaningful
+    // short line — a price, a one-line question — still stands alone.
+    if (bubbles.length && (part.length < 15 || bubbles.length >= MAX_BUBBLES)) {
+      bubbles[bubbles.length - 1] += `\n${part}`;
+    } else {
+      bubbles.push(part);
+    }
+  }
+  return bubbles;
+}
+
 export function humanizeReply(text: string): string {
   if (!text) return text;
   let out = text;
