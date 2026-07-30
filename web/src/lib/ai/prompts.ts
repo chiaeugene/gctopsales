@@ -1,4 +1,4 @@
-import type { Product, StoreProfile, TrainingExample, Order, Testimonial } from "@prisma/client";
+import type { Product, StoreProfile, TrainingExample, Order, Testimonial, DiscoveryMenu } from "@prisma/client";
 import { TESTIMONIAL_PHOTO_PREFIX, type AttachmentMetadata } from "@/lib/attachments";
 import { parseJson } from "@/lib/json";
 import {
@@ -48,9 +48,10 @@ export function buildGcSystemPrompt(opts: {
   products: (Product & { attachments?: AttachmentMetadata[] })[];
   trainingExamples: TrainingExample[];
   testimonials?: Omit<Testimonial, "photoData">[];
+  discoveryMenus?: DiscoveryMenu[];
   order?: Order | null;
 }): string {
-  const { profile, products, trainingExamples, testimonials = [], order } = opts;
+  const { profile, products, trainingExamples, testimonials = [], discoveryMenus = [], order } = opts;
   const identity = IdentityBrainSchema.parse(parseJson(profile.identityBrain, {}));
   const sales = SalesBrainSchema.parse(parseJson(profile.salesBrain, {}));
   const fulfillment = FulfillmentBrainSchema.parse(parseJson(profile.fulfillmentBrain, {}));
@@ -268,6 +269,58 @@ B-ActV works 15-30 min before your meal so you feel full earlier and eat less.
 
 Has the bloating been going on a long time?`
   );
+
+  // Seller-authored discovery menus. This is the "1. Pores 2. Dark spots
+  // 3. Dullness" opening that top MAE agents live on. Train GC teaches it by
+  // example and hopes the model imitates it; this makes it explicit, so the
+  // agent's exact wording and exact options get used every time.
+  if (discoveryMenus.length) {
+    const rendered = discoveryMenus
+      .map((m) => {
+        const opts = parseJson<string[]>(m.options, []);
+        if (!opts.length) return "";
+        const lines = [
+          `### Topic: ${m.topic}`,
+          `- Ask: "${m.question}"`,
+          `- Options: ${opts.map((o, i) => `${i + 1}. ${o}`).join("  ")}`,
+        ];
+        if (m.followUpNote) {
+          lines.push(
+            `- What their answer means (for YOU, never paste this to the customer): ${m.followUpNote}`
+          );
+        }
+        return lines.join("\n");
+      })
+      .filter(Boolean)
+      .join("\n\n");
+
+    prompt += section(
+      "YOUR DISCOVERY MENUS — the agent's own opening questions (use these, don't invent your own)",
+      `${agent} sells by making the customer NAME their problem out of a short list, instead of asking a
+vague "how can I help?". A customer who picks an option has told you exactly what to sell, and picking
+is far easier than composing an answer, so many more people reply.
+
+${rendered}
+
+HOW TO USE THEM
+- When you can tell which topic the customer is circling but NOT their specific problem, ask that
+  topic's menu. Use the agent's wording, not your own paraphrase.
+- ${profile.allowLists
+        ? `Present the options as a numbered list, "1." "2." "3." each on its own line, then nothing after
+  it. The question goes in the bubble above. Never more than one menu in a message.`
+        : `This agent has numbered lists switched OFF, so ask the SAME question in flowing prose instead:
+  name the two or three possibilities inside the sentence ("is it more the big pores, the dark spots,
+  or just looking dull?"). Same question, same options, no numbers.`}
+- If they answer with just a number ("2"), map it to that option and continue as if they had described
+  it in words. Never ask them to clarify what "2" meant.
+- ONE menu per conversation, at the start. Once they've picked, you know their problem: go deeper on
+  it with normal questions. Never fire a second menu at someone who already told you their problem.
+- Never use a menu to list PRODUCTS, prices or bundles. Menus are for the customer's PROBLEM only.
+- If the customer already stated their problem clearly in their first message, SKIP the menu entirely
+  and respond to what they actually said. Asking someone to pick from a list after they already told
+  you is the fastest way to look like a bot.`
+    );
+  }
 
   prompt += section(
     "Deep read — decode the PERSON before every reply (do this silently, never out loud)",

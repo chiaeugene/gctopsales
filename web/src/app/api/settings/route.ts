@@ -69,6 +69,16 @@ export async function PUT(req: Request) {
     const body = PutSchema.safeParse(await req.json());
     if (!body.success) throw new ApiError(400, "Invalid settings payload");
 
+    // A brain is GC's memory of how this agent sells — losing one silently is
+    // the worst failure this page can have. So a save is allowed to edit or
+    // clear individual FIELDS, but never to replace a populated brain with an
+    // entirely empty object (the shape a stale/failed page load produces).
+    const brainGuard = (incoming: Record<string, string> | undefined, stored: string): boolean => {
+      if (incoming === undefined) return false;
+      if (Object.values(incoming).some((v) => (v ?? "").trim())) return true;
+      return !Object.keys(parseJson<Record<string, string>>(stored, {})).length;
+    };
+
     const data: Record<string, unknown> = {};
     if (body.data.storeName !== undefined) data.storeName = body.data.storeName;
     if (body.data.agentName !== undefined) data.agentName = body.data.agentName;
@@ -76,10 +86,10 @@ export async function PUT(req: Request) {
     if (body.data.state !== undefined) data.state = body.data.state;
     if (body.data.homeMarket !== undefined) data.homeMarket = body.data.homeMarket;
     if (body.data.marketsServed !== undefined) data.marketsServed = toJson(body.data.marketsServed);
-    if (body.data.identityBrain !== undefined) data.identityBrain = toJson(body.data.identityBrain);
-    if (body.data.salesBrain !== undefined) data.salesBrain = toJson(body.data.salesBrain);
-    if (body.data.fulfillmentBrain !== undefined) data.fulfillmentBrain = toJson(body.data.fulfillmentBrain);
-    if (body.data.catalogRules !== undefined) data.catalogRules = toJson(body.data.catalogRules);
+    if (brainGuard(body.data.identityBrain, profile.identityBrain)) data.identityBrain = toJson(body.data.identityBrain);
+    if (brainGuard(body.data.salesBrain, profile.salesBrain)) data.salesBrain = toJson(body.data.salesBrain);
+    if (brainGuard(body.data.fulfillmentBrain, profile.fulfillmentBrain)) data.fulfillmentBrain = toJson(body.data.fulfillmentBrain);
+    if (brainGuard(body.data.catalogRules, profile.catalogRules)) data.catalogRules = toJson(body.data.catalogRules);
     if (body.data.tone !== undefined) data.tone = body.data.tone;
     if (body.data.allowLists !== undefined) data.allowLists = body.data.allowLists;
     if (body.data.emojiStyle !== undefined) data.emojiStyle = body.data.emojiStyle;

@@ -84,6 +84,7 @@ model StoreProfile {
   channels         ChannelConnection[]
   testimonials     Testimonial[]
   templates        MessageTemplate[]
+  discoveryMenus   DiscoveryMenu[]
 }
 
 // One connected messaging channel for a tenant. Manual credentials phase:
@@ -354,4 +355,37 @@ model ErrorLog {
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// A seller-authored discovery question with fixed answer options — the "what
+// problem are you facing? 1. Pores 2. Dark spots 3. Dullness" move that top
+// MAE agents open with. Train GC teaches this by example and hopes the model
+// copies it; this makes it explicit and repeatable: the agent controls the
+// exact wording and the exact options, and GC asks it verbatim.
+//
+// Rendering is governed by StoreProfile.allowLists: on = numbered choices,
+// off = the same question asked in prose. The library decides WHAT to ask,
+// the setting decides HOW it looks.
+model DiscoveryMenu {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // The problem area this opens up, e.g. "Skin", "Gut & digestion", "Hair".
+  // GC matches the customer's stated concern against this.
+  topic    String
+  question String
+  // string[] (JSON) — the answer options, in order. 2-5 is the useful range.
+  options  String @default("[]")
+  // Optional: what GC should do with each answer, e.g. which product a given
+  // choice points to. Free text, injected alongside the menu.
+  followUpNote String?
+
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
 }

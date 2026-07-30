@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ChatIcon, CheckIcon } from "@/components/ui/icons";
 import { useT } from "@/components/I18nProvider";
+import { splitIntoBubbles } from "@/lib/ai/humanize";
 
 // A chat is "quiet" once nothing has happened for a day — surface it so the
 // agent knows who to nudge.
@@ -690,64 +691,88 @@ function MessageBubble({ msg, live, onDelete }: { msg: Msg; live?: boolean; onDe
     );
   }
   const isCustomer = msg.role === "CUSTOMER";
+
+  // GC's reply goes out as several separate WhatsApp messages (blank lines are
+  // bubble breaks), so show it here the way the customer actually receives it —
+  // same splitter as the senders, so this can never drift from reality.
+  const parts = msg.role === "GC" ? splitIntoBubbles(msg.content) : [msg.content];
+  const lastIdx = parts.length - 1;
+
   return (
-    <div className={"group/msg " + (isCustomer ? "flex justify-end" : "flex justify-start")}>
-      <div
-        className={
-          isCustomer
-            ? "max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-br-md bg-[var(--ink)] text-white px-3.5 sm:px-4 py-2.5 text-sm whitespace-pre-wrap"
-            : "max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-bl-md bg-black/[0.04] px-3.5 sm:px-4 py-2.5 text-sm whitespace-pre-wrap"
-        }
-      >
-        {msg.role === "AGENT" && <div className="text-[10px] text-black/35 mb-0.5">You</div>}
-        {onDelete && (
-          <button
-            onClick={onDelete}
-            title="Remove this message from GC's memory"
-            className={
-              "float-right ml-2 -mr-1 -mt-0.5 text-[13px] leading-none opacity-0 group-hover/msg:opacity-60 hover:!opacity-100 transition-opacity " +
-              (isCustomer ? "text-white" : "text-black/50")
-            }
-          >
-            ×
-          </button>
-        )}
-        {msg.content}
-        {msg.attachmentIds && msg.attachmentIds.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {msg.attachmentIds.map((aid) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={aid} src={`/api/attachments/${aid}`} alt="attachment GC sent" className="rounded-lg max-h-40 border border-black/[0.06]" />
-            ))}
-          </div>
-        )}
-        {/* On a live channel GC already delivered this to the customer, so
-            there is nothing to copy — say so instead. */}
-        {!isCustomer && msg.role === "GC" && live && (
-          <div className="mt-1.5 -mb-0.5 text-[11px] text-emerald-700">✓ sent to customer automatically</div>
-        )}
-        {!isCustomer && !(msg.role === "GC" && live) && msg.role !== "AGENT" && (
-          <div className="mt-1.5 -mb-0.5">
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(msg.content);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1500);
-              }}
-              className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-ink)] hover:underline"
-              title="Copy GC's reply, then paste it to the customer"
+    <div className="space-y-1.5">
+      {parts.map((part, idx) => {
+        const isLast = idx === lastIdx;
+        return (
+          <div key={idx} className={"group/msg " + (isCustomer ? "flex justify-end" : "flex justify-start")}>
+            <div
+              className={
+                isCustomer
+                  ? "max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-br-md bg-[var(--ink)] text-white px-3.5 sm:px-4 py-2.5 text-sm whitespace-pre-wrap"
+                  : "max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-bl-md bg-black/[0.04] px-3.5 sm:px-4 py-2.5 text-sm whitespace-pre-wrap"
+              }
             >
-              {copied ? (
-                <>
-                  <CheckIcon className="w-3 h-3" /> {t("ws.copied")}
-                </>
-              ) : (
-                t("ws.copyReply")
+              {msg.role === "AGENT" && idx === 0 && <div className="text-[10px] text-black/35 mb-0.5">You</div>}
+              {/* Delete removes the whole stored reply, so it belongs on the
+                  first bubble only — one × per actual message. */}
+              {onDelete && idx === 0 && (
+                <button
+                  onClick={onDelete}
+                  title="Remove this message from GC's memory"
+                  className={
+                    "float-right ml-2 -mr-1 -mt-0.5 text-[13px] leading-none opacity-0 group-hover/msg:opacity-60 hover:!opacity-100 transition-opacity " +
+                    (isCustomer ? "text-white" : "text-black/50")
+                  }
+                >
+                  ×
+                </button>
               )}
-            </button>
+              {part}
+              {isLast && msg.attachmentIds && msg.attachmentIds.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {msg.attachmentIds.map((aid) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={aid} src={`/api/attachments/${aid}`} alt="attachment GC sent" className="rounded-lg max-h-40 border border-black/[0.06]" />
+                  ))}
+                </div>
+              )}
+              {/* On a live channel GC already delivered this to the customer, so
+                  there is nothing to copy — say so instead. */}
+              {isLast && !isCustomer && msg.role === "GC" && live && (
+                <div className="mt-1.5 -mb-0.5 text-[11px] text-emerald-700">
+                  ✓ sent to customer automatically
+                  {parts.length > 1 && <span className="text-black/35"> · {parts.length} messages</span>}
+                </div>
+              )}
+              {isLast && !isCustomer && !(msg.role === "GC" && live) && msg.role !== "AGENT" && (
+                <div className="mt-1.5 -mb-0.5">
+                  <button
+                    onClick={() => {
+                      // Copy the whole reply, blank lines intact, so pasting it
+                      // by hand reproduces the same separate messages.
+                      navigator.clipboard.writeText(msg.content);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    }}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-ink)] hover:underline"
+                    title="Copy GC's reply, then paste it to the customer"
+                  >
+                    {copied ? (
+                      <>
+                        <CheckIcon className="w-3 h-3" /> {t("ws.copied")}
+                      </>
+                    ) : (
+                      t("ws.copyReply")
+                    )}
+                  </button>
+                  {parts.length > 1 && (
+                    <span className="ml-2 text-[11px] text-black/35">sends as {parts.length} messages</span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        );
+      })}
     </div>
   );
 }

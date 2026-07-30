@@ -47,6 +47,7 @@ const groups: NavGroup[] = [
     items: [
       { href: "/setup", labelKey: "nav.setupGc", icon: StoreIcon },
       { href: "/train", labelKey: "nav.trainGc", icon: UsersIcon },
+      { href: "/discovery", labelKey: "nav.discovery", icon: ChatIcon },
       { href: "/gym", labelKey: "nav.gym", icon: DumbbellIcon },
     ],
   },
