@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { StarIcon } from "@/components/ui/icons";
@@ -52,6 +51,10 @@ export default function TestimonialsPage() {
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState<Partial<Testimonial> | null>(null);
   const [uploading, setUploading] = useState(false);
+  // Collapsed by default: 60+ results stacked open made every control on the
+  // page unreachable without scrolling to the bottom.
+  const [open, setOpen] = useState<Set<string>>(new Set());
+  const [query, setQuery] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -132,8 +135,17 @@ export default function TestimonialsPage() {
     const sr = p.series ?? UNGROUPED;
     if (!seriesOrder.includes(sr)) seriesOrder.push(sr);
   }
+  const q = query.trim().toLowerCase();
+  const visible = q
+    ? items.filter((t) =>
+        `${t.resultText} ${t.customerName ?? ""} ${t.productName ?? ""} ${t.market ?? ""}`
+          .toLowerCase()
+          .includes(q)
+      )
+    : items;
+
   const bySeries = new Map<string, Testimonial[]>();
-  for (const t of items) {
+  for (const t of visible) {
     const key = t.productSeries ?? (t.productId ? t.productName ?? UNGROUPED : UNGROUPED);
     if (!bySeries.has(key)) bySeries.set(key, []);
     bySeries.get(key)!.push(t);
@@ -149,114 +161,128 @@ export default function TestimonialsPage() {
       return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
     });
 
+  function toggle(series: string) {
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(series)) next.delete(series);
+      else next.add(series);
+      return next;
+    });
+  }
+
+  // Searching is pointless against collapsed sections, so a query opens
+  // whatever it matched.
+  const searching = q.length > 0;
+  const isOpen = (series: string) => searching || open.has(series);
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-4">
       <PageHeader
         title="Customer results (social proof)"
-        subtitle={
-          <>
-            Real results GC cites at the deciding moment. Add a genuine quote and, where you have one, a before/after
-            photo — GC decides on her own when it fits to send it, the way a top seller would. Only what you add here
-            is ever used.
-          </>
-        }
+        subtitle="Real results GC cites at the deciding moment. GC decides on her own when one fits. Only what you add here is ever used."
         action={<Button onClick={() => setDraft({ isActive: true })}>+ Add result</Button>}
       />
       {error && <div className="text-sm text-red-600">{error}</div>}
 
-      {/* Coverage strip — the whole point of grouping: an agent can see at a
-          glance which product they have no proof for. */}
-      {groups.length > 0 && (
-        <Card className="!py-3">
-          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-            {groups.map((g) => {
-              const live = g.items.filter((x) => x.isActive).length;
-              const thin = live < TARGET_PER_CATEGORY;
-              return (
-                <a
-                  key={g.series}
-                  href={`#cat-${slug(g.series)}`}
-                  className="text-xs inline-flex items-center gap-1.5 hover:underline"
-                >
-                  <span className={thin ? "text-amber-600" : "text-black/55"}>{g.series}</span>
-                  <span
-                    className={
-                      "rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums " +
-                      (thin ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")
-                    }
-                  >
-                    {live}
-                  </span>
-                </a>
-              );
-            })}
-          </div>
-        </Card>
+      {/* Toolbar: search + expand/collapse. Kept directly under the header so
+          it is reachable without scrolling, whatever the library size. */}
+      {items.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search results, names, products…"
+            className="flex-1 min-w-[200px] rounded-xl border border-black/10 px-3.5 py-2 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)]"
+          />
+          <button
+            onClick={() => setOpen(open.size ? new Set() : new Set(groups.map((g) => g.series)))}
+            className="text-xs font-medium text-[var(--accent-ink)] hover:underline px-1"
+          >
+            {open.size ? "Collapse all" : "Expand all"}
+          </button>
+          <span className="text-xs text-black/35 tabular-nums">
+            {visible.length}
+            {searching ? ` of ${items.length}` : ""}
+          </span>
+        </div>
       )}
 
-      <div className="space-y-6">
-        {items.length === 0 && (
-          <p className="text-sm text-black/35">
-            No results yet — add real customer results to give GC proof to close with.
-          </p>
-        )}
+      {searching && visible.length === 0 && (
+        <p className="text-sm text-black/40">No results match &ldquo;{query}&rdquo;.</p>
+      )}
 
+      {items.length === 0 && (
+        <p className="text-sm text-black/35">
+          No results yet — add real customer results to give GC proof to close with.
+        </p>
+      )}
+
+      {/* One collapsed row per category: the whole library fits on one screen,
+          and the amber count still shows where proof is thin. */}
+      <div className="space-y-1.5">
         {groups.map((g) => {
           const live = g.items.filter((x) => x.isActive).length;
+          const thin = live < TARGET_PER_CATEGORY;
           const img = SERIES_IMAGE[g.series];
+          const expanded = isOpen(g.series);
           return (
-            <section key={g.series} id={`cat-${slug(g.series)}`} className="space-y-2 scroll-mt-4">
-              <div className="flex items-center gap-3">
-                {img && (
+            <div key={g.series} className="rounded-2xl border border-black/[0.07] bg-white overflow-hidden">
+              <button
+                onClick={() => toggle(g.series)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-black/[0.02] transition-colors"
+              >
+                {img ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={img}
-                    alt=""
-                    className="w-12 h-12 rounded-xl object-cover shrink-0 border border-black/[0.06] bg-white"
-                  />
+                  <img src={img} alt="" className="w-9 h-9 rounded-lg object-cover shrink-0 bg-black/[0.03]" />
+                ) : (
+                  <span className="w-9 h-9 rounded-lg bg-black/[0.04] shrink-0" />
                 )}
-                <div className="min-w-0">
-                  <h2 className="text-sm font-semibold tracking-tight truncate">{g.series}</h2>
-                  <p className="text-xs text-black/40">
-                    {live} live {live === 1 ? "result" : "results"}
-                    {live < TARGET_PER_CATEGORY && (
-                      <span className="text-amber-600"> · thin, aim for {TARGET_PER_CATEGORY}</span>
-                    )}
-                  </p>
-                </div>
-              </div>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium truncate">{g.series}</span>
+                  <span className={"block text-xs " + (thin ? "text-amber-600" : "text-black/40")}>
+                    {live} live{thin ? ` · thin, aim for ${TARGET_PER_CATEGORY}` : ""}
+                  </span>
+                </span>
+                <span
+                  className={
+                    "rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums shrink-0 " +
+                    (thin ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700")
+                  }
+                >
+                  {g.items.length}
+                </span>
+                <span
+                  className={"shrink-0 text-black/30 text-xs transition-transform " + (expanded ? "rotate-90" : "")}
+                >
+                  ▶
+                </span>
+              </button>
 
-              <div className="space-y-2">
-                {g.items.map((t) => (
-                  <Card key={t.id}>
-                    <div className="flex items-start justify-between gap-3">
+              {expanded && (
+                <div className="divide-y divide-black/[0.05] border-t border-black/[0.05]">
+                  {g.items.map((t) => (
+                    <div key={t.id} className="group/row flex items-start gap-2.5 px-3 py-2.5 hover:bg-black/[0.015]">
                       {t.photoUrl && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={t.photoUrl}
-                          alt=""
-                          className="w-14 h-14 rounded-xl object-cover shrink-0 border border-black/[0.06]"
-                        />
+                        <img src={t.photoUrl} alt="" className="w-9 h-9 rounded-lg object-cover shrink-0" />
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm flex items-center flex-wrap gap-x-1">
-                          <span className="font-medium">{t.customerName || "A customer"}</span>
-                          {t.market && <span className="text-xs text-black/35"> · {t.market}</span>}
-                          {t.productName && (
-                            <span className="text-xs text-[var(--accent-ink)]"> · {t.productName}</span>
-                          )}
+                        <div className="text-xs flex items-center flex-wrap gap-x-1.5 text-black/45">
+                          <span className="font-medium text-black/70">{t.customerName || "A customer"}</span>
+                          {t.market && <span>{t.market}</span>}
                           {t.rating && (
-                            <span className="inline-flex items-center gap-0.5 text-amber-500 ml-1">
+                            <span className="inline-flex items-center gap-0.5 text-amber-500">
                               {Array.from({ length: t.rating }).map((_, i) => (
-                                <StarIcon key={i} className="w-3 h-3" />
+                                <StarIcon key={i} className="w-2.5 h-2.5" />
                               ))}
                             </span>
                           )}
                           {!t.isActive && <Badge tone="danger">hidden</Badge>}
                         </div>
-                        <div className="mt-1 text-sm text-black/60">&ldquo;{t.resultText}&rdquo;</div>
+                        <p className="mt-0.5 text-[13px] leading-snug text-black/60 line-clamp-2">{t.resultText}</p>
                       </div>
-                      <div className="flex gap-3 shrink-0">
+                      {/* Visible on touch (no hover), fades in on desktop. */}
+                      <div className="flex gap-2.5 shrink-0 opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 transition-opacity">
                         <button
                           onClick={() => setDraft(t)}
                           className="text-xs text-[var(--accent-ink)] hover:underline"
@@ -268,10 +294,10 @@ export default function TestimonialsPage() {
                         </button>
                       </div>
                     </div>
-                  </Card>
-                ))}
-              </div>
-            </section>
+                  ))}
+                </div>
+              )}
+            </div>
           );
         })}
       </div>
