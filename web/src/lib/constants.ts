@@ -61,6 +61,12 @@ export const MARKET_INFO: Record<
     shipping: string;
     languages: string;
     localVoice: string;
+    // Payment rails buyers in this market actually expect to be offered.
+    paymentRails: string;
+    // Market-specific selling and compliance switches (see
+    // research/SEA_CHAT_COMMERCE.md). These are legal/consumer-protection
+    // facts, not style preferences.
+    compliance: string;
   }
 > = {
   MY: {
@@ -71,6 +77,9 @@ export const MARKET_INFO: Record<
     shipping:
       "FREE delivery nationwide (no minimum); processed in 1-3 working days, delivered ~5-7 business days; self-pickup at Puchong HQ / Miri / Penang. Free shipping is also a MAE Club member perk.",
     languages: "English (Manglish), Mandarin, Bahasa Malaysia, or rojak mix",
+    paymentRails: "DuitNow QR / DuitNow transfer, FPX online banking, Touch 'n Go eWallet, and COD where the agent offers it. Atome instalments suit the bigger programmes (and Atome is marketed as Shariah-compliant, which matters to many Malaysian buyers).",
+    compliance:
+      "PRICE MUST BE GIVEN ON FIRST ASK. Malaysian e-commerce regulations require a seller to display the full price including taxes and delivery, plus business name and registration number. 'PM for price' is the exact practice the ministry declared illegal (penalties up to RM50,000 and/or 3 years). Halal: name the certifying body if certified, and NEVER imply certification that doesn't exist — marketing something as halal without valid certification is itself the offence. Cite the NPRA MAL registration number when asked about safety, but never claim registration means the product works. Buyers here routinely check a seller's bank account against the police mule-account database before paying, so a bare account number reads as a scam.",
     localVoice:
       "Sound like a warm Malaysian seller. English = Manglish: natural 'lah', 'lor', 'can', 'boleh', 'ya', 'har', 'wan', rojak-mixing English with a little Malay/Chinese is very natural here. Mandarin = Malaysian-Chinese style (simplified characters, casual, mixes in some English words like 'ok'/'try'/'promo'). Malay = warm everyday Bahasa Malaysia. Rojak (mixing all three in one message) is completely normal and endearing — mirror whatever mix they use.",
   },
@@ -82,6 +91,9 @@ export const MARKET_INFO: Record<
     shipping:
       "Served from the Malaysia & Brunei store. Cross-border delivery to Brunei — confirm the delivery method, fee and timing (and whether COD is available) with the agent; don't promise free local delivery.",
     languages: "Malay (dominant), English, some Mandarin",
+    paymentRails: "Confirm with the agent — cross-border from the Malaysia store. Do not promise a rail you haven't confirmed.",
+    compliance:
+      "Halal is a GATE here, not a bonus: treat proof of halal status as a precondition, not a selling point to mention later. Malay-dominant and more formal than Malaysia. Keep imagery conservative. Health products crossing the border sit under Ministry of Health import rules, so never promise customs-free or same-day delivery.",
     localVoice:
       "Sound like a polite, warm Bruneian seller. Malay is the default and most natural here — use gentle, respectful Bruneian/standard Malay (a soft 'bah' is locally natural). Keep English polite and warm if they use it. Mandarin only if they write in Chinese. Bruneians tend to be a touch more formal and courteous than Malaysians — lean warm and respectful, lighter on slang.",
   },
@@ -95,6 +107,9 @@ export const MARKET_INFO: Record<
     languages: "English (Singlish), Mandarin",
     localVoice:
       "Sound like a friendly Singaporean seller. English = Singlish flavour where it fits: 'lah', 'leh', 'lor', 'sia', 'can can', 'okay lah', 'quite good sia' — natural but not overdone. Mandarin = Singaporean-Chinese style (simplified, crisp, mixes in English words). Malay is uncommon for this customer base — don't default to it. Singaporeans are a bit more fast-paced and value-conscious; be efficient and warm.",
+    paymentRails: "PayNow is what Singapore buyers expect. Offer it by name rather than saying 'bank transfer'.",
+    compliance:
+      "STRICTEST claim rules of all the markets. HSA does not pre-approve health supplements, so 'HSA-approved' or 'HSA-registered' is itself a false claim — never say it. HSA also names '100% safe', 'clinically proven' and fast-result promises as misleading. Before/after testimonials that reference a condition are treated as prohibited disease-treatment claims. Keep the register restrained: no 'sis'/'dear', no stacked urgency, lighter on emoji than Malaysia.",
   },
 };
 

@@ -345,10 +345,23 @@ export default function TestimonialsPage() {
               Active (GC can cite this)
             </label>
 
-            {/* Before/after photo — quote and picture live together; GC decides
-                on her own when to send it, no manual dispatch needed. */}
+            {/* Photo lives with the quote; GC decides when to send it. Deliberately
+                NOT labelled "before/after": Malaysia's advertising rules prohibit
+                visuals representing changes in the human body, and Singapore's HSA
+                treats before/after testimonials referencing a condition as a
+                prohibited disease-treatment claim. GC is also blocked from sending
+                that class of image in the prompt. */}
             <div className="border-t border-black/[0.06] pt-3 space-y-2">
-              <div className="text-sm font-semibold">Before/after photo</div>
+              <div className="text-sm font-semibold">Photo (optional)</div>
+              <p className="text-xs text-black/45">
+                Good: the real product in their hands, a packed parcel, a screenshot of their message.
+                These are what actually build trust with a chat buyer.
+              </p>
+              <p className="text-xs text-amber-700">
+                Do not upload before/after body or skin transformation photos. Malaysian advertising rules
+                prohibit visuals showing changes in the human body, and Singapore treats them as a
+                disease-treatment claim. GC will not send them.
+              </p>
               {!draft.id && <p className="text-xs text-black/45">Save this result first, then reopen it to add a photo.</p>}
               {draft.id && (
                 <div className="flex items-center gap-3">
