@@ -49,7 +49,12 @@ export async function POST() {
         }
       }
 
-      const reg = await registerPhoneNumber(c.externalId, token);
+      // A number already on the Cloud API needs no registration — skip the
+      // call entirely rather than provoking a confusing PIN error.
+      const alreadyOnCloud = status.platform === "CLOUD_API";
+      const reg = alreadyOnCloud
+        ? { ok: true, detail: "already on Cloud API" }
+        : await registerPhoneNumber(c.externalId, token);
 
       const report = {
         phoneNumberId: c.externalId,

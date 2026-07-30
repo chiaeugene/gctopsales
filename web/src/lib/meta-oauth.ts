@@ -162,10 +162,17 @@ export async function registerPhoneNumber(phoneNumberId: string, accessToken: st
     body: JSON.stringify({ messaging_product: "whatsapp", pin: "000000" }),
   });
   if (res.ok) return { ok: true };
-  const json = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+  const json = (await res.json().catch(() => null)) as { error?: { message?: string; code?: number } } | null;
   const msg = json?.error?.message ?? `HTTP ${res.status}`;
-  // "already registered" style responses are success for our purposes.
-  if (/already/i.test(msg)) return { ok: true, detail: msg };
+  const code = json?.error?.code;
+  // Already-usable numbers report themselves as errors here:
+  // - "already registered" (plain)
+  // - 133005 PIN mismatch: a two-step PIN only exists on a number that is
+  //   already registered (Meta test numbers ship this way), so this is a
+  //   success for our purposes, not a failure.
+  if (/already/i.test(msg) || code === 133005) {
+    return { ok: true, detail: "already registered" };
+  }
   return { ok: false, detail: msg };
 }
 
