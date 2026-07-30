@@ -18,6 +18,8 @@ type Settings = {
   fulfillmentBrain: Record<string, string>;
   catalogRules: Record<string, string>;
   tone: string;
+  allowLists: boolean;
+  emojiStyle: string;
   autoConfirmPayments: boolean;
   followUpAfterHours: number | null;
   maxFollowUps: number;
@@ -173,6 +175,13 @@ export default function SettingsPage() {
 
       <ToneCard tone={settings.tone} saved={savedCard === "tone"} onSave={(v) => save("tone", { tone: v })} />
 
+      <MessageStyleCard
+        allowLists={settings.allowLists}
+        emojiStyle={settings.emojiStyle}
+        saved={savedCard === "shape"}
+        onSave={(v) => save("shape", v)}
+      />
+
       {BRAIN_SECTIONS.map((sec) => (
         <BrainCard
           key={sec.id}
@@ -276,6 +285,97 @@ function ToneCard(props: { tone: string; saved: boolean; onSave: (v: string) => 
         ))}
       </div>
       <SaveButton saved={props.saved} onClick={() => props.onSave(tone)} />
+    </Card>
+  );
+}
+
+// How replies LOOK on the phone. GC always texts short and splits replies into
+// separate bubbles — that part is not optional. What IS a preference: whether
+// numbered option menus are allowed (some sellers close hard with "#1 #2 #3")
+// and how much emoji fits their brand.
+const LIST_OPTIONS = [
+  { value: false, label: "settings.shape.lists.off.label", desc: "settings.shape.lists.off.desc" },
+  { value: true, label: "settings.shape.lists.on.label", desc: "settings.shape.lists.on.desc" },
+];
+
+const EMOJI_OPTIONS = [
+  { value: "none", label: "settings.shape.emoji.none.label", desc: "settings.shape.emoji.none.desc" },
+  { value: "light", label: "settings.shape.emoji.light.label", desc: "settings.shape.emoji.light.desc" },
+  { value: "each", label: "settings.shape.emoji.each.label", desc: "settings.shape.emoji.each.desc" },
+];
+
+function RadioRow(props: { checked: boolean; name: string; label: string; desc: string; onSelect: () => void }) {
+  const { t } = useT();
+  return (
+    <label
+      className={
+        "flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition-colors " +
+        (props.checked
+          ? "border-[var(--accent)] bg-[var(--accent-soft)]"
+          : "border-black/[0.08] hover:bg-black/[0.02]")
+      }
+    >
+      <input type="radio" name={props.name} checked={props.checked} onChange={props.onSelect} className="mt-1" />
+      <span>
+        <span className="text-sm font-medium">{t(props.label)}</span>
+        <span className="block text-xs text-black/45">{t(props.desc)}</span>
+      </span>
+    </label>
+  );
+}
+
+function MessageStyleCard(props: {
+  allowLists: boolean;
+  emojiStyle: string;
+  saved: boolean;
+  onSave: (v: { allowLists: boolean; emojiStyle: string }) => void;
+}) {
+  const { t } = useT();
+  const [allowLists, setAllowLists] = useState(props.allowLists);
+  const [emojiStyle, setEmojiStyle] = useState(props.emojiStyle);
+  useEffect(() => setAllowLists(props.allowLists), [props.allowLists]);
+  useEffect(() => setEmojiStyle(props.emojiStyle), [props.emojiStyle]);
+
+  return (
+    <Card className="space-y-4">
+      <div>
+        <h2 className="font-semibold">{t("settings.shape.title")}</h2>
+        <p className="text-sm text-black/45">{t("settings.shape.desc")}</p>
+      </div>
+
+      <div className="space-y-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-black/40">
+          {t("settings.shape.lists.title")}
+        </h3>
+        {LIST_OPTIONS.map((o) => (
+          <RadioRow
+            key={String(o.value)}
+            name="allowLists"
+            checked={allowLists === o.value}
+            label={o.label}
+            desc={o.desc}
+            onSelect={() => setAllowLists(o.value)}
+          />
+        ))}
+      </div>
+
+      <div className="space-y-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-black/40">
+          {t("settings.shape.emoji.title")}
+        </h3>
+        {EMOJI_OPTIONS.map((o) => (
+          <RadioRow
+            key={o.value}
+            name="emojiStyle"
+            checked={emojiStyle === o.value}
+            label={o.label}
+            desc={o.desc}
+            onSelect={() => setEmojiStyle(o.value)}
+          />
+        ))}
+      </div>
+
+      <SaveButton saved={props.saved} onClick={() => props.onSave({ allowLists, emojiStyle })} />
     </Card>
   );
 }

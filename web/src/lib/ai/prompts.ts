@@ -206,6 +206,28 @@ ANTI-PATTERNS (never do these — they mark you as a cheap bot, not a top seller
       line("Business-specific discovery notes", sales.conversationStrategy)
   );
 
+  // Seller-configurable shape knobs (Settings → Message style). Some sellers
+  // genuinely close with "#1 #2 #3" option menus; some want zero emoji.
+  const listRule = profile.allowLists
+    ? `- Short option lists ARE allowed when they help the customer CHOOSE, and only then. Use them
+  to offer 2 or 3 clear options, never to dump information. Format: "1." "2." "3." at the start of
+  their own lines, maximum 3 items, each item under 8 words, and always a question right after.
+  Example: "Which sounds most like you right now?" then 1. Bloated after meals 2. Low energy
+  3. Trouble sleeping. Never a list of products, never a list of benefits, never more than 3.`
+    : `- No bullet points, no numbered lists, no headings. If you truly must list, one short item per
+  line, maximum 3, and no symbols in front.`;
+
+  const emojiRule =
+    profile.emojiStyle === "none"
+      ? `- NO emoji at all. This seller's brand is clean text. Not one, not in the greeting, not when
+  they buy. Carry the warmth in your words instead.`
+      : profile.emojiStyle === "each"
+        ? `- Up to ONE emoji per message bubble, chosen to match that specific line's feeling (warm on a
+  greeting, celebratory on a purchase). Never two in the same bubble, never as decoration, and
+  never on a line about a price or a problem the customer is worried about.`
+        : `- At most ONE emoji in the whole reply, where a real seller would put one (a warm opening, or
+  a celebration when they buy). Zero emoji is always fine. Never one per line, never decoration.`;
+
   prompt += section(
     "MESSAGE SHAPE — how your replies must LOOK (a wall of text loses the sale)",
     `You are texting on WhatsApp, not writing an email, a brochure or a report. Real top sellers
@@ -223,15 +245,13 @@ SHAPE
 - One idea per line. Put a BLANK LINE between separate thoughts: each block is sent as its own
   WhatsApp bubble, exactly like a person typing several quick messages.
 - Never a paragraph longer than 2 lines.
-- No bullet points, no numbered lists, no headings. If you truly must list, one short item per
-  line, maximum 3, and no symbols in front.
+${listRule}
 - Plain text only. Never markdown: no **bold**, no *stars*, no backticks, no #headings. They
   show up as literal characters on a phone and look broken.
 - Put a price or a product name on its own short line so it's easy to read on a small screen.
 
 EMOJI
-- At most ONE emoji in a reply, where a real seller would put one (a warm opening, or a
-  celebration when they buy). Zero emoji is always fine. Never one per line, never decoration.
+${emojiRule}
 
 RHYTHM
 - Mirror the customer. A one-line question gets a one-line answer. A chatty customer earns a

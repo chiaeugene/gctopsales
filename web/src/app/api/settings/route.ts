@@ -32,6 +32,8 @@ export async function GET() {
       fulfillmentBrain: FulfillmentBrainSchema.parse(parseJson(profile.fulfillmentBrain, {})),
       catalogRules: CatalogRulesSchema.parse(parseJson(profile.catalogRules, {})),
       tone: profile.tone,
+      allowLists: profile.allowLists,
+      emojiStyle: profile.emojiStyle,
       autoConfirmPayments: profile.autoConfirmPayments,
       followUpAfterHours: profile.followUpAfterHours,
       maxFollowUps: profile.maxFollowUps,
@@ -52,6 +54,8 @@ const PutSchema = z.object({
   fulfillmentBrain: FulfillmentBrainSchema.optional(),
   catalogRules: CatalogRulesSchema.optional(),
   tone: z.enum(["professional", "balanced", "local"]).optional(),
+  allowLists: z.boolean().optional(),
+  emojiStyle: z.enum(["none", "light", "each"]).optional(),
   autoConfirmPayments: z.boolean().optional(),
   followUpAfterHours: z.number().int().min(1).max(72).nullable().optional(),
   maxFollowUps: z.number().int().min(0).max(10).optional(),
@@ -77,6 +81,8 @@ export async function PUT(req: Request) {
     if (body.data.fulfillmentBrain !== undefined) data.fulfillmentBrain = toJson(body.data.fulfillmentBrain);
     if (body.data.catalogRules !== undefined) data.catalogRules = toJson(body.data.catalogRules);
     if (body.data.tone !== undefined) data.tone = body.data.tone;
+    if (body.data.allowLists !== undefined) data.allowLists = body.data.allowLists;
+    if (body.data.emojiStyle !== undefined) data.emojiStyle = body.data.emojiStyle;
     if (body.data.autoConfirmPayments !== undefined) data.autoConfirmPayments = body.data.autoConfirmPayments;
     if (body.data.followUpAfterHours !== undefined) data.followUpAfterHours = body.data.followUpAfterHours;
     if (body.data.maxFollowUps !== undefined) data.maxFollowUps = body.data.maxFollowUps;

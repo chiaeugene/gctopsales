@@ -58,6 +58,13 @@ model StoreProfile {
   // light local flavour) | local (full local slang — Manglish/Singlish/Malay).
   tone String @default("professional")
 
+  // How replies are SHAPED on the phone. Sellers differ: some swear by clean
+  // prose, some genuinely close with "#1 #2 #3" option menus.
+  // allowLists: may GC use short numbered/bulleted option lists.
+  // emojiStyle: none | light (about one per reply) | each (one per bubble).
+  allowLists Boolean @default(false)
+  emojiStyle String  @default("light")
+
   // Opt-in: auto-confirm payment when a proof screenshot is vision-verified
   // with high confidence AND the amount exactly matches the order total.
   autoConfirmPayments Boolean @default(false)

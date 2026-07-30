@@ -217,6 +217,37 @@ const dict: Record<string, Entry> = {
     zh: "十足本地个性：Manglish / Singlish / 马来俚语，像本地朋友在聊天。",
   },
 
+  // Message style (how replies look on the phone)
+  "settings.shape.title": { en: "How GC's messages look", zh: "GC 讯息的排版方式" },
+  "settings.shape.desc": {
+    en: "GC always texts short and splits a reply into a few separate WhatsApp messages, like a real person. These two choices are yours.",
+    zh: "GC 一律发短讯息，并把一个回复分成几条 WhatsApp 讯息发出，像真人那样。以下两项由你决定。",
+  },
+  "settings.shape.lists.title": { en: "Numbered option lists", zh: "编号选项清单" },
+  "settings.shape.lists.off.label": { en: "Never use lists", zh: "不用清单" },
+  "settings.shape.lists.off.desc": {
+    en: "Pure conversation. Cleanest look, and usually the highest reply rate.",
+    zh: "纯对话式。看起来最干净，回复率通常也最高。",
+  },
+  "settings.shape.lists.on.label": { en: "Allow short option lists", zh: "允许简短选项清单" },
+  "settings.shape.lists.on.desc": {
+    en: 'GC may offer up to 3 numbered choices when it helps the customer pick, e.g. "1. Bloated after meals 2. Low energy 3. Trouble sleeping".',
+    zh: '当能帮客户做选择时，GC 可给最多 3 个编号选项，例如「1. 饭后腹胀 2. 精神不好 3. 睡不好」。',
+  },
+  "settings.shape.emoji.title": { en: "Emoji", zh: "表情符号" },
+  "settings.shape.emoji.none.label": { en: "No emoji", zh: "完全不用" },
+  "settings.shape.emoji.none.desc": { en: "Clean text only.", zh: "只用纯文字。" },
+  "settings.shape.emoji.light.label": { en: "Light (recommended)", zh: "少量（建议）" },
+  "settings.shape.emoji.light.desc": {
+    en: "About one per reply, only where a real seller would put one.",
+    zh: "每个回复大约一个，只放在真人销售会放的地方。",
+  },
+  "settings.shape.emoji.each.label": { en: "One in most messages", zh: "多数讯息一个" },
+  "settings.shape.emoji.each.desc": {
+    en: "Warmer and chattier. Up to one per message bubble.",
+    zh: "更亲切、更健谈。每条讯息最多一个。",
+  },
+
   // Brain sections
   "settings.section.fulfillment.title": { en: "Payment & delivery", zh: "收款与配送" },
   "settings.section.fulfillment.why": {
