@@ -32,6 +32,12 @@ const ASSET_KIND_HINT: Record<string, string> = {
   OTHER: "",
 };
 
+// Marks where the agent-static half of the prompt ends and the per-conversation
+// half begins. chatComplete splits here so the static half is cached once per
+// agent per hour and shared by every one of that agent's conversations, instead
+// of each conversation writing its own cache entry.
+export const CACHE_BREAK = "\n<<<GC_CACHE_BREAK>>>\n";
+
 function section(title: string, body: string): string {
   return `\n## ${title}\n${body.trim()}\n`;
 }
@@ -865,7 +871,8 @@ This deep read is internal reasoning only. NEVER say "I sense you're feeling…"
   if (order) {
     const items = parseJson<{ name: string; qty: number; unitPriceMyr: number; currency?: string }[]>(order.items, []);
     const cartCcy = items[0]?.currency === "SGD" ? "S$" : "RM";
-    prompt += section(
+    prompt += CACHE_BREAK;
+  prompt += section(
       "What we already know about this customer (do not re-ask what is known)",
       line("Name", order.customerName) +
         line("Phone", order.phone) +

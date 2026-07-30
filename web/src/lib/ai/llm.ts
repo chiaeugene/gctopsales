@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { CACHE_BREAK } from "@/lib/ai/prompts";
 import OpenAI from "openai";
 
 // Provider-agnostic chat completion. Default: Anthropic Claude.
@@ -57,14 +58,24 @@ export async function chatComplete(opts: {
   // as a cacheable block. Without this each customer message re-pays full input
   // price for the entire catalogue, proof library and playbook — which is what
   // exhausted the API credit. Cache hits bill at a small fraction of that.
-  // 1-HOUR ttl, not the 5-minute default, and the difference is the whole point
+  // Split the system prompt at the marker: everything before it is identical for
+  // this agent, everything after is this one conversation's state. Only the
+  // static half carries cache_control, so one cache entry serves every
+  // conversation the agent is having rather than one entry per conversation.
+  //
+  // 1-HOUR ttl, not the 5-minute default, and that difference is the whole point
   // on WhatsApp. Customers reply minutes or hours apart, so a 5-minute cache
-  // would miss on most turns — and a miss costs a cache WRITE (1.25x base input),
-  // which is worse than not caching at all. A 1h write costs 2x once, then every
-  // message from every customer of this agent for the next hour reads at 0.1x.
+  // would miss on most turns — and a miss bills a cache WRITE (1.25x base input),
+  // which is worse than not caching at all. A 1h write costs 2x once, then reads
+  // are 0.1x for the rest of the hour.
+  const [staticPart, dynamicPart] = opts.system.includes(CACHE_BREAK)
+    ? (opts.system.split(CACHE_BREAK) as [string, string])
+    : [opts.system, ""];
+
   const system: Anthropic.TextBlockParam[] = [
-    { type: "text", text: opts.system, cache_control: { type: "ephemeral", ttl: "1h" } },
+    { type: "text", text: staticPart, cache_control: { type: "ephemeral", ttl: "1h" } },
   ];
+  if (dynamicPart.trim()) system.push({ type: "text", text: dynamicPart });
 
   let res = await client.messages.create({
     model,
