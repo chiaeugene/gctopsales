@@ -92,6 +92,7 @@ model StoreProfile {
   templates        MessageTemplate[]
   discoveryMenus   DiscoveryMenu[]
   shareLinks       ShareLink[]
+  mediaAssets      MediaAsset[]
 }
 
 // One connected messaging channel for a tenant. Manual credentials phase:
@@ -418,6 +419,42 @@ model ShareLink {
 
   // Optional: tie the link to one product so GC only offers it in context.
   productId String?
+
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+}
+
+// A file GC may send that is NOT a product photo and NOT a customer result:
+// a halal/NPRA certificate, a packed-parcel shot, a price card, a label
+// close-up. Before this existed, every image had to hang off a Product or a
+// Testimonial, so the exact assets the research says close a sale in this
+// region (certification proof, delivery proof) had nowhere to live.
+//
+// `note` is the field that makes it usable: it tells GC WHEN this file earns
+// its place, so proof lands on the right objection instead of being sprayed.
+model MediaAsset {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // CERT | DELIVERY | PRICE_CARD | LABEL | PRODUCT | TEAM | OTHER
+  kind  String @default("OTHER")
+  label String // what GC reads to decide if this fits the moment
+  note  String? // when to send it, in the agent's own words
+
+  // Optional: scope to one product so it is only offered in that context.
+  productId String?
+
+  fileName  String
+  fileType  String // PHOTO | PDF
+  mimeType  String
+  data      Bytes
+  sizeBytes Int
 
   isActive  Boolean @default(true)
   sortOrder Int     @default(0)

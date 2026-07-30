@@ -40,7 +40,7 @@ const groups: NavGroup[] = [
       { href: "/campaigns", labelKey: "nav.campaigns", icon: MegaphoneIcon },
       { href: "/templates", labelKey: "nav.templates", icon: FileIcon },
       { href: "/testimonials", labelKey: "nav.results", icon: StarIcon },
-      { href: "/links", labelKey: "nav.links", icon: FileIcon },
+      { href: "/library", labelKey: "nav.library", icon: FileIcon },
     ],
   },
   {

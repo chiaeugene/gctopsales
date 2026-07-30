@@ -10,6 +10,10 @@ export const ATTACHMENT_MAX_BYTES = 8 * 1024 * 1024; // 8MB
 // route to the right table without guessing.
 export const TESTIMONIAL_PHOTO_PREFIX = "test_";
 
+// Standalone library assets (certificates, delivery proof, price cards) share
+// the same id namespace, with their own prefix.
+export const MEDIA_ASSET_PREFIX = "asset_";
+
 export type SendableFile = { fileName: string; mimeType: string; fileType: "PHOTO" | "PDF"; data: Uint8Array };
 export type SendableFileMeta = { fileName: string; fileType: "PHOTO" | "PDF" };
 
@@ -17,6 +21,18 @@ export type SendableFileMeta = { fileName: string; fileType: "PHOTO" | "PDF" };
 // exactly one file, never a batch. Tenant-scoped: an id belonging to a
 // different profile resolves to null even if it exists.
 export async function resolveSendableAttachment(id: string, profileId: string): Promise<SendableFile | null> {
+  if (id.startsWith(MEDIA_ASSET_PREFIX)) {
+    const m = await prisma.mediaAsset.findFirst({
+      where: { id: id.slice(MEDIA_ASSET_PREFIX.length), profileId, isActive: true },
+    });
+    if (!m) return null;
+    return {
+      fileName: m.fileName,
+      mimeType: m.mimeType,
+      fileType: m.fileType as "PHOTO" | "PDF",
+      data: new Uint8Array(m.data),
+    };
+  }
   if (id.startsWith(TESTIMONIAL_PHOTO_PREFIX)) {
     const t = await prisma.testimonial.findFirst({
       where: { id: id.slice(TESTIMONIAL_PHOTO_PREFIX.length), profileId },
@@ -32,6 +48,14 @@ export async function resolveSendableAttachment(id: string, profileId: string): 
 // Metadata only — used by Messenger/Instagram's send-by-URL path, which
 // never needs the raw bytes on our side. Tenant-scoped like the above.
 export async function resolveSendableAttachmentMeta(id: string, profileId: string): Promise<SendableFileMeta | null> {
+  if (id.startsWith(MEDIA_ASSET_PREFIX)) {
+    const m = await prisma.mediaAsset.findFirst({
+      where: { id: id.slice(MEDIA_ASSET_PREFIX.length), profileId, isActive: true },
+      select: { fileName: true, fileType: true },
+    });
+    if (!m) return null;
+    return { fileName: m.fileName, fileType: m.fileType as "PHOTO" | "PDF" };
+  }
   if (id.startsWith(TESTIMONIAL_PHOTO_PREFIX)) {
     const t = await prisma.testimonial.findFirst({
       where: { id: id.slice(TESTIMONIAL_PHOTO_PREFIX.length), profileId },

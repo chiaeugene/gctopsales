@@ -6,7 +6,7 @@ import { buildGcSystemPrompt } from "@/lib/ai/prompts";
 import { humanizeReply } from "@/lib/ai/humanize";
 import { EngineOutputSchema, type EngineOutput } from "@/lib/ai/schemas";
 import { AI_ALLOWED_STATUSES, MONEY_STATES, type OrderStatus } from "@/lib/constants";
-import { TESTIMONIAL_PHOTO_PREFIX } from "@/lib/attachments";
+import { TESTIMONIAL_PHOTO_PREFIX, MEDIA_ASSET_PREFIX } from "@/lib/attachments";
 
 const HISTORY_LIMIT = 40;
 
@@ -64,7 +64,8 @@ export async function generateGcReply(opts: {
     throw new Error("Order is in human takeover; GC will not auto-reply.");
   }
 
-  const [products, trainingExamples, testimonials, discoveryMenus, shareLinks, history] = await Promise.all([
+  const [products, trainingExamples, testimonials, discoveryMenus, shareLinks, mediaAssets, history] =
+    await Promise.all([
     prisma.product.findMany({
       where: { profileId: profile.id, isActive: true },
       orderBy: { sortOrder: "asc" },
@@ -96,6 +97,12 @@ export async function generateGcReply(opts: {
       where: { profileId: profile.id, isActive: true },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     }),
+    prisma.mediaAsset.findMany({
+      where: { profileId: profile.id, isActive: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      // Metadata only — the prompt needs ids and labels, never the file bytes.
+      omit: { data: true },
+    }),
     prisma.message.findMany({
       where: { conversationId },
       // Customer + reply rows are written in one transaction and share a
@@ -105,7 +112,16 @@ export async function generateGcReply(opts: {
     }),
   ]);
 
-  const system = buildGcSystemPrompt({ profile, products, trainingExamples, testimonials, discoveryMenus, shareLinks, order });
+  const system = buildGcSystemPrompt({
+    profile,
+    products,
+    trainingExamples,
+    testimonials,
+    discoveryMenus,
+    shareLinks,
+    mediaAssets,
+    order,
+  });
 
   const messages: ChatMessage[] = [];
   for (const m of history) {
@@ -183,6 +199,7 @@ export async function generateGcReply(opts: {
   const validAttachmentIds = new Set([
     ...products.flatMap((p) => p.attachments.map((a) => a.id)),
     ...testimonials.filter((t) => t.photoMimeType).map((t) => `${TESTIMONIAL_PHOTO_PREFIX}${t.id}`),
+    ...mediaAssets.map((m) => `${MEDIA_ASSET_PREFIX}${m.id}`),
   ]);
   const attachmentIds = output.sendAttachmentIds.filter((id) => validAttachmentIds.has(id));
 

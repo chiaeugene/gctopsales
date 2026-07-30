@@ -6,8 +6,9 @@ import type {
   Testimonial,
   DiscoveryMenu,
   ShareLink,
+  MediaAsset,
 } from "@prisma/client";
-import { TESTIMONIAL_PHOTO_PREFIX, type AttachmentMetadata } from "@/lib/attachments";
+import { TESTIMONIAL_PHOTO_PREFIX, MEDIA_ASSET_PREFIX, type AttachmentMetadata } from "@/lib/attachments";
 import { parseJson } from "@/lib/json";
 import {
   IdentityBrainSchema,
@@ -17,6 +18,18 @@ import {
 } from "@/lib/ai/schemas";
 import { AI_ALLOWED_STATUSES, ORDER_STATUSES, MARKET_INFO, MARKETS, type Market } from "@/lib/constants";
 import { MAE_SALES_MASTERY } from "@/lib/ai/mae-knowledge";
+
+// Plain-language hints so GC understands what each library asset kind is FOR,
+// not just what it is called.
+const ASSET_KIND_HINT: Record<string, string> = {
+  CERT: "certification / lab proof — for safety, halal or authenticity questions",
+  DELIVERY: "delivery proof — for the unspoken 'will my parcel actually arrive' fear",
+  PRICE_CARD: "price card — send instead of a link when they just need to look at prices",
+  LABEL: "label close-up — registration number, batch, expiry",
+  PRODUCT: "product shot",
+  TEAM: "the agent / shop — puts a real human behind the account",
+  OTHER: "",
+};
 
 function section(title: string, body: string): string {
   return `\n## ${title}\n${body.trim()}\n`;
@@ -58,9 +71,19 @@ export function buildGcSystemPrompt(opts: {
   testimonials?: Omit<Testimonial, "photoData">[];
   discoveryMenus?: DiscoveryMenu[];
   shareLinks?: ShareLink[];
+  mediaAssets?: Omit<MediaAsset, "data">[];
   order?: Order | null;
 }): string {
-  const { profile, products, trainingExamples, testimonials = [], discoveryMenus = [], shareLinks = [], order } = opts;
+  const {
+    profile,
+    products,
+    trainingExamples,
+    testimonials = [],
+    discoveryMenus = [],
+    shareLinks = [],
+    mediaAssets = [],
+    order,
+  } = opts;
   const identity = IdentityBrainSchema.parse(parseJson(profile.identityBrain, {}));
   const sales = SalesBrainSchema.parse(parseJson(profile.salesBrain, {}));
   const fulfillment = FulfillmentBrainSchema.parse(parseJson(profile.fulfillmentBrain, {}));
@@ -637,6 +660,39 @@ Answer with facts, calmly, in one message, and do NOT pile on more testimonials:
 that you are an authorised MAE agent, the product registration, the physical address or pickup point
 if the agent has one, and an open invitation to verify any of it themselves. Then let them.`
   );
+
+  // The standalone asset library: proof files that are not product photos and
+  // not customer results (certificates, delivery proof, price cards).
+  if (mediaAssets.length) {
+    const rendered = mediaAssets
+      .map((m) => {
+        const hint = ASSET_KIND_HINT[m.kind] ?? "";
+        const bits = [
+          `- [${MEDIA_ASSET_PREFIX}${m.id}] ${m.label} (${m.fileType}${hint ? `, ${hint}` : ""})`,
+        ];
+        if (m.note) bits.push(`    Send when: ${m.note}`);
+        if (m.productId) bits.push(`    Only with product id ${m.productId}`);
+        return bits.join("\n");
+      })
+      .join("\n");
+
+    prompt += section(
+      "YOUR PROOF LIBRARY — extra files you can send (use the exact id in sendAttachmentIds)",
+      `These are not product photos. They are the trust assets: certificates, delivery proof, price
+cards, label close-ups. In this region they do more to close a sale than another paragraph of
+description, because they answer the questions a cautious buyer will not ask out loud.
+
+${rendered}
+
+- Send by putting the exact id above in "sendAttachmentIds". Never invent an id.
+- Match the file to the moment using its "Send when" note. A certificate belongs with a safety or
+  halal question, delivery proof belongs where they are hesitating about whether you are real.
+- Say in words what you are sending, in the same reply. A file arriving with no explanation is worse
+  than no file.
+- These count toward the same image budget as everything else: never two file messages back to back,
+  and never re-send one you already sent in this conversation.`
+    );
+  }
 
   prompt += section(
     "Deep read — decode the PERSON before every reply (do this silently, never out loud)",

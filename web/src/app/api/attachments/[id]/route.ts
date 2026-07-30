@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { UnauthorizedError, requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
-import { TESTIMONIAL_PHOTO_PREFIX } from "@/lib/attachments";
+import { TESTIMONIAL_PHOTO_PREFIX, MEDIA_ASSET_PREFIX } from "@/lib/attachments";
 
 // The ONE place attachment bytes are ever loaded for the authenticated
 // CRM/playground preview — fetches exactly one row and streams it.
@@ -15,6 +15,20 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   try {
     const profile = await requireProfile();
     const { id } = await ctx.params;
+
+    if (id.startsWith(MEDIA_ASSET_PREFIX)) {
+      const m = await prisma.mediaAsset.findFirst({
+        where: { id: id.slice(MEDIA_ASSET_PREFIX.length), profileId: profile.id },
+      });
+      if (!m) return NextResponse.json({ error: "Attachment not found" }, { status: 404 });
+      return new NextResponse(new Uint8Array(m.data), {
+        headers: {
+          "Content-Type": m.mimeType,
+          "Content-Disposition": `inline; filename="${encodeURIComponent(m.fileName)}"`,
+          "Cache-Control": "private, max-age=3600",
+        },
+      });
+    }
 
     if (id.startsWith(TESTIMONIAL_PHOTO_PREFIX)) {
       const testimonialId = id.slice(TESTIMONIAL_PHOTO_PREFIX.length);

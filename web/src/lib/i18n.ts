@@ -34,6 +34,7 @@ const dict: Record<string, Entry> = {
   "nav.templates": { en: "Templates", zh: "消息模板" },
   "nav.results": { en: "Results", zh: "客户见证" },
   "nav.links": { en: "Links", zh: "分享链接" },
+  "nav.library": { en: "Library", zh: "素材库" },
   "nav.setupGc": { en: "Set up GC", zh: "设置 GC" },
   "nav.trainGc": { en: "Train GC", zh: "训练 GC" },
   "nav.discovery": { en: "Discovery", zh: "开场提问" },
