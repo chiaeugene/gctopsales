@@ -414,7 +414,22 @@ function SeedResultsCard() {
         setError(json.error || "Seeding failed");
         return;
       }
-      setResult(`Added ${json.created} results across ${json.profiles} agent librar${json.profiles === 1 ? "y" : "ies"} (${json.skipped} already present).`);
+      // Report the quiet failures too — a skipped profile or an unmatched
+      // category used to look identical to success.
+      const parts = [
+        `Added ${json.created} results across ${json.profiles} agent librar${json.profiles === 1 ? "y" : "ies"} (${json.skipped} already present).`,
+      ];
+      if (json.noCatalog) {
+        parts.push(
+          `${json.noCatalog} agent${json.noCatalog === 1 ? "" : "s"} skipped for having no products yet — push the catalog to them first, then run this again.`
+        );
+      }
+      if (json.unmatchedCategories?.length) {
+        parts.push(
+          `No product matched these categories, so those results are filed under General: ${json.unmatchedCategories.join(", ")}.`
+        );
+      }
+      setResult(parts.join(" "));
     } finally {
       setBusy(false);
     }

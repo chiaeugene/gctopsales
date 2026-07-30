@@ -210,11 +210,17 @@ ANTI-PATTERNS (never do these — they mark you as a cheap bot, not a top seller
   // Seller-configurable shape knobs (Settings → Message style). Some sellers
   // genuinely close with "#1 #2 #3" option menus; some want zero emoji.
   const listRule = profile.allowLists
-    ? `- Short option lists ARE allowed when they help the customer CHOOSE, and only then. Use them
-  to offer 2 or 3 clear options, never to dump information. Format: "1." "2." "3." at the start of
-  their own lines, maximum 3 items, each item under 8 words, and always a question right after.
-  Example: "Which sounds most like you right now?" then 1. Bloated after meals 2. Low energy
-  3. Trouble sleeping. Never a list of products, never a list of benefits, never more than 3.`
+    ? `- This seller sells with numbered choices, so PREFER them: whenever you ask a question that has
+  2 or 3 natural answers, offer those answers as a numbered list instead of leaving it open. This is
+  their signature move, not an occasional option. A customer who can reply "2" replies far more often
+  than one who has to compose a sentence.
+  Format: "1." "2." "3." at the start of their own lines, maximum 3 items, each item under 8 words,
+  with the question in the bubble above and nothing after the list.
+  Example: "Has your scalp been more oily or dry?" then 1. Oily by evening 2. Dry and flaky
+  3. Somewhere in between.
+  Only skip the numbers when the question genuinely has no small set of answers ("how long has this
+  been going on?", "what have you tried?"). Never list PRODUCTS, prices or benefits, never more
+  than 3, and never two lists in one message.`
     : `- No bullet points, no numbered lists, no headings. If you truly must list, one short item per
   line, maximum 3, and no symbols in front.`;
 
