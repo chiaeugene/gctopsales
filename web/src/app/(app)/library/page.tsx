@@ -28,7 +28,17 @@ const KINDS: { value: string; label: string; why: string }[] = [
   { value: "PRICE_CARD", label: "Price card", why: "Send this instead of a link when they just want to see prices" },
   { value: "LABEL", label: "Label close-up", why: "Registration number, batch, expiry — proves it’s genuine stock" },
   { value: "PRODUCT", label: "Extra product shot", why: "In-hand, unboxing, size comparison" },
+  {
+    value: "INFOGRAPHIC",
+    label: "Explainer / infographic",
+    why: "Mechanism, ingredients, how to take it — the best asset for looking professional",
+  },
   { value: "TEAM", label: "You / your shop", why: "Puts a real human behind the account" },
+  {
+    value: "BEFORE_AFTER",
+    label: "Before / after (restricted)",
+    why: "Stored for your own manual use — GC will not send these automatically",
+  },
   { value: "OTHER", label: "Other", why: "" },
 ];
 const KIND_LABEL: Record<string, string> = Object.fromEntries(KINDS.map((k) => [k.value, k.label]));

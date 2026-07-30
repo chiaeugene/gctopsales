@@ -9,7 +9,17 @@ import { ATTACHMENT_MAX_BYTES, ATTACHMENT_MIME_TO_TYPE, MEDIA_ASSET_PREFIX } fro
 // never returned by the list endpoint (loading every file's payload to render a
 // list is the OOM pattern this codebase has been bitten by before).
 
-export const ASSET_KINDS = ["CERT", "DELIVERY", "PRICE_CARD", "LABEL", "PRODUCT", "TEAM", "OTHER"] as const;
+export const ASSET_KINDS = [
+  "CERT",
+  "DELIVERY",
+  "PRICE_CARD",
+  "LABEL",
+  "PRODUCT",
+  "INFOGRAPHIC",
+  "TEAM",
+  "BEFORE_AFTER",
+  "OTHER",
+] as const;
 
 export async function GET() {
   return handle(async () => {

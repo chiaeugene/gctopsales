@@ -27,6 +27,7 @@ const ASSET_KIND_HINT: Record<string, string> = {
   PRICE_CARD: "price card — send instead of a link when they just need to look at prices",
   LABEL: "label close-up — registration number, batch, expiry",
   PRODUCT: "product shot",
+  INFOGRAPHIC: "explainer graphic — mechanism, ingredients or how to take it; excellent when they want to understand HOW it works",
   TEAM: "the agent / shop — puts a real human behind the account",
   OTHER: "",
 };

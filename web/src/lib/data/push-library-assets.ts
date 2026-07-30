@@ -103,7 +103,11 @@ export async function pushLibraryAssets(prisma: PrismaClient): Promise<LibraryPu
           mimeType: file.mimeType,
           data: file.data,
           sizeBytes: file.data.byteLength,
-          isActive: true,
+          // Before/after body imagery loads switched OFF. Malaysia prohibits
+          // visuals representing changes in the human body and Singapore treats
+          // them as a disease-treatment claim, so an agent has to switch these on
+          // deliberately rather than inherit them silently. Everything else is on.
+          isActive: e.kind !== "BEFORE_AFTER",
           sortOrder: sort++,
         },
       });
