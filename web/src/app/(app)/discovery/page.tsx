@@ -225,10 +225,17 @@ export default function DiscoveryPage() {
         ))}
 
         {menus.length > 0 && (
-          <p className="text-xs text-black/40 px-1">
-            GC asks at most ONE menu per conversation, at the start, and skips it entirely when the customer
-            already said what their problem is.
-          </p>
+          <div className="text-xs text-black/40 px-1 space-y-1">
+            <p>
+              Write each menu once, in whatever language you think in. GC asks it in the customer&rsquo;s language
+              automatically, Mandarin or Malay or rojak, keeping your options in the same order. Product names
+              and prices are never translated.
+            </p>
+            <p>
+              GC asks at most ONE menu per conversation, at the start, skips it entirely when the customer
+              already said what their problem is, and takes over the whole sale the moment they answer.
+            </p>
+          </div>
         )}
       </div>
 
