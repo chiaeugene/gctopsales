@@ -80,6 +80,37 @@ export default function PlaygroundPage() {
     loadChats();
   }, [loadChats]);
 
+  // Silently re-read the open conversation. Only swaps state when something
+  // actually changed, so the view doesn't flicker or fight the scroll position.
+  const refreshOpenChat = useCallback(async () => {
+    if (!orderId) return;
+    const res = await fetch(`/api/playground/session?orderId=${orderId}`);
+    if (!res.ok) return;
+    const json = await res.json();
+    const next = (json.messages as Msg[]).filter(
+      (m) => m.role === "CUSTOMER" || m.role === "GC" || m.role === "AGENT"
+    );
+    setMessages((prev) => {
+      const unchanged =
+        prev.length === next.length && prev[prev.length - 1]?.content === next[next.length - 1]?.content;
+      return unchanged ? prev : next;
+    });
+    setOrder((prev) => (JSON.stringify(prev) === JSON.stringify(json.order) ? prev : json.order));
+  }, [orderId]);
+
+  // Live inbox: real customers arrive on their own schedule, so poll instead of
+  // making the agent press refresh. Paused while a tab is hidden or a request
+  // of ours is already in flight.
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+      if (busy) return;
+      loadChats();
+      refreshOpenChat();
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [busy, loadChats, refreshOpenChat]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -468,7 +499,11 @@ export default function PlaygroundPage() {
           {/* Live-channel banner: this is a real customer, GC is autonomous */}
           {orderId && isLive(order?.source ?? activeChat?.source) && (
             <div className="border-b border-emerald-200 bg-emerald-50/70 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-emerald-900">
+              <span className="text-xs text-emerald-900 flex items-center gap-1.5 flex-wrap">
+                <span className="relative flex w-2 h-2 shrink-0" title="Updating automatically">
+                  <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-70 animate-ping" />
+                  <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
+                </span>
                 <strong>Live on {CHANNEL_LABEL[(order?.source ?? activeChat?.source) as string] ?? "channel"}</strong>
                 {order?.externalContactId ? ` · ${order.externalContactId}` : ""}
                 {" — "}
