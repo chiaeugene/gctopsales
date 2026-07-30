@@ -232,8 +232,9 @@ export default function DiscoveryPage() {
               and prices are never translated.
             </p>
             <p>
-              GC asks at most ONE menu per conversation, at the start, skips it entirely when the customer
-              already said what their problem is, and takes over the whole sale the moment they answer.
+              These are the <strong>opening</strong> move only: at most one per conversation, and skipped
+              entirely when the customer already said what their problem is. Every option question after that
+              GC writes itself from what the customer actually said, so nobody gets the same script twice.
             </p>
           </div>
         )}
