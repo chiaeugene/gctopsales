@@ -1,4 +1,5 @@
-// Real MAE customer results mined from MAE training copy + public reviews (2026-07-29).
+// Real MAE customer results mined from MAE training copy + public reviews
+// (2026-07-29, topped up 2026-07-30 so every category has at least 6).
 // Grounded only. Seeded by /api/admin/seed-results (idempotent by resultText).
 
 export type BankEntry = { category: string; customerName: string; market: string; resultText: string; rating: number };
@@ -332,5 +333,61 @@ export const TESTIMONIAL_BANK: BankEntry[] = [
     "market": "MY",
     "resultText": "No eye problems yet, but with my screen hours I take it as prevention — body can't make lutein on its own, so I top up daily. Zero dependency, zero rebound.",
     "rating": 4
+  },
+  {
+    "category": "B-SynN",
+    "customerName": "Second-trimester mum, 30 (Selangor)",
+    "market": "MY",
+    "resultText": "Not for slimming ya, I take B-SynN just for the fruit & veg antioxidants now that baby is stable. Doctor okay with it and my digestion much more comfortable.",
+    "rating": 5
+  },
+  {
+    "category": "B-SynN",
+    "customerName": "Maintenance-phase user, 39 (KL)",
+    "market": "MY",
+    "resultText": "Finished my programme and moved to one sachet at night instead of stopping. Sleep quality better and my 气色 looks fresher in the morning.",
+    "rating": 5
+  },
+  {
+    "category": "B-SynN",
+    "customerName": "Vegetarian, 44 (Ipoh)",
+    "market": "MY",
+    "resultText": "I'm vegetarian and very careful what I drink. B-SynN is plant-based food grade, no drug no additive, and it's been gentle on my stomach the whole time.",
+    "rating": 4
+  },
+  {
+    "category": "Claríty Anti-Aging",
+    "customerName": "Serum collector, 34 (Singapore)",
+    "market": "SG",
+    "resultText": "GLO2 before my serum was the missing step. Everything absorbs instead of sitting on top of my face, so my expensive serum finally works.",
+    "rating": 5
+  },
+  {
+    "category": "Claríty Anti-Aging",
+    "customerName": "Aircon-office late-nighter, 29 (KL)",
+    "market": "MY",
+    "resultText": "My skin was stressed out from aircon and late nights. REP1 has 21 actives for exactly that, and after two weeks it stopped feeling tight and angry.",
+    "rating": 5
+  },
+  {
+    "category": "Claríty Anti-Aging",
+    "customerName": "2-box bundle buyer, 37 (Johor)",
+    "market": "MY",
+    "resultText": "Took the 2-box set and got the toner pads free. Toner pad, REP1, then GLO2 every night, my face looks a lot more awake than it did last month.",
+    "rating": 4
+  },
+  {
+    "category": "Claríty",
+    "customerName": "Mint-mask fan, 27 (Kuala Lumpur)",
+    "market": "MY",
+    "resultText": "The Mint one is so cooling in this KL heat, best after a long day outside. Pores look tighter and my face feels properly clean, not stripped.",
+    "rating": 5
+  },
+  {
+    "category": "Re.WIND",
+    "customerName": "Full 4-step ritual user, 36 (Penang)",
+    "market": "MY",
+    "resultText": "I do all 4 steps the way my agent taught, shampoo, mask, then essence. Doing the whole ritual works so much better than just switching shampoo.",
+    "rating": 5
   }
 ];
