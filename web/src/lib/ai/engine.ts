@@ -181,6 +181,8 @@ export async function generateGcReply(opts: {
       ],
       maxTokens: 4000,
       temperature: 0.3,
+      // No tools on the retry, so the reply can be pinned to JSON outright.
+      prefill: '{"reply":',
     });
     parsed = EngineOutputSchema.safeParse(extractJson(retryRaw));
     if (parsed.success) console.error("[engine] JSON contract violated once; retry succeeded.");

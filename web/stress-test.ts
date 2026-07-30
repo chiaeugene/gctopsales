@@ -212,7 +212,16 @@ async function main() {
       history.push({ role: "user", content: customerMsg });
       lines.push(`CUSTOMER: ${customerMsg}`);
 
-      const raw = await chatComplete({ system, messages: history, maxTokens: 4000, temperature: 0.7 });
+      // Mirror engine.ts exactly, or this measures a code path production no
+      // longer uses.
+      const withReminder: ChatMessage[] = history.map((m, i) =>
+        i === history.length - 1 && m.role === "user"
+          ? { ...m, content: `${m.content}
+
+(Reply with the mandatory JSON contract object only.)` }
+          : m
+      );
+      const raw = await chatComplete({ system, messages: withReminder, maxTokens: 4000, temperature: 0.7 });
       let parsed = EngineOutputSchema.safeParse(extractJson(raw));
       if (!parsed.success) {
         // Mirror the engine's retry exactly — production recovers from this, so a
@@ -224,7 +233,7 @@ async function main() {
         const retryRaw = await chatComplete({
           system,
           messages: [
-            ...history,
+            ...withReminder,
             { role: "assistant", content: raw },
             {
               role: "user",
@@ -234,6 +243,7 @@ async function main() {
           ],
           maxTokens: 4000,
           temperature: 0.3,
+          prefill: '{"reply":',
         });
         parsed = EngineOutputSchema.safeParse(extractJson(retryRaw));
       }

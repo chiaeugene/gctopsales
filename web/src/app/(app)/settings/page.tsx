@@ -19,6 +19,7 @@ type Settings = {
   fulfillmentBrain: Record<string, string>;
   catalogRules: Record<string, string>;
   tone: string;
+  paymentReady: boolean;
   allowLists: boolean;
   emojiStyle: string;
   useDiscoveryMenus: boolean;
@@ -167,6 +168,23 @@ export default function SettingsPage() {
     <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
       <PageHeader title={t("settings.title")} subtitle={t("settings.subtitle")} />
       {error && <div className="text-sm text-red-600">{error}</div>}
+
+      {/* Nothing else on this page matters as much: without payment details GC
+          cannot close a sale, and the failure is silent. */}
+      {!settings.paymentReady && (
+        <Card className="!border-red-200 !bg-red-50 space-y-1.5">
+          <h2 className="font-semibold text-red-900 flex items-center gap-2 text-sm">
+            <AlertIcon className="w-4 h-4 shrink-0" />
+            GC cannot take payment yet
+          </h2>
+          <p className="text-sm text-red-800">
+            Your payment details are still the example placeholder, so when a customer says
+            &ldquo;I want to pay now&rdquo; GC has nothing to send them and has to hand over to you.
+            Fill in <strong>Payment &amp; delivery</strong> below with your real bank, account name and
+            number.
+          </p>
+        </Card>
+      )}
 
       <MarketsCard
         homeMarket={settings.homeMarket}

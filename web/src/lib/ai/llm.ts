@@ -23,6 +23,10 @@ export async function chatComplete(opts: {
   // can answer competitor-product questions with real, current facts instead
   // of refusing or guessing. No-op on the OpenAI provider.
   webSearch?: boolean;
+  // Text the assistant turn is forced to start with. Used to pin the JSON
+  // contract: the model cannot answer in prose if its reply already began with
+  // `{`. Returned text is re-prefixed so callers see a complete object.
+  prefill?: string;
 }): Promise<string> {
   const provider = process.env.LLM_PROVIDER || "anthropic";
   const maxTokens = opts.maxTokens ?? 1024;
@@ -54,6 +58,11 @@ export async function chatComplete(opts: {
     role: m.role,
     content: m.content,
   }));
+  // Anthropic continues from a trailing assistant turn, so this pins the shape
+  // of the answer. Not combined with server tools: a tool call has to be able to
+  // come first, and a prefill would block it.
+  const prefill = tools ? undefined : opts.prefill;
+  if (prefill) anthropicMessages.push({ role: "assistant", content: prefill });
   // The system prompt is ~37k tokens and identical on every turn, so it is sent
   // as a cacheable block. Without this each customer message re-pays full input
   // price for the entire catalogue, proof library and playbook — which is what
@@ -116,7 +125,8 @@ export async function chatComplete(opts: {
     );
     return "";
   }
-  return texts.map((b) => b.text).join("\n");
+  const body = texts.map((b) => b.text).join("\n");
+  return prefill ? prefill + body : body;
 }
 
 // Extracts the first JSON object from a model response (handles ```json fences

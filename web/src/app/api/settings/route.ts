@@ -31,6 +31,14 @@ export async function GET() {
       salesBrain: SalesBrainSchema.parse(parseJson(profile.salesBrain, {})),
       fulfillmentBrain: FulfillmentBrainSchema.parse(parseJson(profile.fulfillmentBrain, {})),
       catalogRules: CatalogRulesSchema.parse(parseJson(profile.catalogRules, {})),
+      // True when the seeded "(CONFIGURE ME: …)" placeholder is still in place,
+      // which means GC literally cannot give a buyer bank details.
+      paymentReady: Boolean(
+        (() => {
+          const f = FulfillmentBrainSchema.parse(parseJson(profile.fulfillmentBrain, {}));
+          return f.paymentMethods && !/CONFIGURE ME|UPDATE ME/i.test(f.paymentMethods);
+        })()
+      ),
       tone: profile.tone,
       allowLists: profile.allowLists,
       emojiStyle: profile.emojiStyle,
