@@ -36,6 +36,17 @@ export async function handle<T>(fn: () => Promise<T>, routeName?: string): Promi
   }
 }
 
+// Exported so the webhook paths — which deliberately swallow errors to keep
+// Meta's required fast 200 — can still leave a trace. A silent failure there
+// means a customer got no reply at all, which is the worst outcome in the system.
+export async function logBackgroundError(route: string, err: unknown) {
+  try {
+    await recordError(route, err);
+  } catch {
+    // Never let logging break the caller.
+  }
+}
+
 async function recordError(route: string, err: unknown) {
   const message = (err instanceof Error ? `${err.name}: ${err.message}` : String(err)).slice(0, 500);
   await prisma.errorLog.create({ data: { route, message } });

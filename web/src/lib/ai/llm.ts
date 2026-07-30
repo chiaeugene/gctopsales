@@ -53,10 +53,18 @@ export async function chatComplete(opts: {
     role: m.role,
     content: m.content,
   }));
+  // The system prompt is ~37k tokens and identical on every turn, so it is sent
+  // as a cacheable block. Without this each customer message re-pays full input
+  // price for the entire catalogue, proof library and playbook — which is what
+  // exhausted the API credit. Cache hits bill at a small fraction of that.
+  const system: Anthropic.TextBlockParam[] = [
+    { type: "text", text: opts.system, cache_control: { type: "ephemeral" } },
+  ];
+
   let res = await client.messages.create({
     model,
     max_tokens: maxTokens,
-    system: opts.system,
+    system,
     messages: anthropicMessages,
     ...(tools ? { tools } : {}),
   });
@@ -66,7 +74,7 @@ export async function chatComplete(opts: {
     res = await client.messages.create({
       model,
       max_tokens: maxTokens,
-      system: opts.system,
+      system,
       messages: anthropicMessages,
       ...(tools ? { tools } : {}),
     });
@@ -76,6 +84,13 @@ export async function chatComplete(opts: {
   // With web search the response interleaves text with server_tool_use /
   // web_search_tool_result blocks and may contain several text blocks —
   // concatenate them all (the JSON contract extractor scans the whole thing).
+  const u = res.usage as { cache_read_input_tokens?: number; cache_creation_input_tokens?: number; input_tokens?: number };
+  if (process.env.GC_LOG_USAGE) {
+    console.log(
+      `[llm] in=${u.input_tokens ?? 0} cacheRead=${u.cache_read_input_tokens ?? 0} cacheWrite=${u.cache_creation_input_tokens ?? 0}`
+    );
+  }
+
   const texts = res.content.filter((b): b is Anthropic.TextBlock => b.type === "text");
   if (texts.length === 0) {
     console.error(

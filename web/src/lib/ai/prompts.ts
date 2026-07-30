@@ -677,17 +677,32 @@ if the agent has one, and an open invitation to verify any of it themselves. The
   // The standalone asset library: proof files that are not product photos and
   // not customer results (certificates, delivery proof, price cards).
   if (mediaAssets.length) {
-    const rendered = mediaAssets
-      .map((m) => {
-        const hint = ASSET_KIND_HINT[m.kind] ?? "";
-        const bits = [
-          `- [${MEDIA_ASSET_PREFIX}${m.id}] ${m.label} (${m.fileType}${hint ? `, ${hint}` : ""})`,
-        ];
-        if (m.note) bits.push(`    Send when: ${m.note}`);
-        if (m.productId) bits.push(`    Only with product id ${m.productId}`);
-        return bits.join("\n");
+    // Grouped by kind with the explanation stated ONCE per group, and one compact
+    // line per asset. The previous per-asset rendering repeated the same kind
+    // hint 72 times and made this section a quarter of the entire prompt.
+    const byKind = new Map<string, typeof mediaAssets>();
+    for (const m of mediaAssets) {
+      if (!byKind.has(m.kind)) byKind.set(m.kind, []);
+      byKind.get(m.kind)!.push(m);
+    }
+    const rendered = [...byKind.entries()]
+      .map(([kind, list]) => {
+        const hint = ASSET_KIND_HINT[kind] ?? "";
+        const head = `${kind}${hint ? ` — ${hint}` : ""}`;
+        const items = list
+          .map((m) => {
+            // Imported labels and notes run long ("Official MAE image for …").
+            // GC only needs enough to pick the right file, and this list is sent
+            // on every single turn, so it is clipped hard.
+            const label = m.label.length > 70 ? `${m.label.slice(0, 67)}…` : m.label;
+            const note = m.note ? ` · ${m.note.length > 80 ? `${m.note.slice(0, 77)}…` : m.note}` : "";
+            const scope = m.productId ? ` · only with product ${m.productId}` : "";
+            return `  [${MEDIA_ASSET_PREFIX}${m.id}] ${label}${note}${scope}`;
+          })
+          .join("\n");
+        return `${head}\n${items}`;
       })
-      .join("\n");
+      .join("\n\n");
 
     prompt += section(
       "YOUR PROOF LIBRARY — extra files you can send (use the exact id in sendAttachmentIds)",

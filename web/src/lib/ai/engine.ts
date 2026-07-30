@@ -147,6 +147,18 @@ export async function generateGcReply(opts: {
     messages.push({ role: "user", content: "SYSTEM: Open this conversation with a warm greeting appropriate to the store. Output the mandatory JSON contract." });
   }
 
+  // The stored history contains GC's PLAIN-TEXT replies (that is what was sent to
+  // the customer), so from turn 2 onward the model sees its own prose and copies
+  // that shape instead of the JSON contract. Measured at 10/10 conversations in
+  // the stress harness. This reminder is a few tokens; the retry it prevents is a
+  // whole second call against a 37k-token prompt.
+  if (messages.length) {
+    const last = messages[messages.length - 1];
+    if (last.role === "user") {
+      last.content += "\n\n(Reply with the mandatory JSON contract object only.)";
+    }
+  }
+
   // webSearch lets GC research competitor products on the spot (prompt
   // gates when she actually uses it — see "Competitor questions" section).
   const raw = await chatComplete({ system, messages, maxTokens: 4000, temperature: 0.7, webSearch: true });

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { logBackgroundError } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
 import { verifyMetaSignature, readBodyWithLimit } from "@/lib/webhooks/verify";
 import {
@@ -175,6 +176,8 @@ export async function POST(req: Request) {
           }
         } catch (err) {
           console.error("[whatsapp webhook] failed to process message", message.id, err);
+          // An LLM outage or credit exhaustion surfaces here and nowhere else.
+          void logBackgroundError("webhook:whatsapp", err);
         }
       }
     }
