@@ -3,6 +3,7 @@ import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { ATTACHMENT_MAX_BYTES, ATTACHMENT_MIME_TO_TYPE, MEDIA_ASSET_PREFIX } from "@/lib/attachments";
+import { normaliseForWhatsApp } from "@/lib/images";
 
 // The standalone library of files GC may send: certificates, delivery proof,
 // price cards, label close-ups. Tenant-scoped on every operation, and bytes are
@@ -91,7 +92,11 @@ export async function POST(req: Request) {
       if (!owned) throw new ApiError(400, "Unknown product");
     }
 
-    const data = new Uint8Array(await file.arrayBuffer());
+    // WhatsApp rejects WEBP outright, so normalise here rather than discovering
+    // it when a customer never receives the image.
+    const raw = new Uint8Array(await file.arrayBuffer());
+    const norm = await normaliseForWhatsApp(raw, file.type, file.name || "upload");
+    const data = norm.data;
     const n = await prisma.mediaAsset.count({ where: { profileId: profile.id } });
     const created = await prisma.mediaAsset.create({
       data: {
@@ -100,9 +105,9 @@ export async function POST(req: Request) {
         label: meta.data.label.trim(),
         note: meta.data.note?.trim() || null,
         productId: meta.data.productId || null,
-        fileName: file.name || "upload",
+        fileName: norm.fileName,
         fileType,
-        mimeType: file.type,
+        mimeType: norm.mimeType,
         data,
         sizeBytes: data.byteLength,
         sortOrder: n,

@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { PrismaClient } from "@prisma/client";
+import { normaliseForWhatsApp } from "@/lib/images";
 
 // Admin-only: give every agent's products a photo GC can actually SEND.
 //
@@ -66,7 +67,9 @@ export async function pushProductPhotos(prisma: PrismaClient): Promise<PhotoPush
       if (p.series) unmapped.add(p.series);
       continue;
     }
-    const data = await bytesFor(mapping.file);
+    const rawBytes = await bytesFor(mapping.file);
+    // The bundled MAE artwork is WEBP, which WhatsApp refuses to send.
+    const data = rawBytes ? (await normaliseForWhatsApp(rawBytes, "image/webp", mapping.file)).data : null;
     if (!data) {
       noMapping++;
       continue;
@@ -75,12 +78,12 @@ export async function pushProductPhotos(prisma: PrismaClient): Promise<PhotoPush
       data: {
         profileId: p.profileId,
         productId: p.id,
-        fileName: mapping.file,
+        fileName: mapping.file.replace(/\.[^.]+$/, ".jpg"),
         // The label is what GC reads to decide whether this file fits the
         // moment, so it has to describe the picture, not the filename.
         label: `${mapping.label} product photo`,
         fileType: "PHOTO",
-        mimeType: "image/webp",
+        mimeType: "image/jpeg",
         data,
         sizeBytes: data.byteLength,
         sortOrder: 0,
