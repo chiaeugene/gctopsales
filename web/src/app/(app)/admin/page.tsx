@@ -219,6 +219,7 @@ export default function AdminPage() {
 
       <SeedResultsCard />
       <ProductPhotosCard />
+      <LearningCard />
 
       <ActivityTreeCard />
 
@@ -509,6 +510,56 @@ function ProductPhotosCard() {
       {error && <div className="text-sm text-red-600">{error}</div>}
       <Button onClick={push} disabled={busy}>
         {busy ? "Pushing…" : "Give every product a photo"}
+      </Button>
+    </Card>
+  );
+}
+
+// The Learning Hub only has something to teach once cases exist. Cases also build
+// nightly via the cron, but an admin wants to see it work immediately.
+function LearningCard() {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function build() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/learning", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Build failed");
+        return;
+      }
+      setResult(
+        `Scanned ${json.scanned} closed orders: ${json.created} new case${json.created === 1 ? "" : "s"}, ` +
+          `${json.updated} updated, ${json.skipped} skipped (too short or unchanged).`
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">Learning Hub cases</h2>
+        <p className="text-sm text-black/45">
+          Turns real won and lost conversations into teaching cases, with names and phone numbers stripped out. Runs
+          nightly on its own; this builds them now. Losses are included on purpose — that is usually where the
+          transferable lesson is.
+        </p>
+      </div>
+      {result && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+          <CheckIcon className="w-4 h-4 shrink-0" />
+          {result}
+        </div>
+      )}
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      <Button onClick={build} disabled={busy}>
+        {busy ? "Studying…" : "Build learning cases now"}
       </Button>
     </Card>
   );

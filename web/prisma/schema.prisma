@@ -93,6 +93,7 @@ model StoreProfile {
   discoveryMenus   DiscoveryMenu[]
   shareLinks       ShareLink[]
   mediaAssets      MediaAsset[]
+  learningCases    LearningCase[]
 }
 
 // One connected messaging channel for a tenant. Manual credentials phase:
@@ -463,4 +464,47 @@ model MediaAsset {
   updatedAt DateTime @updatedAt
 
   @@index([profileId])
+}
+
+// A real conversation turned into a teaching example. Built from orders that
+// actually closed or were actually lost, so the team learns from what happened
+// rather than from theory.
+//
+// The transcript is COPIED here, anonymised, on purpose: a lesson must survive
+// the customer's messages being deleted, and a case shared across the team must
+// never carry a real customer's name or number.
+model LearningCase {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   StoreProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // One case per order, so re-running the builder updates rather than duplicates.
+  orderId String @unique
+
+  outcome     String // WON | LOST
+  productLine String?
+  market      String?
+  valueMyr    Float?
+
+  // The distilled lesson. headline is what shows in the list; the rest opens up.
+  headline     String
+  whatWorked   String
+  whatToAvoid  String
+  keyQuote     String? // the single line that turned it, quoted from the chat
+  turningPoint String? // what was happening at that moment
+
+  // Anonymised transcript, stored as plain text.
+  transcript String
+
+  // 0-100 from the sales report card, when one exists.
+  score Int?
+
+  // Admin publishes a case to the whole team; otherwise only its owner sees it.
+  isShared Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+  @@index([outcome])
 }

@@ -50,6 +50,7 @@ const groups: NavGroup[] = [
       { href: "/train", labelKey: "nav.trainGc", icon: UsersIcon },
       { href: "/discovery", labelKey: "nav.discovery", icon: ChatIcon },
       { href: "/gym", labelKey: "nav.gym", icon: DumbbellIcon },
+      { href: "/learn", labelKey: "nav.learn", icon: TrophyIcon },
     ],
   },
   {
