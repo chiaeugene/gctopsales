@@ -55,8 +55,11 @@ export function humanizeReply(text: string): string {
   if (!text) return text;
   let out = text;
 
-  // 1. Leading list bullets ("- item", "— item", "* item") → "• item".
-  out = out.replace(/^[ \t]*[-*—–―][ \t]+/gm, "• ");
+  // 1. Leading list markers are REMOVED, not prettified. Converting "- item"
+  //    into "• item" still leaves a bullet, which reads just as machine-written
+  //    as the dash did. Numbered lists ("1." "2.") are deliberately untouched —
+  //    those are the seller's own option menus.
+  out = out.replace(/^[ \t]*[-*•—–―][ \t]+/gm, "");
 
   // 2. Dashes between digits collapse to a plain tight hyphen (ranges):
   //    "1 — 2", "1 -- 2", "1 - 2" → "1-2", "RM100 — RM150" → "RM100-RM150".
@@ -80,11 +83,13 @@ export function humanizeReply(text: string): string {
     }
   );
 
-  // 4. Spaced single hyphen as a clause separator: "text - text" → "text, text".
-  //    (digit-digit was already collapsed in step 2.)
-  out = out.replace(/(\S)[ \t]+-[ \t]+(\S)/g, (_m, a: string, b: string) => {
-    return `${a}${separatorFor(a, b)}${b}`;
-  });
+  // 4. Single hyphen used as a clause separator → comma. Covers a space on both
+  //    sides ("text - text") AND on only one ("text -text", "text- text"), which
+  //    the both-sides-only version let through. Digit ranges were already
+  //    collapsed in step 2, and hyphens inside words (B-ActV, Touch-n-Go) have no
+  //    adjacent space so they are never touched.
+  out = out.replace(/(\S)[ \t]+-[ \t]*(\S)/g, (_m, a: string, b: string) => `${a}${separatorFor(a, b)}${b}`);
+  out = out.replace(/(\S)-[ \t]+(\S)/g, (_m, a: string, b: string) => `${a}${separatorFor(a, b)}${b}`);
 
   // 5. Cleanup artifacts.
   out = out

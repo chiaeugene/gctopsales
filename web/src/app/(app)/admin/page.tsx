@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -111,6 +111,8 @@ export default function AdminPage() {
       {error && <div className="text-sm text-red-600">{error}</div>}
 
       <PushCatalogCard />
+
+      <ResetChatsCard />
 
       <SheetImportCard onRegistered={load} />
 
@@ -458,6 +460,104 @@ function SeedResultsCard() {
       <Button onClick={seed} disabled={busy}>
         {busy ? "Seeding…" : "Seed results to all agents"}
       </Button>
+    </Card>
+  );
+}
+
+// Handing the app to a tester means handing over somebody else's practice chats
+// too. This clears the history without touching the catalogue, the results bank
+// or the library — the tester keeps a fully-loaded GC with an empty inbox.
+function ResetChatsCard() {
+  const [counts, setCounts] = useState<{ willDelete: Record<string, number>; willKeep: Record<string, number> } | null>(null);
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const PHRASE = "DELETE ALL CHATS";
+
+  const load = useCallback(async () => {
+    const res = await fetch("/api/admin/reset-chats");
+    if (res.ok) setCounts(await res.json());
+  }, []);
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function wipe() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/reset-chats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Reset failed");
+        return;
+      }
+      const d = json.deleted as Record<string, number>;
+      setResult(
+        `Cleared ${d.orders} chat${d.orders === 1 ? "" : "s"} and ${d.messages} messages. ` +
+          `Catalogue, results, library and settings untouched.`
+      );
+      setConfirm("");
+      load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">Start every inbox from zero</h2>
+        <p className="text-sm text-black/45">
+          Deletes all chats, messages, orders, learning cases and the error log across every agent, so a tester opens a
+          clean Workspace. Keeps everything GC needs in order to sell: the catalogue and photos, the results bank, the
+          media library, discovery menus, training examples, channel connections and each agent&apos;s settings. This
+          cannot be undone.
+        </p>
+      </div>
+      {counts && (
+        <div className="grid gap-3 sm:grid-cols-2 text-xs">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-3">
+            <p className="font-medium text-red-900">Will be deleted</p>
+            {Object.entries(counts.willDelete).map(([k, v]) => (
+              <p key={k} className="text-red-800/70">
+                {v} {k.replace(/([A-Z])/g, " $1").toLowerCase()}
+              </p>
+            ))}
+          </div>
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+            <p className="font-medium text-emerald-900">Will be kept</p>
+            {Object.entries(counts.willKeep).map(([k, v]) => (
+              <p key={k} className="text-emerald-800/70">
+                {v} {k.replace(/([A-Z])/g, " $1").toLowerCase()}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
+      {result && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+          <CheckIcon className="w-4 h-4 shrink-0" />
+          {result}
+        </div>
+      )}
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          placeholder={`Type ${PHRASE}`}
+          className={inputClass + " max-w-xs"}
+        />
+        <Button onClick={wipe} disabled={busy || confirm !== PHRASE}>
+          {busy ? "Clearing…" : "Clear all chat history"}
+        </Button>
+      </div>
     </Card>
   );
 }

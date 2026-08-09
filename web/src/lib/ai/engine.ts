@@ -219,7 +219,42 @@ export async function generateGcReply(opts: {
     ...testimonials.filter((t) => t.photoMimeType).map((t) => `${TESTIMONIAL_PHOTO_PREFIX}${t.id}`),
     ...mediaAssets.map((m) => `${MEDIA_ASSET_PREFIX}${m.id}`),
   ]);
-  const attachmentIds = output.sendAttachmentIds.filter((id) => validAttachmentIds.has(id));
+  let attachmentIds = output.sendAttachmentIds.filter((id) => validAttachmentIds.has(id));
+
+  // ENFORCEMENT, not a request: a price with no picture is the failure the SEA
+  // research flags hardest, and the prompt rule alone still let it through 4-8
+  // times per 100 messages. If GC named a price and chose no file, attach the
+  // photo of the product it is talking about.
+  //
+  // Only a PRODUCT PHOTO is auto-attached. A testimonial is deliberately NOT
+  // auto-picked: choosing the wrong one is worse than none (testing caught a
+  // Claríty mask result pasted onto a serum pitch), and code cannot judge whether
+  // a result matches this customer's problem. That stays the model's job.
+  if (attachmentIds.length === 0 && /(RM|MYR|S\$|SGD)\s?\d{2,}/i.test(output.reply)) {
+    const named = products.find(
+      (p) => p.attachments.length > 0 && output.reply.toLowerCase().includes(p.name.toLowerCase())
+    );
+    // Fall back to the cart's product, then to whatever this order is about, so a
+    // price for "the 2-box set" still gets a visual.
+    const fromCart = products.find(
+      (p) =>
+        p.attachments.length > 0 &&
+        parseJson<{ name: string }[]>(order.items, []).some((i) => i.name === p.name)
+    );
+    const byInterest =
+      order.productInterest && order.productInterest.length > 2
+        ? products.find(
+            (p) =>
+              p.attachments.length > 0 &&
+              (p.series ?? "").toLowerCase().includes(order.productInterest!.toLowerCase().slice(0, 12))
+          )
+        : undefined;
+    const pick = named ?? fromCart ?? byInterest;
+    if (pick) {
+      attachmentIds = [pick.attachments[0].id];
+      console.log(`[engine] auto-attached product photo for a price message: ${pick.name}`);
+    }
+  }
 
   const updatedOrder = await applyEngineEffects(profile, order, output);
   return { reply: output.reply, output, order: updatedOrder, attachmentIds };
