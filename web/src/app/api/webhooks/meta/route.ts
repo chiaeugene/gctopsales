@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { logBackgroundError } from "@/lib/api";
+import { alreadyHandled } from "@/lib/channels/dedupe";
 import { prisma } from "@/lib/prisma";
 import { verifyMetaSignature, readBodyWithLimit } from "@/lib/webhooks/verify";
 import {
@@ -101,6 +102,12 @@ export async function POST(req: Request) {
       if (message.is_echo) continue;
       // The page/IG account itself can appear as sender on some event types.
       if (senderId === targetId) continue;
+      // Same redelivery guard as WhatsApp, and for the same reason: the unique
+      // index on externalId only fires after the reply has already been sent.
+      if (await alreadyHandled(message.mid)) {
+        console.log("[meta webhook] already handled, skipping", message.mid);
+        continue;
+      }
 
       try {
         // Voice note (audio attachment) — transcribe + sell.

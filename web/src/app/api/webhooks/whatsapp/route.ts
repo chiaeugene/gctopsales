@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { logBackgroundError } from "@/lib/api";
+import { alreadyHandled } from "@/lib/channels/dedupe";
 import { prisma } from "@/lib/prisma";
 import { verifyMetaSignature, readBodyWithLimit } from "@/lib/webhooks/verify";
 import {
@@ -99,6 +100,11 @@ export async function POST(req: Request) {
 
       for (const message of value.messages) {
         try {
+          // Redelivery guard FIRST — before the LLM runs or anything is sent.
+          if (await alreadyHandled(message.id)) {
+            console.log("[whatsapp webhook] already handled, skipping", message.id);
+            continue;
+          }
           if (message.type === "image" && message.image?.id) {
             const media = await fetchWhatsAppMediaBytes(creds, message.image.id);
             const fileType = media ? inboundMimeToType(media.mimeType) : null;
