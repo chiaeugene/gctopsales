@@ -139,7 +139,7 @@ export default function TrainPage() {
         </div>
 
         {/* Chat */}
-        <Card padding="none" className="flex-1 flex flex-col min-w-0 h-[60dvh] md:h-auto">
+        <Card data-tour="train-chat" padding="none" className="flex-1 flex flex-col min-w-0 h-[60dvh] md:h-auto">
           {!active ? (
             <div className="flex-1 flex items-center justify-center text-sm text-black/35 p-6 text-center">
               {t("train.pickScenario")}

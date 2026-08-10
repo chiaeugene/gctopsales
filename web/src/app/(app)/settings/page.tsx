@@ -290,7 +290,7 @@ function ToneCard(props: { tone: string; saved: boolean; onSave: (v: string) => 
   const [tone, setTone] = useState(props.tone);
   useEffect(() => setTone(props.tone), [props.tone]);
   return (
-    <Card className="space-y-3">
+    <Card data-tour="settings-tone" className="space-y-3">
       <h2 className="font-semibold">{t("settings.tone.title")}</h2>
       <p className="text-sm text-black/45">{t("settings.tone.desc")}</p>
       <div className="space-y-2">

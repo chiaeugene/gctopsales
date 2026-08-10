@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { auth, signOut } from "@/lib/auth";
@@ -42,7 +43,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </main>
         {/* Mounted in the layout so the panel survives the navigations it
             triggers: the page behind it changes, the tour does not restart. */}
-        <GuidedTour agentName={(user.profile?.agentName ?? user.name ?? "").split(" ")[0]} />
+        {/* Suspense because the tour reads the query string (?tour=1 replays it),
+            and useSearchParams needs a boundary if a page is ever prerendered. */}
+        <Suspense fallback={null}>
+          <GuidedTour agentName={(user.profile?.agentName ?? user.name ?? "").split(" ")[0]} />
+        </Suspense>
       </div>
     </I18nProvider>
   );

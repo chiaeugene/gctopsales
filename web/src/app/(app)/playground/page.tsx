@@ -581,7 +581,7 @@ export default function PlaygroundPage() {
 
               {error && <div className="px-4 py-2 text-xs text-red-600 border-t border-black/[0.05]">{error}</div>}
 
-              <form onSubmit={send} className="p-2.5 sm:p-3.5 border-t border-black/[0.06] flex gap-1.5 sm:gap-2">
+              <form data-tour="workspace-composer" onSubmit={send} className="p-2.5 sm:p-3.5 border-t border-black/[0.06] flex gap-1.5 sm:gap-2">
                 <input
                   ref={fileRef}
                   type="file"

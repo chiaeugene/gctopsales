@@ -135,7 +135,7 @@ export default async function DashboardPage() {
 
       {!onboardingDone && <OnboardingChecklist lang={lang} steps={onboardSteps} />}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div data-tour="dashboard-stats" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Conversations" value={total} />
         <StatCard label="Win rate" value={`${winRate}%`} />
         <StatCard label="Paid orders" value={paid} />
@@ -143,7 +143,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Priority queue — work the hottest leads first */}
-      <section>
+      <section data-tour="dashboard-queue">
         <Card padding="none">
           <div className="px-5 py-4 border-b border-black/[0.06] flex items-center justify-between">
             <span className="font-semibold text-[15px]">Priority queue — work these first</span>

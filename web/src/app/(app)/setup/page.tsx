@@ -97,7 +97,7 @@ export default function SetupPage() {
         </Card>
       )}
 
-      <Card padding="none" className="min-h-[24rem] flex flex-col">
+      <Card data-tour="setup-interview" padding="none" className="min-h-[24rem] flex flex-col">
         <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {!started && (
             <div className="text-center mt-16">

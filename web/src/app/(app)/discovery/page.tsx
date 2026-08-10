@@ -143,7 +143,7 @@ export default function DiscoveryPage() {
 
       {/* Two separate questions, and agents conflate them: is the feature ON,
           and how are the questions FORMATTED. Both answered here. */}
-      <Card className="space-y-2.5">
+      <Card data-tour="discovery-toggle" className="space-y-2.5">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="min-w-0">
             <div className="text-sm font-semibold">
