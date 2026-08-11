@@ -14,6 +14,45 @@ export function llmConfigured(): boolean {
     : Boolean(process.env.ANTHROPIC_API_KEY);
 }
 
+/**
+ * The provider rejected the call for a reason the operator can fix: no credit,
+ * rate limited, or temporarily overloaded. Separated from a genuine bug so the UI
+ * can name the cause instead of showing "Something went wrong".
+ */
+export class LlmUpstreamError extends Error {
+  constructor(
+    message: string,
+    public readonly kind: "no_credit" | "rate_limited" | "overloaded" | "auth"
+  ) {
+    super(message);
+    this.name = "LlmUpstreamError";
+  }
+}
+
+/** Reads a provider error and, when it is an operator-fixable one, names it. */
+export function describeUpstreamError(err: unknown): LlmUpstreamError | null {
+  const status = (err as { status?: number } | null)?.status;
+  const raw = err instanceof Error ? err.message : String(err ?? "");
+  const text = raw.toLowerCase();
+
+  if (text.includes("credit balance") || text.includes("insufficient_quota") || text.includes("billing")) {
+    return new LlmUpstreamError(
+      "The AI account is out of credit, so GC cannot reply. Top up the Anthropic billing balance and it resumes immediately, no redeploy needed.",
+      "no_credit"
+    );
+  }
+  if (status === 401 || status === 403 || text.includes("invalid x-api-key") || text.includes("authentication")) {
+    return new LlmUpstreamError("The AI API key was rejected. Check ANTHROPIC_API_KEY in the Render environment.", "auth");
+  }
+  if (status === 429 || text.includes("rate limit")) {
+    return new LlmUpstreamError("Too many replies at once, the AI provider is rate limiting us. Wait a few seconds and send again.", "rate_limited");
+  }
+  if (status === 529 || status === 503 || text.includes("overloaded")) {
+    return new LlmUpstreamError("The AI provider is briefly overloaded. Send that message again in a moment.", "overloaded");
+  }
+  return null;
+}
+
 export async function chatComplete(opts: {
   system: string;
   messages: ChatMessage[];

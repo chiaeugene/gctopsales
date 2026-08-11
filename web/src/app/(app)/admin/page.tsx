@@ -568,6 +568,7 @@ function ResetChatsCard() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const PHRASE = "DELETE ALL CHATS";
+  const [armed, setArmed] = useState(false);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/reset-chats");
@@ -614,6 +615,12 @@ function ResetChatsCard() {
           cannot be undone.
         </p>
       </div>
+      {!armed ? (
+        <button onClick={() => setArmed(true)} className="text-sm font-medium text-red-700 hover:underline self-start">
+          Show the clear button
+        </button>
+      ) : (
+        <>
       {counts && (
         <div className="grid gap-3 sm:grid-cols-2 text-xs">
           <div className="rounded-xl border border-red-200 bg-red-50 p-3">
@@ -651,7 +658,12 @@ function ResetChatsCard() {
         <Button onClick={wipe} disabled={busy || confirm !== PHRASE}>
           {busy ? "Clearing…" : "Clear all chat history"}
         </Button>
+        <button onClick={() => setArmed(false)} className="text-sm text-black/40 hover:text-black/70">
+          Hide
+        </button>
       </div>
+        </>
+      )}
     </Card>
   );
 }

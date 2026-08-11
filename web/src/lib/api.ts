@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { UnauthorizedError } from "@/lib/tenant";
 import { LlmNotConfiguredError, DailyReplyCapError } from "@/lib/ai/engine";
+import { describeUpstreamError } from "@/lib/ai/llm";
 import { prisma } from "@/lib/prisma";
 
 // Uniform error handling for route handlers. Unexpected (500) errors are
@@ -29,6 +30,14 @@ export async function handle<T>(fn: () => Promise<T>, routeName?: string): Promi
     }
     if (err instanceof ApiError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
+    }
+    // An out-of-credit or rate-limited provider is not a bug, and showing
+    // "Something went wrong" for it wastes the operator's time at exactly the
+    // wrong moment. Name the cause. Still logged, so it shows in Admin errors.
+    const upstream = describeUpstreamError(err);
+    if (upstream) {
+      recordError(routeName ?? "unknown", err).catch(() => {});
+      return NextResponse.json({ error: upstream.message }, { status: 503 });
     }
     console.error(err);
     recordError(routeName ?? "unknown", err).catch(() => {});
