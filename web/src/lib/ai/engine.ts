@@ -103,14 +103,22 @@ export async function generateGcReply(opts: {
       // Metadata only — the prompt needs ids and labels, never the file bytes.
       omit: { data: true },
     }),
+    // NEWEST 40, then flipped back into reading order. This was `asc` + `take`,
+    // which is the OLDEST 40: past message 40 a conversation froze in time. GC
+    // answered a brand-new question using week-old context and never saw
+    // anything in between — including its own recent replies. That single line
+    // produced most of the "why is it acting like we already discussed this"
+    // behaviour on long WhatsApp threads.
     prisma.message.findMany({
       where: { conversationId },
       // Customer + reply rows are written in one transaction and share a
       // timestamp — id (creation-ordered cuid) breaks the tie.
-      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       take: HISTORY_LIMIT,
     }),
   ]);
+
+  history.reverse(); // fetched newest-first for the LIMIT; the model reads oldest-first
 
   const system = buildGcSystemPrompt({
     profile,
@@ -423,10 +431,11 @@ export async function refreshOrderSummary(profile: StoreProfile, order: Order, c
   if (!llmConfigured()) return;
   const history = await prisma.message.findMany({
     where: { conversationId },
-    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     take: HISTORY_LIMIT,
   });
   if (history.length < 4) return;
+  history.reverse(); // newest-first for the LIMIT, oldest-first to summarise
 
   const transcript = history
     .map((m) => `${m.role === "CUSTOMER" ? "Customer" : "GC"}: ${m.content}`)

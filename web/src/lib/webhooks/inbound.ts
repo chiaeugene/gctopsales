@@ -23,8 +23,28 @@ export async function findOrCreateOrderForInbound(
   source: OrderSource,
   externalContactId: string
 ): Promise<OrderWithConversation> {
+  // Reuse the LIVE conversation, not every conversation this contact has ever
+  // had. Without the freshness window a phone number mapped to one order
+  // forever: a fresh "pm skincare" three weeks later arrived carrying all the
+  // old context, so GC believed discovery was already done and opened with a
+  // price. It also meant a customer could never buy twice, because the won
+  // order was the one still being appended to.
+  //
+  // A closed order is done, and a thread nobody has touched in ten days is a new
+  // enquiry rather than a continuation. Either way: start a new order. The CRM
+  // still groups them by phone, so history is not lost, only separated.
+  const CONTINUE_WINDOW_MS = 10 * 24 * 60 * 60 * 1000;
+  const CLOSED = ["Payment Confirmed", "Processing", "Shipped", "Delivered", "Lost"];
+
   let order = await prisma.order.findFirst({
-    where: { profileId: profile.id, externalContactId, source },
+    where: {
+      profileId: profile.id,
+      externalContactId,
+      source,
+      status: { notIn: CLOSED },
+      updatedAt: { gte: new Date(Date.now() - CONTINUE_WINDOW_MS) },
+    },
+    orderBy: { updatedAt: "desc" },
     include: { conversation: true },
   });
   if (!order) {
@@ -317,6 +337,7 @@ export async function recordUnhandledInboundMessage(opts: {
 
   let order = await prisma.order.findFirst({
     where: { profileId: profile.id, externalContactId, source },
+    orderBy: { updatedAt: "desc" }, // there can be several now; note it on the current one
   });
   if (!order) {
     order = await prisma.order.create({
