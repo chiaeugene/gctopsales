@@ -114,7 +114,19 @@ export default function AdminPage() {
 
       <ResetChatsCard />
 
+      <DemoChatsCard />
+
       <SheetImportCard onRegistered={load} />
+
+      <Card className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40 space-y-1.5">
+        <h2 className="font-semibold text-sm">Where live customer chats land</h2>
+        <p className="text-sm text-black/55">
+          A WhatsApp, Messenger or Instagram connection belongs to ONE account, and its customer chats appear only in
+          that account&apos;s Workspace. Nobody else can see them, not even an admin. The Channels column below shows who
+          holds what. If chats are arriving on the wrong account, connect the channel again from the Connect page while
+          logged in as the account you want them on.
+        </p>
+      </Card>
 
       <Card padding="none">
         <form onSubmit={createTenant} className="grid md:grid-cols-2 gap-3 p-5">
@@ -189,7 +201,9 @@ export default function AdminPage() {
               <th className="px-4 py-3">Store</th>
               <th className="px-4 py-3">Orders</th>
               <th className="px-4 py-3">Products</th>
-              <th className="px-4 py-3">Channels</th>
+              <th className="px-4 py-3" title="Live customer chats only appear in the Workspace of the account holding the channel">
+                Channels
+              </th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -463,6 +477,86 @@ function SeedResultsCard() {
     </Card>
   );
 }
+
+// Angi's account is the master, and the master account is what people get shown.
+// So it needs conversations in it that GC actually wrote, not an empty Workspace
+// and a promise.
+function DemoChatsCard() {
+  const [busy, setBusy] = useState<string | null>(null);
+  const [results, setResults] = useState<DemoResult[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  async function build() {
+    setError(null);
+    setResults([]);
+    const scenarios = [0, 1, 2, 3];
+    for (const i of scenarios) {
+      setBusy(`Chat ${i + 1} of 4, GC is having the conversation…`);
+      try {
+        const res = await fetch("/api/admin/demo-chats", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ scenario: i }),
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          setError(json.error || "Could not build the demo chats");
+          break;
+        }
+        setResults((r) => [...r, json as DemoResult]);
+      } catch {
+        setError("Could not reach the server");
+        break;
+      }
+    }
+    setBusy(null);
+  }
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">The 4 demo chats</h2>
+        <p className="text-sm text-black/45">
+          Builds four conversations in THIS account&apos;s Workspace, ready to open: skincare from a post reply, hair
+          fall, bloating, and stress in Mandarin. They are real, not scripted, every turn goes through the same engine a
+          WhatsApp customer hits, so nobody is ever shown a reply GC did not write. Takes a minute or two. Running it
+          again replaces the previous four rather than piling up copies.
+        </p>
+      </div>
+      {busy && <div className="text-sm text-black/45">{busy}</div>}
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      {results.length > 0 && (
+        <div className="space-y-1.5 text-xs">
+          {results.map((r) => (
+            <div key={r.label} className="flex flex-wrap items-center gap-2 rounded-xl border border-black/[0.06] px-3 py-2">
+              <span className="font-medium">{r.label}</span>
+              <span className="text-black/40">
+                bubbles {r.bubbles.join(", ")} · emoji {r.emoji.join(", ")} · {r.images} image{r.images === 1 ? "" : "s"}
+              </span>
+              {/* The three failures from the live WhatsApp test, checked on every run. */}
+              <span className={r.checks.priceOnFirstReply ? "text-red-600" : "text-emerald-700"}>
+                {r.checks.priceOnFirstReply ? "quoted a price on turn 1" : "no price on turn 1"}
+              </span>
+              {r.checks.assumedACondition && <span className="text-red-600">named a condition unprompted</span>}
+              {r.checks.alwaysThreeBubbles && <span className="text-red-600">every reply was 3 bubbles</span>}
+            </div>
+          ))}
+        </div>
+      )}
+      <Button onClick={build} disabled={busy !== null}>
+        {busy ? "Building…" : "Build the 4 demo chats"}
+      </Button>
+    </Card>
+  );
+}
+
+type DemoResult = {
+  label: string;
+  bubbles: number[];
+  emoji: number[];
+  images: number;
+  checks: { priceOnFirstReply: boolean; assumedACondition: boolean; alwaysThreeBubbles: boolean };
+};
 
 // Handing the app to a tester means handing over somebody else's practice chats
 // too. This clears the history without touching the catalogue, the results bank

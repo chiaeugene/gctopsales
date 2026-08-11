@@ -8,24 +8,55 @@ import { parseJson } from "@/lib/json";
 // juggling. Each chat is still an Order+Conversation with source PLAYGROUND —
 // the exact production pipeline.
 
-const CreateSchema = z.object({ name: z.string().max(80).optional() });
+const CreateSchema = z.object({
+  name: z.string().max(80).optional(),
+  // Start a FRESH conversation with a contact you have already talked to. The
+  // ten-day continue window is right for real customers mid-sale, but useless
+  // when you are testing the same number six times an hour and want every run to
+  // begin from nothing.
+  //
+  // This creates a new order carrying the same channel identity. The next inbound
+  // message attaches here because findOrCreateOrderForInbound takes the most
+  // recently updated open order for that contact. The old thread is left exactly
+  // as it was, with its own status and history intact.
+  freshFrom: z.string().optional(),
+});
 
 export async function POST(req: Request) {
   return handle(async () => {
     const profile = await requireProfile();
     let name: string | undefined;
+    let freshFrom: string | undefined;
     try {
       const body = CreateSchema.safeParse(await req.json());
-      if (body.success) name = body.data.name?.trim() || undefined;
+      if (body.success) {
+        name = body.data.name?.trim() || undefined;
+        freshFrom = body.data.freshFrom;
+      }
     } catch {
       // empty body is fine
     }
+
+    let source = "PLAYGROUND";
+    let externalContactId: string | null = null;
+    let phone: string | null = null;
+    if (freshFrom) {
+      const previous = await prisma.order.findFirst({ where: { id: freshFrom, profileId: profile.id } });
+      if (!previous) throw new ApiError(404, "Chat not found");
+      source = previous.source;
+      externalContactId = previous.externalContactId;
+      phone = previous.phone;
+      name = name ?? previous.customerName ?? undefined;
+    }
+
     const order = await prisma.order.create({
       data: {
         profileId: profile.id,
-        source: "PLAYGROUND",
+        source,
         customerName: name,
-        conversation: { create: { profileId: profile.id, kind: "PLAYGROUND" } },
+        externalContactId,
+        phone,
+        conversation: { create: { profileId: profile.id, kind: source } },
       },
       include: { conversation: true },
     });

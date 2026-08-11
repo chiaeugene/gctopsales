@@ -167,6 +167,33 @@ export default function PlaygroundPage() {
     await loadChats();
   }
 
+  // Start over with the same person. The ten-day continue window is right for a
+  // real customer mid-sale, but when you are testing the same number repeatedly
+  // you want every run to begin from nothing. This opens a new thread carrying
+  // the same channel identity, and the next inbound message lands in it. The old
+  // thread stays in the list, untouched.
+  async function startFreshWith(id: string) {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/playground/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ freshFrom: id }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Could not start a fresh chat");
+        return;
+      }
+      await loadChats();
+      await openChat(json.orderId);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function deleteChat(id: string) {
     if (!confirm("Delete this chat and its history?")) return;
     await fetch("/api/playground/session", {
@@ -535,6 +562,14 @@ export default function PlaygroundPage() {
                   ? "you are handling this chat, GC is paused."
                   : "GC is replying automatically. Anything you type goes to the customer and pauses GC."}
               </span>
+              <button
+                onClick={() => startFreshWith(orderId)}
+                disabled={busy}
+                title="GC forgets this thread and treats the next message as a brand-new enquiry"
+                className="shrink-0 rounded-lg border border-emerald-300 bg-white px-2.5 py-1 text-[11px] font-medium text-emerald-900 hover:bg-emerald-100 disabled:opacity-40"
+              >
+                Start fresh with this contact
+              </button>
               {order?.needsHuman && (
                 <button
                   onClick={handBackToGc}
