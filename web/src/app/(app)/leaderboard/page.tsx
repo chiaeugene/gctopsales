@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hasAdminRights } from "@/lib/tenant";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { MedalIcon, UsersIcon } from "@/components/ui/icons";
@@ -23,7 +24,7 @@ export default async function LeaderboardPage() {
   const userId = (session?.user as { id?: string } | undefined)?.id;
   if (!userId) redirect("/login");
   const me = await prisma.user.findUnique({ where: { id: userId } });
-  if (!me || me.role !== "ADMIN") redirect("/");
+  if (!me || !hasAdminRights(me)) redirect("/");
 
   const [profiles, stageGroups, needsHumanGroups] = await Promise.all([
     prisma.storeProfile.findMany({

@@ -11,6 +11,7 @@ type TenantUser = {
   email: string;
   name: string;
   role: string;
+  isOwner?: boolean;
   createdAt: string;
   profile: {
     id: string;
@@ -229,12 +230,20 @@ export default function AdminPage() {
                   <div className="font-medium">{u.name}</div>
                   <div className="text-xs text-black/45">{u.email}</div>
                 </td>
-                <td className="px-4 py-3 text-xs">{u.role}</td>
+                <td className="px-4 py-3 text-xs">
+                  {u.role}
+                  {u.isOwner && (
+                    <span className="ml-1.5 rounded-full bg-[var(--accent-soft)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--accent-ink)]">
+                      owner
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-xs">{u.profile?.storeName || "—"}</td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.orders ?? 0}</td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.products ?? 0}</td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.channels ?? 0}</td>
                 <td className="px-4 py-3">
+                  {!u.isOwner && (
                   <button
                     onClick={() => setRole(u, u.role === "ADMIN" ? "AGENT" : "ADMIN")}
                     title="Only ADMIN accounts can see the Admin page and its tools"
@@ -242,6 +251,7 @@ export default function AdminPage() {
                   >
                     {u.role === "ADMIN" ? "Make agent" : "Make admin"}
                   </button>
+                  )}
                   <button
                     onClick={() => resetPasscode(u)}
                     className="text-[11px] font-medium text-[var(--accent-ink)] hover:underline whitespace-nowrap"

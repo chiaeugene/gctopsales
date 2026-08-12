@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hasAdminRights } from "@/lib/tenant";
 import { Sidebar } from "@/components/Sidebar";
 import { GuidedTour } from "@/components/GuidedTour";
 import { I18nProvider } from "@/components/I18nProvider";
@@ -34,7 +35,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <I18nProvider lang={lang}>
       <div className="min-h-screen flex">
-        <Sidebar email={user.email} isAdmin={user.role === "ADMIN"} onSignOut={doSignOut} />
+        <Sidebar email={user.email} isAdmin={hasAdminRights(user)} onSignOut={doSignOut} />
         {/* pt-18 clears the fixed mobile top bar. The inner div centers the
             content column in the remaining width — without it every page hugs
             the sidebar and wide screens get a dead right gutter. */}

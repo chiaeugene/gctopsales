@@ -1,7 +1,7 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { handle, ApiError } from "@/lib/api";
-import { requireAdmin } from "@/lib/tenant";
+import { requireAdmin, isOwnerEmail } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 
 // Super-admin tenant management. Creating a tenant = a User (AGENT role) + an
@@ -28,7 +28,9 @@ export async function GET() {
         },
       },
     });
-    return { users };
+    // isOwner is not the same as role. The owner account has admin rights even if
+    // its row says AGENT, and the UI has to be able to say that.
+    return { users: users.map((u) => ({ ...u, isOwner: isOwnerEmail(u.email) })) };
   });
 }
 
