@@ -1,5 +1,6 @@
 import type { Conversation, Order, StoreProfile } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { describeUpstreamError } from "@/lib/ai/llm";
 import {
   generateGcReply,
   recordExchange,
@@ -100,14 +101,45 @@ export async function handleInboundMessage(opts: {
     return null;
   }
 
-  const { output, order: updatedOrder, attachmentIds } = await generateGcReply({
-    profile,
-    order,
-    conversationId,
-    customerMessage,
+  // Store the customer's message BEFORE trying to answer it. What they said is a
+  // fact as soon as it arrives; whether GC can reply is a separate question. This
+  // used to live inside recordExchange alongside the reply, in one transaction, so
+  // a provider outage silently threw the message away: nothing in the Workspace,
+  // no notification, an invisible lost lead. Keeping externalId here also keeps
+  // redelivery dedupe working, since Meta retries against the same id.
+  await prisma.message.create({
+    data: { conversationId, role: "CUSTOMER", content: customerMessage, externalId: externalMessageId },
   });
 
-  await recordExchange({ conversationId, customerMessage, output, attachmentIds, externalMessageId });
+  let output, updatedOrder, attachmentIds;
+  try {
+    ({ output, order: updatedOrder, attachmentIds } = await generateGcReply({
+      profile,
+      order,
+      conversationId,
+      customerMessage: null, // already stored above, so history ends on their turn
+    }));
+  } catch (err) {
+    // A transient overload will be gone in a minute, so leave GC live and let the
+    // next message flow normally: the unanswered message is now visible in the
+    // Workspace either way. Anything else (no credit, rejected key, a real bug)
+    // will not fix itself, so hand the chat to a human rather than leaving the
+    // customer talking to nobody.
+    const upstream = describeUpstreamError(err);
+    const transient = upstream?.kind === "overloaded" || upstream?.kind === "rate_limited";
+    if (!transient) {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          needsHuman: true,
+          takeoverReason: upstream?.message ?? "GC could not generate a reply. Please answer this customer yourself.",
+        },
+      });
+    }
+    throw err;
+  }
+
+  await recordExchange({ conversationId, customerMessage: null, output, attachmentIds });
   await scheduleFollowUp(profile, updatedOrder, { customerSpoke: true });
 
   refreshOrderSummary(profile, updatedOrder, conversationId).catch(() => {});

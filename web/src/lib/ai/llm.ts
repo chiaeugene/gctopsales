@@ -79,7 +79,12 @@ export async function chatComplete(opts: {
     return res.choices[0]?.message?.content ?? "";
   }
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const client = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    // 529 "overloaded" and 429 are transient. Losing a real WhatsApp customer to a
+    // thirty-second wobble is far more expensive than waiting for it to pass.
+    maxRetries: 5,
+  });
   const model = process.env.GC_LLM_MODEL || "claude-sonnet-5";
 
   const tools = opts.webSearch
