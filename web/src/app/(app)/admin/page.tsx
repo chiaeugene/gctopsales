@@ -47,6 +47,21 @@ export default function AdminPage() {
     setUsers(json.users);
   }
 
+  async function setRole(u: { id: string; email: string; role: string }, role: string) {
+    if (!confirm(`Change ${u.email} to ${role}?`)) return;
+    const res = await fetch("/api/admin/tenants", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: u.id, role }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      setError(json.error || "Could not change the role");
+      return;
+    }
+    load();
+  }
+
   async function resetPasscode(u: TenantUser) {
     const passcode = prompt(
       `New passcode for ${u.name} (${u.email}) — usually the last 6 digits of their phone:`
@@ -220,6 +235,13 @@ export default function AdminPage() {
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.products ?? 0}</td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.channels ?? 0}</td>
                 <td className="px-4 py-3">
+                  <button
+                    onClick={() => setRole(u, u.role === "ADMIN" ? "AGENT" : "ADMIN")}
+                    title="Only ADMIN accounts can see the Admin page and its tools"
+                    className="mr-3 text-[11px] font-medium text-[var(--accent-ink)] hover:underline whitespace-nowrap"
+                  >
+                    {u.role === "ADMIN" ? "Make agent" : "Make admin"}
+                  </button>
                   <button
                     onClick={() => resetPasscode(u)}
                     className="text-[11px] font-medium text-[var(--accent-ink)] hover:underline whitespace-nowrap"

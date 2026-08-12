@@ -56,10 +56,27 @@ const PatchSchema = z.object({
 export async function PATCH(req: Request) {
   return handle(async () => {
     const admin = await requireAdmin();
+
+    // Two jobs on one endpoint: reset a passcode, or change a role.
+    const roleChange = z.object({ userId: z.string(), role: z.enum(["AGENT", "ADMIN"]) }).safeParse(
+      await req.clone().json()
+    );
+    if (roleChange.success) {
+      const target = await prisma.user.findUnique({ where: { id: roleChange.data.userId } });
+      if (!target) throw new ApiError(404, "User not found");
+      // Never let the last admin demote themselves out of the building.
+      if (roleChange.data.role === "AGENT") {
+        const admins = await prisma.user.count({ where: { role: "ADMIN" } });
+        if (admins <= 1) throw new ApiError(400, "That is the only admin left. Promote someone else first.");
+        if (target.id === admin.id) throw new ApiError(400, "Ask another admin to change your own role.");
+      }
+      await prisma.user.update({ where: { id: target.id }, data: { role: roleChange.data.role } });
+      return { ok: true, email: target.email, role: roleChange.data.role };
+    }
+
     const body = PatchSchema.safeParse(await req.json());
     if (!body.success) throw new ApiError(400, "Passcode must be at least 6 characters");
 
-    void admin;
     const user = await prisma.user.findUnique({ where: { id: body.data.userId } });
     if (!user) throw new ApiError(404, "User not found");
 
