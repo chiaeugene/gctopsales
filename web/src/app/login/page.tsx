@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { AnimatedHeadline } from "@/components/ui/animated-headline";
@@ -10,6 +10,17 @@ import { AnimatedHeadline } from "@/components/ui/animated-headline";
 // instead of being flung to opposite screen edges.
 export default function LoginPage() {
   const router = useRouter();
+
+  // The tour is meant to run on every login. Its "already seen" flag lives in
+  // sessionStorage, which survives signing out and back in within the same
+  // browser session — so the second login of the day skipped it. Landing on this
+  // page IS the start of a login, so clear the flag here. Every gc-tour-* key
+  // goes, not just the current version, so an old one can never linger.
+  useEffect(() => {
+    for (const k of Object.keys(sessionStorage)) {
+      if (k.startsWith("gc-tour-")) sessionStorage.removeItem(k);
+    }
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
