@@ -29,7 +29,7 @@ const SCENARIOS = [
   {
     label: "Skincare, from a post reply",
     name: "Demo · skincare (pm skincare)",
-    turns: ["pm skincare", "How can it helps me", "Too expensive"],
+    turns: ["pm skincare", "How can it helps me", "Too expensive", "Let me think about it first"],
   },
   {
     label: "Hair fall",
@@ -44,7 +44,7 @@ const SCENARIOS = [
   {
     label: "Stress and sleep, in Mandarin",
     name: "Demo · 压力失眠",
-    turns: ["最近压力很大，晚上睡不好，有什么可以帮我吗？", "差不多半年了", "有没有人用过，有效果吗？"],
+    turns: ["最近压力很大，晚上睡不好，有什么可以帮我吗？", "差不多半年了", "有没有人用过，有效果吗？", "我还想考虑一下"],
   },
 ];
 
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
     const conversationId = created.conversation!.id;
 
     let order = created;
-    const replies: { bubbles: number; emoji: number; images: number; text: string }[] = [];
+    const replies: { customer: string; bubbles: number; emoji: number; images: number; text: string }[] = [];
 
     for (const turn of scenario.turns) {
       const { output, order: next, attachmentIds } = await generateGcReply({
@@ -100,6 +100,7 @@ export async function POST(req: Request) {
       });
 
       replies.push({
+        customer: turn,
         bubbles: splitIntoBubbles(output.reply).length,
         emoji: (output.reply.match(/\p{Extended_Pictographic}/gu) ?? []).length,
         images: attachmentIds.length,
@@ -107,14 +108,40 @@ export async function POST(req: Request) {
       });
     }
 
-    // The three shape failures from the live WhatsApp test, checked here so they
-    // cannot come back quietly.
+    // The shape failures caught in live WhatsApp tests, checked here so they cannot
+    // come back quietly.
     const first = replies[0]?.text ?? "";
-    const checks = {
+    const checks: Record<string, boolean> = {
       priceOnFirstReply: /\b(RM|MYR|S\$|SGD)\s?\d{2,}/i.test(first),
       assumedACondition: /\b(acne|jerawat|eczema|melasma|rosacea)\b/i.test(first),
       alwaysThreeBubbles: replies.length > 1 && replies.every((r) => r.bubbles === 3),
     };
+
+    // SALES DNA, checked on the "let me think about it" turn. Turn one must locate
+    // the doubt and do nothing else: end on a question, stay short, volunteer no
+    // exit, and hold the certification pitch until it is actually asked for.
+    const hesitation = replies.find((r) => /think about it|考虑|fikir dulu/i.test(r.customer));
+    if (hesitation) {
+      const lastLine = hesitation.text.trim().split(/\n+/).filter(Boolean).pop() ?? "";
+      checks.hesitationEndsOnAQuestion = /[?？]\s*$/.test(lastLine);
+      checks.hesitationVolunteeredAnExit =
+        /tomorrow|check back|follow up|get back to you|take your time|明天|再跟你|再联络|慢慢考虑/i.test(
+          hesitation.text
+        );
+      checks.hesitationStayedShort = hesitation.bubbles <= 2;
+      checks.hesitationPitchedUnasked = /NPRA|halal|清真|认证|certifi|食品级/i.test(hesitation.text);
+    }
+
+    const problems: string[] = [];
+    if (checks.priceOnFirstReply) problems.push("quoted a price on turn 1");
+    if (checks.assumedACondition) problems.push("named a condition unprompted");
+    if (checks.alwaysThreeBubbles) problems.push("every reply was 3 bubbles");
+    if (hesitation) {
+      if (!checks.hesitationEndsOnAQuestion) problems.push("hesitation reply did not end on a question");
+      if (checks.hesitationVolunteeredAnExit) problems.push("volunteered the exit");
+      if (!checks.hesitationStayedShort) problems.push("hesitation reply ran long");
+      if (checks.hesitationPitchedUnasked) problems.push("pitched certifications unasked");
+    }
 
     return {
       label: scenario.label,
@@ -122,6 +149,8 @@ export async function POST(req: Request) {
       bubbles: replies.map((r) => r.bubbles),
       emoji: replies.map((r) => r.emoji),
       images: replies.reduce((n, r) => n + r.images, 0),
+      testedHesitation: Boolean(hesitation),
+      problems,
       checks,
     };
   });

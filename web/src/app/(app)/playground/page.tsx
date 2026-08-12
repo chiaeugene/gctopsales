@@ -135,10 +135,12 @@ export default function PlaygroundPage() {
   }
 
   const [demoBusy, setDemoBusy] = useState<string | null>(null);
+  const [demoReport, setDemoReport] = useState<string[]>([]);
 
   async function buildDemoChats() {
     if (demoBusy) return;
     setError(null);
+    setDemoReport([]);
     for (const i of [0, 1, 2, 3]) {
       setDemoBusy(`Demo ${i + 1} of 4…`);
       try {
@@ -152,6 +154,13 @@ export default function PlaygroundPage() {
           setError(json.error || "Could not build the demo chats");
           break;
         }
+        // Same report the Admin card shows: these chats are also the regression
+        // test, so the result belongs in front of whoever ran it.
+        const problems = (json.problems ?? []) as string[];
+        setDemoReport((r) => [
+          ...r,
+          `${json.label}: bubbles ${(json.bubbles ?? []).join(", ")}${problems.length ? ` — ${problems.join("; ")}` : " — ok"}`,
+        ]);
         await loadChats();
       } catch {
         setError("Could not reach the server");
@@ -448,6 +457,15 @@ export default function PlaygroundPage() {
         >
           {demoBusy ?? "Add 4 demo chats"}
         </button>
+        {demoReport.length > 0 && (
+          <div className="space-y-0.5 text-[10px] leading-relaxed text-black/45">
+            {demoReport.map((l) => (
+              <p key={l} className={/— ok$/.test(l) ? "" : "text-red-600"}>
+                {l}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {chats.length === 0 && <p className="text-xs text-black/35 p-3">{t("ws.noChats")}</p>}

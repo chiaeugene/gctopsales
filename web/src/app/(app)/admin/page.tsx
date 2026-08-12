@@ -565,12 +565,16 @@ function DemoChatsCard() {
               <span className="text-black/40">
                 bubbles {r.bubbles.join(", ")} · emoji {r.emoji.join(", ")} · {r.images} image{r.images === 1 ? "" : "s"}
               </span>
-              {/* The three failures from the live WhatsApp test, checked on every run. */}
-              <span className={r.checks.priceOnFirstReply ? "text-red-600" : "text-emerald-700"}>
-                {r.checks.priceOnFirstReply ? "quoted a price on turn 1" : "no price on turn 1"}
-              </span>
-              {r.checks.assumedACondition && <span className="text-red-600">named a condition unprompted</span>}
-              {r.checks.alwaysThreeBubbles && <span className="text-red-600">every reply was 3 bubbles</span>}
+              {/* Whatever failed this run, named. Empty means the shape rules held. */}
+              {r.problems.length === 0 ? (
+                <span className="text-emerald-700">shape rules held{r.testedHesitation ? ", hesitation included" : ""}</span>
+              ) : (
+                r.problems.map((prob) => (
+                  <span key={prob} className="text-red-600">
+                    {prob}
+                  </span>
+                ))
+              )}
             </div>
           ))}
         </div>
@@ -587,7 +591,8 @@ type DemoResult = {
   bubbles: number[];
   emoji: number[];
   images: number;
-  checks: { priceOnFirstReply: boolean; assumedACondition: boolean; alwaysThreeBubbles: boolean };
+  testedHesitation: boolean;
+  problems: string[];
 };
 
 // Handing the app to a tester means handing over somebody else's practice chats
