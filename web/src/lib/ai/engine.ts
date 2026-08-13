@@ -229,6 +229,23 @@ export async function generateGcReply(opts: {
   ]);
   let attachmentIds = output.sendAttachmentIds.filter((id) => validAttachmentIds.has(id));
 
+  // NEVER SEND THE SAME FILE TWICE. The model has no memory of what it attached
+  // earlier, only of what it wrote, so it happily re-picks the same product photo
+  // every time the product comes up. On WhatsApp that is unmistakably a bot: no
+  // human sends you the identical picture four messages running.
+  //
+  // The one exception is being asked. "Send again" / "再发一次" usually means the
+  // customer lost it in a busy thread, and refusing then would be worse.
+  const alreadySent = new Set(
+    history.flatMap((m) => (m.role === "GC" ? parseJson<string[]>(m.attachmentIds ?? "[]", []) : []))
+  );
+  const lastFromCustomer =
+    customerMessage ?? [...history].reverse().find((m) => m.role === "CUSTOMER")?.content ?? "";
+  const asksToSeeItAgain = /(again|re-?send|one more time|resend)|再发|再传|重发|再看/i.test(lastFromCustomer);
+  if (!asksToSeeItAgain) {
+    attachmentIds = attachmentIds.filter((id) => !alreadySent.has(id));
+  }
+
   // ENFORCEMENT, not a request: a price with no picture is the failure the SEA
   // research flags hardest, and the prompt rule alone still let it through 4-8
   // times per 100 messages. If GC named a price and chose no file, attach the
@@ -240,13 +257,17 @@ export async function generateGcReply(opts: {
   // a result matches this customer's problem. That stays the model's job.
   if (attachmentIds.length === 0 && /(RM|MYR|S\$|SGD)\s?\d{2,}/i.test(output.reply)) {
     const named = products.find(
-      (p) => p.attachments.length > 0 && output.reply.toLowerCase().includes(p.name.toLowerCase())
+      (p) =>
+        p.attachments.length > 0 &&
+        !alreadySent.has(p.attachments[0].id) &&
+        output.reply.toLowerCase().includes(p.name.toLowerCase())
     );
     // Fall back to the cart's product, then to whatever this order is about, so a
     // price for "the 2-box set" still gets a visual.
     const fromCart = products.find(
       (p) =>
         p.attachments.length > 0 &&
+        !alreadySent.has(p.attachments[0].id) &&
         parseJson<{ name: string }[]>(order.items, []).some((i) => i.name === p.name)
     );
     const byInterest =
@@ -257,7 +278,11 @@ export async function generateGcReply(opts: {
               (p.series ?? "").toLowerCase().includes(order.productInterest!.toLowerCase().slice(0, 12))
           )
         : undefined;
-    const pick = named ?? fromCart ?? byInterest;
+    // Only ever offer a photo this conversation has not already seen. Without
+    // this the price rule would re-send the same picture on every quote.
+    const unsent = (p: (typeof products)[number]) =>
+      p.attachments.length > 0 && !alreadySent.has(p.attachments[0].id);
+    const pick = [named, fromCart, byInterest].find((p) => p && unsent(p));
     if (pick) {
       attachmentIds = [pick.attachments[0].id];
       console.log(`[engine] auto-attached product photo for a price message: ${pick.name}`);

@@ -100,9 +100,21 @@ export function buildGcSystemPrompt(opts: {
   // replaced them, GC has no bank details and every ready buyer dead-ends. Detect
   // it and tell GC plainly rather than letting it improvise or loop on handover.
   const PLACEHOLDER = /CONFIGURE ME|UPDATE ME/i;
-  const paymentReady = Boolean(
-    fulfillment.paymentMethods && !PLACEHOLDER.test(fulfillment.paymentMethods)
-  );
+  const filled = (v?: string) => Boolean(v && v.trim() && !PLACEHOLDER.test(v));
+
+  // An automatic close needs all three: a customer cannot transfer to a bank with
+  // no number, or to a number with no name to check against. Two out of three is
+  // not "mostly ready", it is still a dead end, so it counts as not ready.
+  const bankDetailsComplete =
+    filled(fulfillment.paymentBank) &&
+    filled(fulfillment.paymentAccountName) &&
+    filled(fulfillment.paymentAccountNumber);
+  // An agent who only sells by e-wallet is still ready, hence the fallback.
+  const paymentReady = bankDetailsComplete || filled(fulfillment.paymentMethods);
+
+  const payTo = bankDetailsComplete
+    ? `${fulfillment.paymentBank}  ${fulfillment.paymentAccountNumber}  (${fulfillment.paymentAccountName})`
+    : "";
 
   const store = identity.storeName || profile.storeName || "our store";
   const agent = identity.agentName || profile.agentName || "the team";
@@ -193,7 +205,11 @@ them, it is wrong even when every other rule is satisfied.
     line("Membership pricing story", catalog.membershipPitch) +
     line("Loyalty program talking points", catalog.loyaltyProgram) +
     line("Authenticity guarantee", catalog.authenticityGuarantee) +
-    line("Payment methods", fulfillment.paymentMethods) +
+    // Spelled out exactly as the customer must copy it. GC quoting a bank with no
+    // number, or a number with no holder name, is the difference between a sale
+    // and a customer staring at their banking app.
+    line("PAY TO (send these exact details when they are ready to pay)", payTo) +
+    line("Other payment methods accepted", fulfillment.paymentMethods) +
     line("COD rules", fulfillment.codRules) +
     line("Shipping policy", fulfillment.shippingPolicy) +
     line("Shipping fee rules", fulfillment.shippingFeeRules) +
@@ -1197,6 +1213,9 @@ PUNCTUATION (non-negotiable, every language): real people typing on WhatsApp nev
     `Core principle: when a customer says they're ready to buy, close immediately — never stall.
 - The moment a customer confirms what they want: (1) restate the exact items, quantities and total in RM, (2) put those items in "proposedOrder" in your output (the system computes the authoritative total from the catalog), (3) collect the delivery address + phone if missing, and (4) send the exact payment instructions from the fulfillment rules (bank transfer / DuitNow / TNG as configured). Ask them to send the payment proof screenshot here once done.
 - Never mark anything as paid yourself. When the customer says they've paid or sends a proof screenshot, the system and ${agent} verify it — your job is to acknowledge warmly and set the expectation that confirmation comes shortly.
+- Send the PAY TO line EXACTLY as written above: bank, account number, account holder name, all three
+  together in one message. A customer typing into a banking app needs all three, and their app shows
+  the holder's name back to them before they confirm. A missing name makes a careful buyer stop.
 - If payment instructions are not configured, hand over instead of inventing an account number.`
   );
 

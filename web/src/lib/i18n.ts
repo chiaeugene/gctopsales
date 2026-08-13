@@ -297,9 +297,25 @@ const dict: Record<string, Entry> = {
   },
 
   // Brain fields — fulfillment
+  "settings.field.paymentBank.label": {
+    en: "Bank name — REQUIRED",
+    zh: "银行名称 — 必填",
+  },
+  "settings.field.paymentAccountName.label": {
+    en: "Account holder name — REQUIRED",
+    zh: "账户持有人姓名 — 必填",
+  },
+  "settings.field.paymentAccountName.help": {
+    en: "Exactly as printed on the account. Customers' banking apps show this name before they confirm, and a mismatch makes them stop.",
+    zh: "要跟账户上的完全一样。客户的银行 App 在确认前会显示这个名字，对不上他们就不敢转。",
+  },
+  "settings.field.paymentAccountNumber.label": {
+    en: "Account number — REQUIRED",
+    zh: "账号 — 必填",
+  },
   "settings.field.paymentMethods.label": {
-    en: "Where customers send the money — REQUIRED before you can take an order",
-    zh: "客户把钱转到哪里 — 接单前必填",
+    en: "Anything else customers can pay with (optional)",
+    zh: "其他收款方式（选填）",
   },
   "settings.field.paymentMethods.help": {
     en:

@@ -43,7 +43,13 @@ export type SalesBrain = z.infer<typeof SalesBrainSchema>;
 
 export const FulfillmentBrainSchema = z
   .object({
-    paymentMethods: z.string().default(""), // bank/DuitNow/TNG details for proof-matching
+    // The three that make an automatic close possible. Kept as separate fields
+    // rather than one blob so an agent cannot answer vaguely: a customer needs a
+    // bank, a name and a number, and any one of them missing stops the transfer.
+    paymentBank: z.string().default(""),
+    paymentAccountName: z.string().default(""),
+    paymentAccountNumber: z.string().default(""),
+    paymentMethods: z.string().default(""), // extras: DuitNow, TNG, PayNow, BIBD
     paymentInstructions: z.string().default(""),
     codRules: z.string().default(""), // cash-on-delivery, if offered
     shippingPolicy: z.string().default(""),

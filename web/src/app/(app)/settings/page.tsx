@@ -50,6 +50,20 @@ const BRAIN_SECTIONS: {
     why: "settings.section.fulfillment.why",
     important: true,
     fields: [
+      { key: "paymentBank", label: "settings.field.paymentBank.label", required: true, example: "Maybank" },
+      {
+        key: "paymentAccountName",
+        label: "settings.field.paymentAccountName.label",
+        help: "settings.field.paymentAccountName.help",
+        required: true,
+        example: "ANGI LIM",
+      },
+      {
+        key: "paymentAccountNumber",
+        label: "settings.field.paymentAccountNumber.label",
+        required: true,
+        example: "512345678901",
+      },
       {
         key: "paymentMethods",
         label: "settings.field.paymentMethods.label",
