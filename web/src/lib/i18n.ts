@@ -297,10 +297,29 @@ const dict: Record<string, Entry> = {
   },
 
   // Brain fields — fulfillment
-  "settings.field.paymentMethods.label": { en: "Your payment methods", zh: "你的收款方式" },
+  "settings.field.paymentMethods.label": {
+    en: "Where customers send the money — REQUIRED before you can take an order",
+    zh: "客户把钱转到哪里 — 接单前必填",
+  },
   "settings.field.paymentMethods.help": {
-    en: "Exact bank + account name + number. GC checks customer payment screenshots against THIS.",
-    zh: "写清楚银行、户口名和号码。GC 就是用这个来核对客户的付款截图。",
+    en:
+      "Write it exactly as a customer must type it into their banking app. Bank name, account NUMBER, and the account HOLDER'S NAME as printed on the account. " +
+      "Malaysia: DuitNow QR or the bank account, plus Touch 'n Go if you accept it (e.g. Maybank 512345678901, CHIA EU GENE · TNG 012-3456789). " +
+      "Singapore: PayNow by mobile or UEN, named as PayNow, not 'bank transfer' (e.g. PayNow 91234567, ANGI LIM). " +
+      "Brunei: your BIBD or Baiduri account with the full holder name. " +
+      "GC also checks customer payment screenshots against THIS text, so a wrong digit means real payments get rejected. " +
+      "Do not write 'PM me' or 'ask agent' — GC will hand the chat to you instead of closing the sale.",
+    zh:
+      "要写到客户可以直接照着输入进网银的程度：银行名称、账号、以及账户上的持有人姓名。" +
+      "马来西亚：DuitNow QR 或银行账号，有用 Touch 'n Go 也写上（例：Maybank 512345678901，CHIA EU GENE · TNG 012-3456789）。" +
+      "新加坡：写 PayNow 手机号或 UEN，要写明是 PayNow，不要只写「转账」（例：PayNow 91234567，ANGI LIM）。" +
+      "汶莱：BIBD 或 Baiduri 账号，附上完整持有人姓名。" +
+      "GC 也是用这段文字来核对客户的付款截图，写错一个数字，真实付款就会被判为不符。" +
+      "不要写「PM我」或「问代理」，那样 GC 会把对话交回给你，而不是帮你成交。",
+  },
+  "settings.paymentMissing": {
+    en: "Not set yet. GC can still sell, but the moment a customer says yes it has nothing to give them, so it hands the chat to you instead of closing.",
+    zh: "还没填。GC 还是可以照常销售，但客户一说要买，它没有东西可以给对方，只能把对话交回给你，成交不了。",
   },
   "settings.field.paymentInstructions.label": {
     en: "What GC tells customers when it's time to pay",

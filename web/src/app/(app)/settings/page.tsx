@@ -29,7 +29,10 @@ type Settings = {
   channels: Channel[];
 };
 
-type Field = { key: string; label: string; help?: string; example?: string };
+// `required` is not form validation — the field can still be saved empty. It marks
+// the one field whose absence stops a sale dead, so the page says so out loud
+// instead of letting it look optional like the rest.
+type Field = { key: string; label: string; help?: string; example?: string; required?: boolean };
 
 // Every field below feeds GC's brain directly — labels/help are agent-friendly,
 // but the keys are unchanged so nothing in the engine breaks.
@@ -51,7 +54,8 @@ const BRAIN_SECTIONS: {
         key: "paymentMethods",
         label: "settings.field.paymentMethods.label",
         help: "settings.field.paymentMethods.help",
-        example: "Maybank 1234567890 (CHIA EU GENE), Touch 'n Go 012-3456789",
+        required: true,
+        example: "Maybank 512345678901 (ANGI LIM) · DuitNow 012-3456789 · PayNow 91234567 (SG customers)",
       },
       {
         key: "paymentInstructions",
@@ -566,6 +570,13 @@ function BrainCard(props: {
             <label key={f.key} className="block text-xs">
               <span className="font-medium text-black/70">{t(f.label)}</span>
               {f.help && <span className="block text-black/40 mt-0.5">{t(f.help)}</span>}
+              {/* A placeholder counts as empty: the seeded "CONFIGURE ME" text is
+                  exactly what the engine treats as no payment details at all. */}
+              {f.required && (empty || /CONFIGURE ME|UPDATE ME/i.test(values[f.key] ?? "")) && (
+                <span className="mt-1 block rounded-lg border border-red-200 bg-red-50 px-2 py-1.5 text-[11px] text-red-800">
+                  {t("settings.paymentMissing")}
+                </span>
+              )}
               <textarea
                 value={values[f.key] ?? ""}
                 onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
