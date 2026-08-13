@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CheckIcon, AlertIcon } from "@/components/ui/icons";
 import { MetaConnectButtons } from "@/components/MetaConnectButtons";
+import { BotHealth } from "@/components/BotHealth";
 
 const META_APP_CONFIGURED = Boolean(process.env.NEXT_PUBLIC_META_APP_ID);
 
@@ -117,6 +118,8 @@ export default function ConnectPage() {
       </Card>
 
       {info.connected.WHATSAPP && <WhatsAppActivateCard connection={info.connected.WHATSAPP} />}
+
+      <BotHealth />
 
       {META_APP_CONFIGURED && <MetaConnectButtons onConnected={load} />}
 

@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { HeroBanner } from "@/components/ui/HeroBanner";
+import { BotHealth } from "@/components/BotHealth";
 import { FlameIcon, SnowflakeIcon, AlertIcon, ChartIcon } from "@/components/ui/icons";
 
 export default async function DashboardPage() {
@@ -132,6 +133,9 @@ export default async function DashboardPage() {
           {needsHuman} conversation{needsHuman > 1 ? "s" : ""} need your attention — click to review
         </Link>
       )}
+
+      {/* Silent while healthy; speaks up the moment GC could not answer someone. */}
+      <BotHealth compact />
 
       {!onboardingDone && <OnboardingChecklist lang={lang} steps={onboardSteps} />}
 
