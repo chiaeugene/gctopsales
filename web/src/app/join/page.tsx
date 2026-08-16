@@ -46,17 +46,36 @@ export default function JoinPage() {
     <main className="min-h-screen px-4 py-12 sm:py-20">
       <div className="mx-auto w-full max-w-md">
         <p className="text-xs font-medium uppercase tracking-wider text-[var(--accent-ink)]">GC · AI Sales Team</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Join your team on GC</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          Get your own AI closer
+        </h1>
         <p className="mt-2.5 text-sm leading-relaxed text-black/55">
-          GC answers your customers on WhatsApp in your name, in their language, around the clock. Fill this in and your
-          leader will confirm your account.
+          GC learns your products, your prices and your way of selling, then answers your customers on WhatsApp in your
+          name, in their language, at 2am if that is when they message. You keep control of every ringgit.
+        </p>
+        <ul className="mt-4 space-y-1.5 text-sm text-black/60">
+          <li className="flex gap-2.5">
+            <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--accent)]" />
+            Replies in seconds, so you stop losing customers to a slow answer
+          </li>
+          <li className="flex gap-2.5">
+            <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--accent)]" />
+            English, Malay or Mandarin, whichever the customer used
+          </li>
+          <li className="flex gap-2.5">
+            <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--accent)]" />
+            Sends your photos and real customer results, and never invents a price
+          </li>
+        </ul>
+        <p className="mt-4 text-sm leading-relaxed text-black/55">
+          Fill this in and we will approve your application as fast as we can.
         </p>
 
         {done ? (
           <div className="mt-8 rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
             <h2 className="font-semibold text-emerald-900">Thanks, {form.name.split(" ")[0]}.</h2>
             <p className="mt-1.5 text-sm text-emerald-900/80">
-              Your leader will confirm your account shortly. When they do, sign in with this email and{" "}
+              We will approve your application as fast as we can. The moment it is done, sign in with this email and{" "}
               <strong>the last 6 digits of your phone number</strong> as your passcode.
             </p>
           </div>

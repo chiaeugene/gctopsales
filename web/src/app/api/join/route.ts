@@ -18,7 +18,7 @@ const Schema = z.object({
   phone: z.string().trim().min(7).max(30),
 });
 
-const OK = { ok: true, message: "Thanks. Your leader will confirm your account shortly." };
+const OK = { ok: true, message: "Thanks. We will approve your application as fast as we can." };
 
 export async function POST(req: Request) {
   try {

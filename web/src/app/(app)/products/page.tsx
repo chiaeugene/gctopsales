@@ -116,9 +116,23 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
+      {/* New accounts are handed a copy of the MAE catalogue, and people assume a
+          pre-filled list is fixed. It is theirs: prices, wording, photos, all of
+          it. Saying so here is the difference between an agent selling in their
+          own voice and one who never touches the defaults. */}
+      <Card className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40 space-y-1.5">
+        <h2 className="font-semibold text-sm">This catalogue is yours to change</h2>
+        <p className="text-sm text-black/55">
+          What you see here was copied in to get you started, and it is an example, not a rule. Every price,
+          description, selling note and photo can be edited, and you can add your own products or switch off anything
+          you do not sell. GC quotes exactly what is on this page, so if a price here is wrong, that is the price your
+          customer hears.
+        </p>
+      </Card>
+
       <PageHeader
         title="Products"
-        subtitle="The catalog GC sells from. Attach photos/PDFs and GC will send them when the label matches the moment."
+        subtitle="The catalogue GC sells from. Attach photos or PDFs and GC sends them when the moment matches the label."
         action={<Button onClick={() => setEditing({ ...BLANK })}>+ New product</Button>}
       />
       {error && <div className="text-sm text-red-600">{error}</div>}
