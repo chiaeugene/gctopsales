@@ -164,6 +164,8 @@ Leave empty to use the platform default. 0 stops GC replying entirely.`,
 
       <DemoChatsCard />
 
+      <InviteLinkCard />
+
       <SignupsCard onRegistered={load} />
 
       <SheetImportCard onRegistered={load} />
@@ -558,6 +560,78 @@ function SeedResultsCard() {
       <Button onClick={seed} disabled={busy}>
         {busy ? "Seeding…" : "Seed results to all agents"}
       </Button>
+    </Card>
+  );
+}
+
+// The sign-up page is useless if nobody can find the link. This makes it
+// copyable, and hands over a WhatsApp message that is ready to paste, because
+// "here is a URL, write your own invitation" is how a rollout stalls.
+function InviteLinkCard() {
+  const [copied, setCopied] = useState<string | null>(null);
+  // Read from the browser rather than hardcoding, so it stays correct on a custom
+  // domain or a preview deploy.
+  const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const joinUrl = `${origin}/join`;
+  const invite =
+    `Hi! You can get your own GC AI sales assistant.
+
+` +
+    `It answers your customers on WhatsApp in your name, in their language, 24 hours a day.
+
+` +
+    `Sign up here: ${joinUrl}
+
+` +
+    `Fill in your name, your leader's name, email and phone. I will approve it and you can start straight away. ` +
+    `Your passcode is the last 6 digits of your phone number.`;
+
+  async function copy(text: string, what: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(what);
+      setTimeout(() => setCopied(null), 2000);
+    } catch {
+      setCopied("failed");
+    }
+  }
+
+  return (
+    <Card className="space-y-3 !border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40">
+      <div>
+        <h2 className="font-semibold">Invite your team</h2>
+        <p className="text-sm text-black/55">
+          Send this link to anyone who should have GC. They fill in four things, and their request lands in Sign-up
+          requests below for you to approve.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <code className="flex-1 min-w-0 truncate rounded-xl border border-black/10 bg-white px-3 py-2 text-sm">
+          {joinUrl}
+        </code>
+        <Button onClick={() => copy(joinUrl, "link")}>{copied === "link" ? "Copied" : "Copy link"}</Button>
+        <button
+          onClick={() => copy(invite, "message")}
+          className="rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-medium hover:border-[var(--accent)]"
+        >
+          {copied === "message" ? "Copied" : "Copy WhatsApp message"}
+        </button>
+        <a
+          href={`https://wa.me/?text=${encodeURIComponent(invite)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-medium hover:border-[var(--accent)]"
+        >
+          Open in WhatsApp
+        </a>
+      </div>
+      {copied === "failed" && (
+        <p className="text-xs text-red-600">Could not copy automatically. Select the link above and copy it by hand.</p>
+      )}
+      <p className="text-xs text-black/40">
+        The link is also on the login page, so anyone who lands there without an account can find it themselves.
+      </p>
     </Card>
   );
 }

@@ -190,6 +190,24 @@ export async function runHealthChecks(profile: StoreProfile, opts?: { pingLlm?: 
           : undefined,
   });
 
+  // ------------------------------- 5b. GC has pictures and proof to send -------
+  // GC can only send files belonging to THIS account, so an empty library is a bot
+  // that never sends an infographic and a bank with no proof to close with.
+  const [assets, results] = await Promise.all([
+    prisma.mediaAsset.count({ where: { profileId: profile.id, isActive: true } }),
+    prisma.testimonial.count({ where: { profileId: profile.id, isActive: true } }),
+  ]);
+  checks.push({
+    key: "library",
+    label: "GC has pictures and proof to send",
+    status: assets === 0 && results === 0 ? "warn" : "pass",
+    detail: `${assets} file${assets === 1 ? "" : "s"} in your library, ${results} customer result${results === 1 ? "" : "s"}.`,
+    fix:
+      assets === 0 && results === 0
+        ? "Add your own photos on the Library page, or ask your admin to push the MAE set to your account."
+        : undefined,
+  });
+
   // ----------------------------------------------------- 6. a buyer can pay ----
   const f = parseJson<Record<string, string>>(profile.fulfillmentBrain, {});
   const PLACEHOLDER = /CONFIGURE ME|UPDATE ME/i;

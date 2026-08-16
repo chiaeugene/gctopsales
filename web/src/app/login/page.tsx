@@ -123,7 +123,7 @@ export default function LoginPage() {
             >
               {busy ? "Signing in… · 登录中…" : "Sign in · 登录"}
             </button>
-            <p className="text-[11px] text-black/35 text-center">No account? Ask your team admin to create one for you.</p>
+            <p className="text-[11px] text-black/35 text-center">No account yet? <a href="/join" className="text-[var(--accent-ink)] hover:underline font-medium">Request one here</a>.</p>
           </form>
         </div>
       </div>
