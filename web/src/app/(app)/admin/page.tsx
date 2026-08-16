@@ -16,6 +16,8 @@ type TenantUser = {
   profile: {
     id: string;
     storeName: string | null;
+    leaderName?: string | null;
+    dailyReplyCap?: number | null;
     _count: { orders: number; products: number; channels: number };
   } | null;
 };
@@ -46,6 +48,36 @@ export default function AdminPage() {
       return;
     }
     setUsers(json.users);
+  }
+
+  // The cost control. Empty clears it back to the platform default rather than
+  // setting zero, because zero means "no replies at all" and is a real choice.
+  async function setCap(u: { id: string; email: string; profile?: { dailyReplyCap?: number | null } | null }) {
+    const current = u.profile?.dailyReplyCap;
+    const input = prompt(
+      `Daily reply limit for ${u.email}.
+
+Leave empty to use the platform default. 0 stops GC replying entirely.`,
+      current == null ? "" : String(current)
+    );
+    if (input === null) return;
+    const trimmed = input.trim();
+    const dailyReplyCap = trimmed === "" ? null : Number(trimmed);
+    if (dailyReplyCap !== null && (!Number.isInteger(dailyReplyCap) || dailyReplyCap < 0)) {
+      setError("Enter a whole number, or leave it empty for the default");
+      return;
+    }
+    const res = await fetch("/api/admin/tenants", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: u.id, dailyReplyCap }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      setError(json.error || "Could not set the limit");
+      return;
+    }
+    load();
   }
 
   async function setRole(u: { id: string; email: string; role: string }, role: string) {
@@ -220,6 +252,9 @@ export default function AdminPage() {
               <th className="px-4 py-3" title="Live customer chats only appear in the Workspace of the account holding the channel">
                 Channels
               </th>
+              <th className="px-4 py-3" title="Daily reply limit per agent — click a value to change it">
+                Daily limit
+              </th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -238,10 +273,24 @@ export default function AdminPage() {
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-xs">{u.profile?.storeName || "—"}</td>
+                <td className="px-4 py-3 text-xs">
+                  {u.profile?.storeName || "—"}
+                  {u.profile?.leaderName && (
+                    <div className="text-[11px] text-black/40">under {u.profile.leaderName}</div>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.orders ?? 0}</td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.products ?? 0}</td>
                 <td className="px-4 py-3 text-xs tabular-nums">{u.profile?._count.channels ?? 0}</td>
+                <td className="px-4 py-3 text-xs tabular-nums">
+                  <button
+                    onClick={() => setCap(u)}
+                    title="Daily reply limit for this agent. This is the cost control."
+                    className="hover:underline text-[var(--accent-ink)]"
+                  >
+                    {u.profile?.dailyReplyCap ?? "default"}
+                  </button>
+                </td>
                 <td className="px-4 py-3">
                   {!u.isOwner && (
                   <button
@@ -280,6 +329,7 @@ type SheetAgent = {
   name: string;
   email: string;
   phone: string;
+  leaderName?: string;
   passcode: string | null;
   exists: boolean;
 };
@@ -342,7 +392,7 @@ function SheetImportCard({ onRegistered }: { onRegistered: () => Promise<void> }
           const res = await fetch("/api/admin/tenants", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: a.email, password: a.passcode, name: a.name, cloneCatalog: true }),
+            body: JSON.stringify({ email: a.email, password: a.passcode, name: a.name, leaderName: a.leaderName, cloneCatalog: true }),
           });
           if (res.ok) {
             ok++;

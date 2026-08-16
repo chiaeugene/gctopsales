@@ -23,6 +23,8 @@ export async function GET() {
           select: {
             id: true,
             storeName: true,
+            leaderName: true,
+            dailyReplyCap: true,
             _count: { select: { orders: true, products: true, channels: true } },
           },
         },
@@ -41,6 +43,7 @@ const PostSchema = z.object({
   password: z.string().min(6).max(100),
   name: z.string().min(1).max(200),
   storeName: z.string().max(200).optional(),
+  leaderName: z.string().max(200).optional(),
   // ADMIN accounts see the Admin panel (all agents, passcode resets, errors).
   role: z.enum(["AGENT", "ADMIN"]).default("AGENT"),
   // Copy the admin profile's products + brains into the new tenant (default
@@ -74,6 +77,23 @@ export async function PATCH(req: Request) {
       }
       await prisma.user.update({ where: { id: target.id }, data: { role: roleChange.data.role } });
       return { ok: true, email: target.email, role: roleChange.data.role };
+    }
+
+    // Per-agent daily reply ceiling. null clears it back to the platform default.
+    const capChange = z
+      .object({ userId: z.string(), dailyReplyCap: z.number().int().min(0).max(100000).nullable() })
+      .safeParse(await req.clone().json());
+    if (capChange.success) {
+      const target = await prisma.user.findUnique({
+        where: { id: capChange.data.userId },
+        include: { profile: { select: { id: true } } },
+      });
+      if (!target?.profile) throw new ApiError(404, "That user has no workspace");
+      await prisma.storeProfile.update({
+        where: { id: target.profile.id },
+        data: { dailyReplyCap: capChange.data.dailyReplyCap },
+      });
+      return { ok: true, email: target.email, dailyReplyCap: capChange.data.dailyReplyCap };
     }
 
     const body = PatchSchema.safeParse(await req.json());
@@ -117,6 +137,7 @@ export async function POST(req: Request) {
           create: {
             storeName: body.data.storeName ?? `${body.data.name}'s MAE Store`,
             agentName: body.data.name,
+            leaderName: body.data.leaderName,
             ...(source
               ? {
                   identityBrain: source.identityBrain,

@@ -29,14 +29,20 @@ export class DailyReplyCapError extends Error {
 // the GC_DAILY_REPLY_CAP env var; 0 disables the cap.
 const DAILY_REPLY_CAP = Number(process.env.GC_DAILY_REPLY_CAP ?? 200);
 
-async function assertUnderDailyCap(profileId: string) {
-  if (!DAILY_REPLY_CAP) return;
+/** The agent's own ceiling if set, otherwise the platform default. */
+export function effectiveDailyCap(profile: { dailyReplyCap?: number | null }): number {
+  return profile.dailyReplyCap ?? DAILY_REPLY_CAP;
+}
+
+async function assertUnderDailyCap(profile: { id: string; dailyReplyCap?: number | null }) {
+  const cap = effectiveDailyCap(profile);
+  if (!cap) return;
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
   const used = await prisma.message.count({
-    where: { role: "GC", createdAt: { gte: startOfDay }, conversation: { profileId } },
+    where: { role: "GC", createdAt: { gte: startOfDay }, conversation: { profileId: profile.id } },
   });
-  if (used >= DAILY_REPLY_CAP) throw new DailyReplyCapError(DAILY_REPLY_CAP);
+  if (used >= cap) throw new DailyReplyCapError(cap);
 }
 
 // Full auto-reply pipeline: load tenant brains → compile prompt → call LLM →
@@ -57,7 +63,7 @@ export async function generateGcReply(opts: {
   const { profile, order, conversationId, customerMessage, systemNudge } = opts;
 
   if (!llmConfigured()) throw new LlmNotConfiguredError();
-  await assertUnderDailyCap(profile.id);
+  await assertUnderDailyCap(profile);
 
   // Frozen orders never auto-reply — the agent has taken over.
   if (order.needsHuman) {

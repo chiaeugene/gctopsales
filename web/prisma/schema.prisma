@@ -33,6 +33,9 @@ model StoreProfile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   agentName String?
+  // Their upline. Captured at registration so the team tree and the leaderboard
+  // can group agents without anyone re-keying a roster.
+  leaderName String?
   storeName String?
   city      String?
   state     String?
@@ -43,6 +46,12 @@ model StoreProfile {
   // GC knows to detect the customer's country when it affects price/shipping.
   homeMarket    String @default("MY") // MY | SG | BN
   marketsServed String @default("[\"MY\"]")
+
+  // Per-agent ceiling on GC replies per day. Null means use the platform default
+  // (GC_DAILY_REPLY_CAP). This is the cost control: one runaway conversation, or
+  // one agent pasting a whole customer list into the Workspace, cannot spend the
+  // whole month's budget.
+  dailyReplyCap Int?
 
   // ONBOARDING: NOT_STARTED | INTERVIEW | TRAINING | COMPLETED
   onboardingStatus String @default("NOT_STARTED")

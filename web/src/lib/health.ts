@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { StoreProfile } from "@prisma/client";
 import { parseJson } from "@/lib/json";
 import { llmConfigured, chatComplete, describeUpstreamError } from "@/lib/ai/llm";
+import { effectiveDailyCap } from "@/lib/ai/engine";
 
 /**
  * "Will the bot actually reply?" — answered by checking, not by hoping.
@@ -154,7 +155,7 @@ export async function runHealthChecks(profile: StoreProfile, opts?: { pingLlm?: 
   }
 
   // ------------------------------------------------ 4. today's budget is left --
-  const cap = Number(process.env.GC_DAILY_REPLY_CAP ?? 200);
+  const cap = effectiveDailyCap(profile);
   if (cap > 0) {
     const since = new Date();
     since.setHours(0, 0, 0, 0);

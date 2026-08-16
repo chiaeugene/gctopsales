@@ -112,6 +112,8 @@ export async function POST(req: Request) {
     const nameCol = findColumn(header, ["name", "agent"]);
     const emailCol = findColumn(header, ["email", "e-mail", "mail"]);
     const phoneCol = findColumn(header, ["phone", "contact", "whatsapp", "hp", "tel", "number"]);
+    // Optional: a roster without an upline column still imports fine.
+    const leaderCol = findColumn(header, ["leader", "upline", "sponsor", "team", "referrer"]);
     if (emailCol === -1) throw new ApiError(400, "Couldn't find an Email column in the header row");
     if (phoneCol === -1) throw new ApiError(400, "Couldn't find a Phone column in the header row");
 
@@ -121,7 +123,8 @@ export async function POST(req: Request) {
         const email = (r[emailCol] || "").trim().toLowerCase();
         const phone = (r[phoneCol] || "").trim();
         const name = nameCol !== -1 ? (r[nameCol] || "").trim() : "";
-        return { name: name || email.split("@")[0], email, phone, passcode: passcodeFromPhone(phone) };
+        const leaderName = leaderCol !== -1 ? (r[leaderCol] || "").trim() : "";
+        return { name: name || email.split("@")[0], email, phone, leaderName, passcode: passcodeFromPhone(phone) };
       })
       .filter((a) => a.email.includes("@"));
 
