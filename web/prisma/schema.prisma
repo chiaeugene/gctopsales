@@ -517,3 +517,22 @@ model LearningCase {
   @@index([profileId])
   @@index([outcome])
 }
+
+// A public sign-up request from the /join page. Deliberately NOT a User: anyone
+// on the internet can post here, so nothing becomes an account until an admin
+// approves it. Email is unique so a double submit is a no-op rather than a
+// duplicate row for somebody to wonder about.
+model AgentSignup {
+  id         String   @id @default(cuid())
+  name       String
+  leaderName String?
+  email      String   @unique
+  phone      String
+  // PENDING | APPROVED | DISMISSED
+  status     String   @default("PENDING")
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status])
+}

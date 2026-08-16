@@ -164,6 +164,8 @@ Leave empty to use the platform default. 0 stops GC replying entirely.`,
 
       <DemoChatsCard />
 
+      <SignupsCard onRegistered={load} />
+
       <SheetImportCard onRegistered={load} />
 
       <Card className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40 space-y-1.5">
@@ -559,6 +561,131 @@ function SeedResultsCard() {
     </Card>
   );
 }
+
+// Requests from the public /join page. Approving here is the SAME path the Sheet
+// import uses, so an account comes into existence exactly one way regardless of
+// how the agent reached us.
+function SignupsCard({ onRegistered }: { onRegistered: () => void }) {
+  const [rows, setRows] = useState<Signup[]>([]);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const res = await fetch("/api/admin/signups");
+    if (!res.ok) return;
+    const json = await res.json();
+    setRows(json.signups ?? []);
+  }, []);
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function act(id: string, action: "approve" | "dismiss", email: string) {
+    setBusy(id);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/signups", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Could not do that");
+      } else if (action === "approve") {
+        setResult(`${email} can sign in now, passcode ${json.passcode}. ${json.products} products copied over.`);
+        onRegistered();
+      }
+      load();
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  if (rows.length === 0) {
+    return (
+      <Card className="space-y-1.5">
+        <h2 className="font-semibold">Sign-up requests</h2>
+        <p className="text-sm text-black/45">
+          Nothing waiting. Share <strong>gc-top-sales.onrender.com/join</strong> with your team and their requests
+          appear here for you to approve.
+        </p>
+        {result && (
+          <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+            <CheckIcon className="w-4 h-4 shrink-0" />
+            {result}
+          </div>
+        )}
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">
+          Sign-up requests <span className="text-[var(--accent-ink)]">({rows.length})</span>
+        </h2>
+        <p className="text-sm text-black/45">
+          From <strong>/join</strong>. Approving creates their workspace, copies your catalogue, and sets their passcode
+          to the last 6 digits of their phone. Payment details are never copied, since those are personal.
+        </p>
+      </div>
+      {result && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+          <CheckIcon className="w-4 h-4 shrink-0" />
+          {result}
+        </div>
+      )}
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      <div className="space-y-2">
+        {rows.map((r) => (
+          <div key={r.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-black/[0.06] px-3 py-2.5 text-xs">
+            <span className="font-medium">{r.name}</span>
+            <span className="text-black/45">{r.email}</span>
+            <span className="text-black/45">{r.phone}</span>
+            {r.leaderName && (
+              <span className={r.leaderKnown === false ? "text-amber-700" : "text-black/45"}>
+                under {r.leaderName}
+                {r.leaderKnown === false ? " (no agent by that name yet)" : ""}
+              </span>
+            )}
+            {r.alreadyHasAccount && <span className="text-amber-700">already has an account</span>}
+            {!r.passcode && <span className="text-red-600">phone too short for a passcode</span>}
+            <span className="ml-auto flex gap-2">
+              <button
+                onClick={() => act(r.id, "approve", r.email)}
+                disabled={busy !== null || !r.passcode}
+                className="rounded-full bg-[var(--accent-soft)] px-3 py-1 font-medium text-[var(--accent-ink)] hover:bg-[var(--accent-soft-2)] disabled:opacity-40"
+              >
+                {busy === r.id ? "…" : "Approve"}
+              </button>
+              <button
+                onClick={() => act(r.id, "dismiss", r.email)}
+                disabled={busy !== null}
+                className="text-black/40 hover:text-black/70 disabled:opacity-40"
+              >
+                Dismiss
+              </button>
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+type Signup = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  leaderName: string | null;
+  leaderKnown: boolean | null;
+  passcode: string | null;
+  alreadyHasAccount: boolean;
+};
 
 // Angi's account is the master, and the master account is what people get shown.
 // So it needs conversations in it that GC actually wrote, not an empty Workspace
