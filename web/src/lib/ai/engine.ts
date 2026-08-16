@@ -8,7 +8,9 @@ import { EngineOutputSchema, type EngineOutput } from "@/lib/ai/schemas";
 import { AI_ALLOWED_STATUSES, MONEY_STATES, type OrderStatus } from "@/lib/constants";
 import { TESTIMONIAL_PHOTO_PREFIX, MEDIA_ASSET_PREFIX } from "@/lib/attachments";
 
-const HISTORY_LIMIT = 40;
+// Uncached input, paid in full on every reply. 40 was generous; the rolling
+// summary carries anything older, and 30 still covers a long negotiation.
+const HISTORY_LIMIT = 30;
 
 export class LlmNotConfiguredError extends Error {
   constructor() {
@@ -460,12 +462,18 @@ export async function scheduleFollowUp(profile: StoreProfile, order: Order, opts
 // Optional: refresh order.summary/nextAction after a few exchanges.
 export async function refreshOrderSummary(profile: StoreProfile, order: Order, conversationId: string) {
   if (!llmConfigured()) return;
+  const total = await prisma.message.count({ where: { conversationId } });
+  if (total < 4) return;
+  // Every third exchange, not every one. The last several messages already reach
+  // the model as history, so a summary that is two turns stale costs nothing and
+  // this alone removes two thirds of these calls.
+  if (total % 6 !== 0) return;
+
   const history = await prisma.message.findMany({
     where: { conversationId },
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    take: HISTORY_LIMIT,
+    take: 20,
   });
-  if (history.length < 4) return;
   history.reverse(); // newest-first for the LIMIT, oldest-first to summarise
 
   const transcript = history
@@ -474,6 +482,9 @@ export async function refreshOrderSummary(profile: StoreProfile, order: Order, c
 
   try {
     const raw = await chatComplete({
+      // A cheap model, deliberately. No customer ever reads this, and summarising a
+      // transcript is the easiest job in the app.
+      model: process.env.GC_SUMMARY_MODEL || "claude-haiku-4-5",
       system:
         'You summarize sales conversations for an ecommerce CRM. Respond ONLY with JSON: {"summary": "2-3 sentence factual summary", "nextAction": "one concrete recommended next step for the agent"}',
       messages: [{ role: "user", content: transcript.slice(-6000) }],

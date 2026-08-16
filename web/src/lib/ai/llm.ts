@@ -57,6 +57,8 @@ export async function chatComplete(opts: {
   system: string;
   messages: ChatMessage[];
   maxTokens?: number;
+  /** Override the model. Used by background work that no customer ever reads. */
+  model?: string;
   temperature?: number;
   // Lets the model search the web (Anthropic server-side tool) — used so GC
   // can answer competitor-product questions with real, current facts instead
@@ -69,7 +71,7 @@ export async function chatComplete(opts: {
 
   if (provider === "openai") {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const model = process.env.GC_LLM_MODEL || "gpt-4o";
+    const model = opts.model || process.env.GC_LLM_MODEL || "gpt-4o";
     const res = await client.chat.completions.create({
       model,
       max_tokens: maxTokens,
@@ -85,7 +87,7 @@ export async function chatComplete(opts: {
     // thirty-second wobble is far more expensive than waiting for it to pass.
     maxRetries: 5,
   });
-  const model = process.env.GC_LLM_MODEL || "claude-sonnet-5";
+  const model = opts.model || process.env.GC_LLM_MODEL || "claude-sonnet-5";
 
   const tools = opts.webSearch
     ? [{ type: "web_search_20260209" as const, name: "web_search" as const, max_uses: 3 }]

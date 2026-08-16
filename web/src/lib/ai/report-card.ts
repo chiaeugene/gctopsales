@@ -38,6 +38,8 @@ export async function gradeConversation(profile: StoreProfile, order: Order, con
 
   try {
     const raw = await chatComplete({
+      // Background grading, never read live by a customer: cheap model.
+      model: process.env.GC_SUMMARY_MODEL || "claude-haiku-4-5",
       system: `You are a sharp sales coach for MAE Global wellness sellers. Analyze the conversation transcript and grade how well the sale was worked, like a top sales manager doing a call review. Be honest and specific. Respond ONLY with one JSON object:
 {
   "scores": { "discovery": 0-10, "uspMatch": 0-10, "objectionHandling": 0-10, "closing": 0-10 },

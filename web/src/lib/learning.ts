@@ -100,6 +100,8 @@ export async function buildLearningCases(prisma: PrismaClient, opts?: { limit?: 
     }
 
     const raw = await chatComplete({
+      // Background grading, never read live by a customer: cheap model.
+      model: process.env.GC_SUMMARY_MODEL || "claude-haiku-4-5",
       system: `You turn real sales conversations into short teaching cases for a team of wellness sellers in Malaysia and Singapore.
 
 Be concrete and specific to THIS conversation. Quote what was actually said. Never give generic advice like "build rapport" or "understand the customer" — if a lesson would apply to any conversation, it is not worth writing down.
