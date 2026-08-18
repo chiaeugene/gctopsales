@@ -30,6 +30,9 @@ declare global {
 const APP_ID = process.env.NEXT_PUBLIC_META_APP_ID;
 const WA_CONFIG_ID = process.env.NEXT_PUBLIC_META_WA_CONFIG_ID;
 const LOGIN_CONFIG_ID = process.env.NEXT_PUBLIC_META_LOGIN_CONFIG_ID;
+// Flip to true once whatsapp-style App Review approval comes through for
+// Messenger and Instagram. Until then the buttons stay hidden everywhere.
+export const MESSENGER_IG_APPROVED = false;
 const GRAPH_VERSION = "v21.0";
 
 function useFacebookSdk() {
@@ -63,7 +66,13 @@ export function MetaConnectButtons({ onConnected }: { onConnected: () => void })
   return (
     <div className="grid sm:grid-cols-2 gap-3">
       {WA_CONFIG_ID && <WhatsAppConnectCard sdkReady={sdkReady} onConnected={onConnected} />}
-      {LOGIN_CONFIG_ID && <FacebookConnectCard sdkReady={sdkReady} onConnected={onConnected} />}
+      {/* Messenger and Instagram wait on their own Meta App Review. The card stays
+          in the code, switched off, because turning it back on is one flag once the
+          permissions are approved. Showing it now would send an agent into a
+          failure they cannot fix. */}
+      {MESSENGER_IG_APPROVED && LOGIN_CONFIG_ID && (
+        <FacebookConnectCard sdkReady={sdkReady} onConnected={onConnected} />
+      )}
     </div>
   );
 }

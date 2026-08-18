@@ -707,7 +707,9 @@ function SignupsCard({ onRegistered }: { onRegistered: () => void }) {
       if (!res.ok) {
         setError(json.error || "Could not do that");
       } else if (action === "approve") {
-        setResult(`${email} can sign in now, passcode ${json.passcode}. ${json.products} products copied over.`);
+        setResult(
+          `${email} can sign in now, passcode ${json.passcode}. Copied over: ${json.products} products, ${json.results} customer results, ${json.menus} discovery menus.`
+        );
         onRegistered();
       }
       load();

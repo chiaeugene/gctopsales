@@ -78,10 +78,22 @@ export async function POST(req: Request) {
       throw new ApiError(409, "That email already has an account. Marked as handled.");
     }
 
-    // Clone from the approving admin, same as the Sheet import does.
+    // Clone from the approving admin, same as the Sheet import does. Proof and
+    // discovery menus come along because an agent whose GC has nothing to close
+    // with on day one is a weak first impression, and these are text, so copying
+    // them per agent costs almost nothing.
     const source = await prisma.storeProfile.findUnique({
       where: { userId: admin.id },
-      include: { products: { orderBy: { sortOrder: "asc" } } },
+      include: {
+        products: { orderBy: { sortOrder: "asc" } },
+        // Photo BYTES are deliberately excluded. 55 results with images copied per
+        // agent would grow the database by hundreds of megabytes for a team of
+        // fifty. The words are what GC quotes; pictures come from the admin's
+        // push-to-all-agents buttons.
+        testimonials: { where: { isActive: true }, omit: { photoData: true } },
+        discoveryMenus: { where: { isActive: true } },
+        shareLinks: { where: { isActive: true } },
+      },
     });
 
     const user = await prisma.user.create({
@@ -113,15 +125,32 @@ export async function POST(req: Request) {
     });
 
     if (source && user.profile) {
-      await prisma.product.createMany({
-        data: source.products.map((p) => {
-          const { id: _id, profileId: _profileId, createdAt: _c, updatedAt: _u, ...rest } = p;
+      const reparent = <T extends { id: string; profileId: string; createdAt?: Date; updatedAt?: Date }>(rows: T[]) =>
+        rows.map((r) => {
+          const { id: _id, profileId: _p, createdAt: _c, updatedAt: _u, ...rest } = r;
           return { ...rest, profileId: user.profile!.id };
-        }),
-      });
+        });
+
+      await prisma.product.createMany({ data: reparent(source.products) });
+      if (source.testimonials.length) {
+        // photoMimeType without the bytes would make the sender try to attach a
+        // file that is not there, so it is cleared alongside them.
+        await prisma.testimonial.createMany({
+          data: reparent(source.testimonials).map((t) => ({ ...t, photoMimeType: null })),
+        });
+      }
+      if (source.discoveryMenus.length) await prisma.discoveryMenu.createMany({ data: reparent(source.discoveryMenus) });
+      if (source.shareLinks.length) await prisma.shareLink.createMany({ data: reparent(source.shareLinks) });
     }
 
     await prisma.agentSignup.update({ where: { id: signup.id }, data: { status: "APPROVED" } });
-    return { ok: true, email: user.email, passcode, products: source?.products.length ?? 0 };
+    return {
+      ok: true,
+      email: user.email,
+      passcode,
+      products: source?.products.length ?? 0,
+      results: source?.testimonials.length ?? 0,
+      menus: source?.discoveryMenus.length ?? 0,
+    };
   });
 }

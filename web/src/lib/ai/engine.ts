@@ -33,7 +33,11 @@ export class DailyReplyCapError extends Error {
 // each, which is the ceiling a runaway conversation cannot get past. Raise it per
 // agent from the Admin table when somebody earns it.
 export const DEFAULT_DAILY_REPLY_CAP = 100;
-const DAILY_REPLY_CAP = Number(process.env.GC_DAILY_REPLY_CAP ?? DEFAULT_DAILY_REPLY_CAP);
+// Deliberately NOT read from the environment. An env var is invisible from inside
+// the app, so "what is this agent's limit?" had two possible answers and no way to
+// tell which was in force. The limit now lives in exactly two places: this constant
+// for anyone without their own, and the per-agent number in the Admin table.
+const DAILY_REPLY_CAP = DEFAULT_DAILY_REPLY_CAP;
 
 /** The agent's own ceiling if set, otherwise the platform default. */
 export function effectiveDailyCap(profile: { dailyReplyCap?: number | null }): number {

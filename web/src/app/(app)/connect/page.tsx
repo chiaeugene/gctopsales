@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CheckIcon, AlertIcon } from "@/components/ui/icons";
-import { MetaConnectButtons } from "@/components/MetaConnectButtons";
+import { MetaConnectButtons, MESSENGER_IG_APPROVED } from "@/components/MetaConnectButtons";
 import { BotHealth } from "@/components/BotHealth";
 
 const META_APP_CONFIGURED = Boolean(process.env.NEXT_PUBLIC_META_APP_ID);
@@ -119,6 +119,16 @@ export default function ConnectPage() {
 
       {info.connected.WHATSAPP && <WhatsAppActivateCard connection={info.connected.WHATSAPP} />}
 
+      {!MESSENGER_IG_APPROVED && (
+        <Card className="space-y-1 !border-black/[0.06]">
+          <h2 className="font-semibold text-sm">WhatsApp only, for now</h2>
+          <p className="text-sm text-black/55">
+            Facebook Messenger and Instagram are built and waiting on Meta&apos;s approval, the same review WhatsApp has
+            already passed. They will appear here the moment it comes through. Nothing you set up now needs redoing.
+          </p>
+        </Card>
+      )}
+
       <BotHealth />
 
       {META_APP_CONFIGURED && <MetaConnectButtons onConnected={load} />}
@@ -133,7 +143,7 @@ export default function ConnectPage() {
       {showManual && (
         <>
       <div className="flex gap-2">
-        {(["WHATSAPP", "MESSENGER", "INSTAGRAM"] as const).map((c) => (
+        {(MESSENGER_IG_APPROVED ? (["WHATSAPP", "MESSENGER", "INSTAGRAM"] as const) : (["WHATSAPP"] as const)).map((c) => (
           <button
             key={c}
             onClick={() => setTab(c)}
