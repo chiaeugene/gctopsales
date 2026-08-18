@@ -37,12 +37,18 @@ const GRAPH_VERSION = "v21.0";
 
 function useFacebookSdk() {
   const [ready, setReady] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   useEffect(() => {
     if (!APP_ID) return;
     if (window.FB) {
       setReady(true);
       return;
     }
+    // Ten seconds is far longer than the script needs and far shorter than a
+    // person's patience with a button that does nothing.
+    const giveUp = setTimeout(() => {
+      if (!window.FB) setBlocked(true);
+    }, 10000);
     window.fbAsyncInit = () => {
       window.FB!.init({ appId: APP_ID, version: GRAPH_VERSION, xfbml: false });
       setReady(true);
@@ -53,15 +59,27 @@ function useFacebookSdk() {
       script.src = "https://connect.facebook.net/en_US/sdk.js";
       script.async = true;
       script.defer = true;
+      script.onerror = () => setBlocked(true);
       document.body.appendChild(script);
     }
+    return () => clearTimeout(giveUp);
   }, []);
-  return ready;
+  return { ready, blocked };
 }
 
 export function MetaConnectButtons({ onConnected }: { onConnected: () => void }) {
-  const sdkReady = useFacebookSdk();
+  const { ready: sdkReady, blocked } = useFacebookSdk();
   if (!APP_ID) return null;
+
+  if (blocked) {
+    return (
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
+        <strong>Facebook&apos;s login script could not load.</strong> An ad blocker, a VPN or a company network filter is
+        the usual cause. Turn the blocker off for this site and refresh, try another browser, or use the manual setup
+        below, which needs no Facebook script.
+      </div>
+    );
+  }
 
   return (
     <div className="grid sm:grid-cols-2 gap-3">
@@ -82,18 +100,29 @@ function WhatsAppConnectCard({ sdkReady, onConnected }: { sdkReady: boolean; onC
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const signupData = useRef<{ phoneNumberId?: string; wabaId?: string; code?: string }>({});
+  const handshakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
-      if (event.origin !== "https://www.facebook.com" && event.origin !== "https://web.facebook.com") return;
+      // Any facebook.com host, because ignoring a real message is indistinguishable
+      // from never receiving one, and both end as a card stuck on "Connecting…".
+      let host: string;
+      try {
+        host = new URL(event.origin).hostname;
+      } catch {
+        return;
+      }
+      if (host !== "facebook.com" && !host.endsWith(".facebook.com")) return;
       try {
         const data = JSON.parse(typeof event.data === "string" ? event.data : "{}");
         if (data.type !== "WA_EMBEDDED_SIGNUP") return;
         if (data.event === "FINISH") {
+          if (handshakeTimer.current) clearTimeout(handshakeTimer.current);
           signupData.current.phoneNumberId = data.data?.phone_number_id;
           signupData.current.wabaId = data.data?.waba_id;
           maybeFinish();
         } else if (data.event === "CANCEL" || data.event === "ERROR") {
+          if (handshakeTimer.current) clearTimeout(handshakeTimer.current);
           setBusy(false);
           setError(data.data?.error_message || "WhatsApp signup was cancelled.");
         }
@@ -140,6 +169,17 @@ function WhatsAppConnectCard({ sdkReady, onConnected }: { sdkReady: boolean; onC
           return;
         }
         signupData.current.code = code;
+        // The number arrives on the postMessage channel, not here. Give it two
+        // minutes, then say what happened instead of spinning forever.
+        if (!signupData.current.phoneNumberId) {
+          handshakeTimer.current = setTimeout(() => {
+            if (signupData.current.phoneNumberId) return;
+            setBusy(false);
+            setError(
+              "Facebook signed you in but never sent your number back. Try Connect again, and if it happens twice use the manual setup below."
+            );
+          }, 120000);
+        }
         maybeFinish();
       },
       {
