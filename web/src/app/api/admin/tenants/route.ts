@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { handle, ApiError } from "@/lib/api";
 import { requireAdmin, isOwnerEmail } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { DEFAULT_DAILY_REPLY_CAP } from "@/lib/ai/engine";
 
 // Super-admin tenant management. Creating a tenant = a User (AGENT role) + an
 // empty StoreProfile, optionally cloning the admin's MAE catalog + brains so
@@ -81,11 +82,25 @@ export async function PATCH(req: Request) {
 
     // Per-agent daily reply ceiling. null clears it back to the platform default.
     const capChange = z
-      .object({ userId: z.string(), dailyReplyCap: z.number().int().min(0).max(100000).nullable() })
+      .object({
+        userId: z.string().optional(),
+        // Apply the same ceiling to every agent at once. Existing accounts have no
+        // explicit cap, so without this they would keep falling back to whatever
+        // the environment says.
+        allAgents: z.boolean().optional(),
+        dailyReplyCap: z.number().int().min(0).max(100000).nullable(),
+      })
+      .refine((v) => Boolean(v.userId) !== Boolean(v.allAgents), "Name one agent or all of them")
       .safeParse(await req.clone().json());
-    if (capChange.success) {
+    if (capChange.success && capChange.data.allAgents) {
+      const { count } = await prisma.storeProfile.updateMany({
+        data: { dailyReplyCap: capChange.data.dailyReplyCap },
+      });
+      return { ok: true, updated: count, dailyReplyCap: capChange.data.dailyReplyCap };
+    }
+    if (capChange.success && capChange.data.userId) {
       const target = await prisma.user.findUnique({
-        where: { id: capChange.data.userId },
+        where: { id: capChange.data.userId! },
         include: { profile: { select: { id: true } } },
       });
       if (!target?.profile) throw new ApiError(404, "That user has no workspace");
@@ -137,6 +152,7 @@ export async function POST(req: Request) {
           create: {
             storeName: body.data.storeName ?? `${body.data.name}'s MAE Store`,
             agentName: body.data.name,
+            dailyReplyCap: DEFAULT_DAILY_REPLY_CAP,
             leaderName: body.data.leaderName,
             ...(source
               ? {

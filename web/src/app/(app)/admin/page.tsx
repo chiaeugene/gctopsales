@@ -52,6 +52,31 @@ export default function AdminPage() {
 
   // The cost control. Empty clears it back to the platform default rather than
   // setting zero, because zero means "no replies at all" and is a real choice.
+  async function setAllCaps() {
+    const input = prompt(
+      "Daily reply limit for EVERY agent. This overwrites each agent's own limit. Leave empty to put everyone back on the platform default.",
+      "100"
+    );
+    if (input === null) return;
+    const trimmed = input.trim();
+    const dailyReplyCap = trimmed === "" ? null : Number(trimmed);
+    if (dailyReplyCap !== null && (!Number.isInteger(dailyReplyCap) || dailyReplyCap < 0)) {
+      setError("Enter a whole number, or leave it empty for the default");
+      return;
+    }
+    const res = await fetch("/api/admin/tenants", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ allAgents: true, dailyReplyCap }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      setError(json.error || "Could not set the limits");
+      return;
+    }
+    load();
+  }
+
   async function setCap(u: { id: string; email: string; profile?: { dailyReplyCap?: number | null } | null }) {
     const current = u.profile?.dailyReplyCap;
     const input = prompt(
@@ -178,6 +203,20 @@ Leave empty to use the platform default. 0 stops GC replying entirely.`,
           holds what. If chats are arriving on the wrong account, connect the channel again from the Connect page while
           logged in as the account you want them on.
         </p>
+      </Card>
+
+      <Card className="space-y-1.5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="font-semibold text-sm">Daily reply limits</h2>
+            <p className="text-sm text-black/55">
+              Every agent is capped at 100 GC replies a day, which is roughly RM5 of usage each. New accounts start
+              there automatically. Click any number in the Daily limit column to change one agent, or set them all at
+              once here.
+            </p>
+          </div>
+          <Button onClick={setAllCaps}>Set every agent</Button>
+        </div>
       </Card>
 
       <Card padding="none">

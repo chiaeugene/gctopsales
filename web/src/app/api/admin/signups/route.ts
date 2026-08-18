@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { handle, ApiError } from "@/lib/api";
 import { requireAdmin } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { DEFAULT_DAILY_REPLY_CAP } from "@/lib/ai/engine";
 
 /**
  * The admin side of /join: review requests, and turn one into a real account.
@@ -92,6 +93,7 @@ export async function POST(req: Request) {
         profile: {
           create: {
             agentName: signup.name,
+            dailyReplyCap: DEFAULT_DAILY_REPLY_CAP,
             leaderName: signup.leaderName,
             storeName: source?.storeName,
             city: source?.city,

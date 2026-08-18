@@ -29,7 +29,11 @@ export class DailyReplyCapError extends Error {
 // Cost guardrail: cap how many AI replies one agent can generate per day
 // (each reply is an Anthropic call, possibly with web search). Override with
 // the GC_DAILY_REPLY_CAP env var; 0 disables the cap.
-const DAILY_REPLY_CAP = Number(process.env.GC_DAILY_REPLY_CAP ?? 200);
+// 100 replies per agent per day. At roughly 5 sen a reply that is about RM5 a day
+// each, which is the ceiling a runaway conversation cannot get past. Raise it per
+// agent from the Admin table when somebody earns it.
+export const DEFAULT_DAILY_REPLY_CAP = 100;
+const DAILY_REPLY_CAP = Number(process.env.GC_DAILY_REPLY_CAP ?? DEFAULT_DAILY_REPLY_CAP);
 
 /** The agent's own ceiling if set, otherwise the platform default. */
 export function effectiveDailyCap(profile: { dailyReplyCap?: number | null }): number {
