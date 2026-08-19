@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CheckIcon } from "@/components/ui/icons";
+import { welcomeMessage, waNumber } from "@/lib/welcome-message";
 
 type TenantUser = {
   id: string;
@@ -682,6 +683,8 @@ function SignupsCard({ onRegistered }: { onRegistered: () => void }) {
   const [rows, setRows] = useState<Signup[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
+  const [approved, setApproved] = useState<Approved | null>(null);
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -707,6 +710,8 @@ function SignupsCard({ onRegistered }: { onRegistered: () => void }) {
       if (!res.ok) {
         setError(json.error || "Could not do that");
       } else if (action === "approve") {
+        const row = rows.find((r) => r.id === id);
+        if (row) setApproved({ name: row.name, email: row.email, passcode: json.passcode, phone: row.phone });
         setResult(
           `${email} can sign in now, passcode ${json.passcode}. Copied over: ${json.products} products, ${json.results} customer results, ${json.menus} discovery menus.`
         );
@@ -753,6 +758,39 @@ function SignupsCard({ onRegistered }: { onRegistered: () => void }) {
           {result}
         </div>
       )}
+      {approved && (
+        <div className="space-y-2 rounded-2xl border border-[var(--accent)]/25 bg-[var(--accent-soft)]/40 p-3.5">
+          <p className="text-sm font-medium">Send {approved.name.split(" ")[0]} their login</p>
+          <p className="text-xs text-black/50">
+            English and Chinese in one message, with their email and passcode already filled in, and the three things to
+            do first.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={`https://wa.me/${waNumber(approved.phone)}?text=${encodeURIComponent(
+                welcomeMessage({ ...approved, origin: typeof window === "undefined" ? "" : window.location.origin })
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-[linear-gradient(135deg,var(--accent)_0%,var(--accent-ink)_100%)] px-4 py-2 text-xs font-medium text-white hover:brightness-110"
+            >
+              Send on WhatsApp
+            </a>
+            <button
+              onClick={async () => {
+                await navigator.clipboard.writeText(
+                  welcomeMessage({ ...approved, origin: window.location.origin })
+                );
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+              className="rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-medium hover:border-[var(--accent)]"
+            >
+              {copied ? "Copied" : "Copy the message"}
+            </button>
+          </div>
+        </div>
+      )}
       {error && <div className="text-sm text-red-600">{error}</div>}
       <div className="space-y-2">
         {rows.map((r) => (
@@ -790,6 +828,8 @@ function SignupsCard({ onRegistered }: { onRegistered: () => void }) {
     </Card>
   );
 }
+
+type Approved = { name: string; email: string; passcode: string; phone: string };
 
 type Signup = {
   id: string;
