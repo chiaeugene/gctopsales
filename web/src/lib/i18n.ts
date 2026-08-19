@@ -333,6 +333,16 @@ const dict: Record<string, Entry> = {
       "GC 也是用这段文字来核对客户的付款截图，写错一个数字，真实付款就会被判为不符。" +
       "不要写「PM我」或「问代理」，那样 GC 会把对话交回给你，而不是帮你成交。",
   },
+  "settings.reset.title": { en: "Start GC over", zh: "让 GC 重新开始" },
+  "settings.reset.desc": {
+    en: "Puts how GC talks and sells back on the team defaults, and clears your training. Keeps everything that is yours: payment details, products, your WhatsApp connection, and all your chats.",
+    zh: "把 GC 的说话和销售方式恢复成团队默认，并清空你的训练记录。属于你的东西都会保留：收款资料、产品、WhatsApp 连接和所有对话。",
+  },
+  "settings.reset.confirm": {
+    en: "Reset GC to the team defaults? Your training corrections will be cleared. Your payment details, products, chats and WhatsApp connection are kept.",
+    zh: "确定把 GC 恢复成团队默认吗？你的训练记录会被清空。收款资料、产品、对话和 WhatsApp 连接都会保留。",
+  },
+  "settings.reset.button": { en: "Reset to team defaults", zh: "恢复团队默认" },
   "settings.paymentMissing": {
     en: "Not set yet. GC can still sell, but the moment a customer says yes it has nothing to give them, so it hands the chat to you instead of closing.",
     zh: "还没填。GC 还是可以照常销售，但客户一说要买，它没有东西可以给对方，只能把对话交回给你，成交不了。",

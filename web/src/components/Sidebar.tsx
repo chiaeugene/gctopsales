@@ -21,7 +21,15 @@ import {
   GridIcon,
 } from "@/components/ui/icons";
 
-type NavItem = { href: string; labelKey: string; icon: (p: { className?: string }) => React.ReactElement };
+type NavItem = {
+  href: string;
+  labelKey: string;
+  icon: (p: { className?: string }) => React.ReactElement;
+  // Boss-only tools. Campaigns and Templates send in bulk, the Gym spends real
+  // LLM calls, and the Learning Hub reads across conversations — all of it is
+  // platform work, not daily selling, so agents never see it.
+  adminOnly?: boolean;
+};
 type NavGroup = { labelKey: string; items: NavItem[] };
 
 const groups: NavGroup[] = [
@@ -37,8 +45,8 @@ const groups: NavGroup[] = [
   {
     labelKey: "nav.group.grow",
     items: [
-      { href: "/campaigns", labelKey: "nav.campaigns", icon: MegaphoneIcon },
-      { href: "/templates", labelKey: "nav.templates", icon: FileIcon },
+      { href: "/campaigns", labelKey: "nav.campaigns", icon: MegaphoneIcon, adminOnly: true },
+      { href: "/templates", labelKey: "nav.templates", icon: FileIcon, adminOnly: true },
       { href: "/testimonials", labelKey: "nav.results", icon: StarIcon },
       { href: "/library", labelKey: "nav.library", icon: FileIcon },
     ],
@@ -49,8 +57,8 @@ const groups: NavGroup[] = [
       { href: "/setup", labelKey: "nav.setupGc", icon: StoreIcon },
       { href: "/train", labelKey: "nav.trainGc", icon: UsersIcon },
       { href: "/discovery", labelKey: "nav.discovery", icon: ChatIcon },
-      { href: "/gym", labelKey: "nav.gym", icon: DumbbellIcon },
-      { href: "/learn", labelKey: "nav.learn", icon: TrophyIcon },
+      { href: "/gym", labelKey: "nav.gym", icon: DumbbellIcon, adminOnly: true },
+      { href: "/learn", labelKey: "nav.learn", icon: TrophyIcon, adminOnly: true },
     ],
   },
   {
@@ -86,12 +94,16 @@ export function Sidebar({
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   // Team (leaderboard + admin) is the boss's master panel — agents don't see it.
-  const allGroups: NavGroup[] = isAdmin
-    ? [
-        ...groups.slice(0, 3),
-        { labelKey: "nav.group.team", items: [...groups[3].items, { href: "/admin", labelKey: "nav.admin", icon: AdminIcon }] },
-      ]
-    : groups.slice(0, 3);
+  const allGroups: NavGroup[] = (
+    isAdmin
+      ? [
+          ...groups.slice(0, 3),
+          { labelKey: "nav.group.team", items: [...groups[3].items, { href: "/admin", labelKey: "nav.admin", icon: AdminIcon } as NavItem] },
+        ]
+      : groups.slice(0, 3)
+  )
+    .map((g) => ({ ...g, items: g.items.filter((i) => isAdmin || !i.adminOnly) }))
+    .filter((g) => g.items.length > 0);
 
   const navLink = (item: NavItem) => {
     const active = isActive(item.href);

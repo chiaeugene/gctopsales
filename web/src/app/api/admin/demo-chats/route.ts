@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
-import { requireProfile } from "@/lib/tenant";
+import { requireAdmin, requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { generateGcReply } from "@/lib/ai/engine";
 import { splitIntoBubbles } from "@/lib/ai/humanize";
@@ -50,6 +50,7 @@ const SCENARIOS = [
 
 export async function GET() {
   return handle(async () => {
+    await requireAdmin();
     await requireProfile();
     return { scenarios: SCENARIOS.map((s, i) => ({ index: i, label: s.label, turns: s.turns.length })) };
   });
@@ -57,9 +58,10 @@ export async function GET() {
 
 export async function POST(req: Request) {
   return handle(async () => {
-    // Own-profile only, deliberately: the demos belong to whoever is looking at
-    // them, and one admin should not be dropping chats into another agent's
-    // Workspace.
+    // Boss-only: agents' Workspaces stay clean of demo content. Still seeded
+    // into the CALLER's own profile, so one admin cannot drop chats into another
+    // account's Workspace.
+    await requireAdmin();
     const profile = await requireProfile();
     const body = z.object({ scenario: z.number().int().min(0).max(SCENARIOS.length - 1) }).safeParse(await req.json());
     if (!body.success) throw new ApiError(400, "Which scenario?");

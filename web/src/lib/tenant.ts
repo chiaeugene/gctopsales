@@ -33,7 +33,7 @@ export async function requireProfile(): Promise<StoreProfile> {
 // she cannot see the Admin page, and the only tool that could promote her lives
 // behind it. This is the one door that must never be lockable from the inside.
 // ADMIN_EMAIL still grants rights as well, so ownership can move without a deploy.
-const PLATFORM_OWNER = "angilim@gmail.com";
+export const PLATFORM_OWNER = "angilim@gmail.com";
 
 export function isOwnerEmail(email: string | null | undefined): boolean {
   if (!email) return false;

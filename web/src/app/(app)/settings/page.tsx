@@ -271,7 +271,50 @@ export default function SettingsPage() {
           )}
         </label>
       </Card>
+
+      <ResetCard />
     </div>
+  );
+}
+
+// The undo for setup and training gone wrong. Setup and Train GC write into these
+// settings, which is the point, but it also means an agent can talk GC into a
+// corner with no way back. This puts GC's behaviour back on the team defaults
+// while keeping everything that is theirs: payment details, products, WhatsApp
+// connection, and every conversation.
+function ResetCard() {
+  const { t } = useT();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function reset() {
+    if (!confirm(t("settings.reset.confirm"))) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/settings/reset", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Reset failed");
+        return;
+      }
+      // Everything on this page just changed underneath us; a reload is the
+      // honest way to show it.
+      window.location.reload();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="space-y-2">
+      <h2 className="font-semibold text-sm">{t("settings.reset.title")}</h2>
+      <p className="text-sm text-black/45">{t("settings.reset.desc")}</p>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      <Button variant="secondary" onClick={reset} disabled={busy}>
+        {busy ? "…" : t("settings.reset.button")}
+      </Button>
+    </Card>
   );
 }
 
