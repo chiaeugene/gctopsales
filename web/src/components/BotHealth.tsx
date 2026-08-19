@@ -82,7 +82,7 @@ export function BotHealth({ compact = false }: { compact?: boolean }) {
 
   // ---------------------------------------------------------------- full ----
   return (
-    <Card className="space-y-3">
+    <Card data-tour="connect-health" className="space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-semibold">Will GC reply to a customer right now?</h2>

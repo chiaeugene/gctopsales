@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/Button";
  * Mounted in the app layout, so it survives the route changes it triggers
  * itself: the page behind it swaps while the tour keeps its place.
  */
-const TOUR_VERSION = "v2";
+const TOUR_VERSION = "v3";
 const KEY = `gc-tour-${TOUR_VERSION}`;
 
 type Step = {
@@ -63,6 +63,18 @@ const STEPS: Step[] = [
   },
   {
     n: 3,
+    title: "Your catalogue",
+    href: "/products",
+    anchor: "products-yours",
+    what: "These products came pre-loaded, and every one of them is yours to change.",
+    why: [
+      "Prices, descriptions, selling notes, photos: all editable. Add your own products, switch off anything you do not sell.",
+      "This matters because GC quotes exactly what is on this page. If a price here is wrong, that is the price your customer hears.",
+    ],
+    cta: "Next: set GC up",
+  },
+  {
+    n: 4,
     title: "Set up GC",
     href: "/setup",
     anchor: "setup-interview",
@@ -70,12 +82,12 @@ const STEPS: Step[] = [
     why: [
       "You talk, it asks. Your name, your city, the markets you serve, how you ship, and how customers pay you. No forms.",
       "Everything you say here is saved into your Settings. Setup is not a separate thing from Settings, it is the friendly way of filling Settings in, and you can go and edit any of it by hand later.",
-      "Payment details matter most. A customer who says yes cannot pay if GC has nothing to give them, so do this before you take a real chat.",
+      "The three that matter most: your bank name, the account holder's name, and the account number. With all three, GC closes the sale on its own — it sends your details the moment a customer says yes. Missing any one, and GC has to hand the chat back to you at the exact moment money moves.",
     ],
     cta: "Next: train GC",
   },
   {
-    n: 4,
+    n: 5,
     title: "Train GC",
     href: "/train",
     anchor: "train-chat",
@@ -84,11 +96,12 @@ const STEPS: Step[] = [
       "You play the customer, GC replies, and you correct it. Each correction is kept as an example of your style.",
       "Here is the part people miss: this is not a practice mode that gets thrown away. What you teach here is written back into your Settings, the same fields you saw in setup, and shipped into GC's real instructions.",
       "So it changes how GC answers actual customers on WhatsApp from the next message onward. Tell it once that you never push the biggest package first, and it stops doing that everywhere, not only in the chat where you said it.",
+      "And you cannot break anything: Settings has a Start GC over button that puts everything back on the team defaults, keeping your payment details, products and chats.",
     ],
     cta: "Next: discovery questions",
   },
   {
-    n: 5,
+    n: 6,
     title: "Discovery",
     href: "/discovery",
     anchor: "discovery-toggle",
@@ -101,7 +114,7 @@ const STEPS: Step[] = [
     cta: "Next: try it live",
   },
   {
-    n: 6,
+    n: 7,
     title: "Workspace",
     href: "/playground",
     anchor: "workspace-composer",
@@ -111,10 +124,23 @@ const STEPS: Step[] = [
       "A practice chat runs through exactly the same engine as a real customer. Nothing is faked, and nothing is sent to anybody.",
       "You can take a conversation over from GC whenever you want, and hand it back when you are done.",
     ],
+    cta: "Next: go live on WhatsApp",
+  },
+  {
+    n: 8,
+    title: "Connect",
+    href: "/connect",
+    anchor: "connect-health",
+    what: "This is where GC goes live: link your WhatsApp Business, then let this panel prove it works.",
+    why: [
+      "One button connects your WhatsApp. You log in with Facebook, pick your number, done — no tokens, no copying IDs.",
+      "Then press Run the full check. It tests every step a customer message travels, for real, and tells you the exact thing to fix if anything is off.",
+      "All green means you are live: a customer messaging your number right now gets an answer. You get 100 GC replies a day, more than a full day of selling needs.",
+    ],
     cta: "Last step: Settings",
   },
   {
-    n: 7,
+    n: 9,
     title: "Settings",
     href: "/settings",
     anchor: "settings-tone",
@@ -144,7 +170,15 @@ const DEMOS = [
 
 type Demo = { text: string; reply?: string; error?: string; busy?: boolean };
 
-export function GuidedTour({ agentName }: { agentName: string }) {
+export function GuidedTour({
+  agentName,
+  isAdmin,
+  seenCount,
+}: {
+  agentName: string;
+  isAdmin: boolean;
+  seenCount: number;
+}) {
   const [step, setStep] = useState<number | null>(null); // null = closed, 0 = intro
   const [demos, setDemos] = useState<Demo[]>([]);
   const [demoOrderId, setDemoOrderId] = useState<string | null>(null);
@@ -157,8 +191,8 @@ export function GuidedTour({ agentName }: { agentName: string }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // ?tour=1 replays it on demand, which is how you check the tour without
-    // logging out and back in, and how an agent finds it again next month.
+    // ?tour=1 replays it deliberately, any time, for anyone — and a deliberate
+    // replay never counts against the two auto-openings.
     if (params.get("tour") === "1") {
       sessionStorage.removeItem(KEY);
       setStep(0);
@@ -168,8 +202,18 @@ export function GuidedTour({ agentName }: { agentName: string }) {
     // Otherwise only open from the dashboard, which is where login lands. Never
     // hijack a page somebody navigated to on purpose mid-session.
     if (pathname !== "/") return;
+    // Agents get the auto-tour twice, then it stays out of the way: by the third
+    // login it is repetition, not onboarding. Admins keep it every login for now,
+    // since they demo the product. The count survives cleared browsers because it
+    // lives on the profile, and it increments once per session, guarded so a
+    // mid-session reload does not burn a second viewing.
+    if (!isAdmin && seenCount >= 2) return;
+    if (!isAdmin && !sessionStorage.getItem("gc-tour-counted")) {
+      sessionStorage.setItem("gc-tour-counted", "1");
+      fetch("/api/tour/seen", { method: "POST" }).catch(() => {});
+    }
     setStep(0);
-  }, [pathname, params]);
+  }, [pathname, params, isAdmin, seenCount]);
 
   const close = useCallback(() => {
     sessionStorage.setItem(KEY, "done");
@@ -298,11 +342,11 @@ export function GuidedTour({ agentName }: { agentName: string }) {
             <p className="text-xs font-medium uppercase tracking-wider text-[var(--accent-ink)]">
               Welcome{agentName ? `, ${agentName}` : ""}
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Seven stops, in the order that matters</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Nine stops, in the order that matters</h2>
             <p className="mt-3 text-sm leading-relaxed text-black/60">
               GC Top Sales answers your customers for you. Before you point it at a real WhatsApp it needs to know who
-              you are, how you sell, and what to ask. We will walk the screens in that order, stop to try six real
-              messages, and finish where all of it is stored.
+              you are, how you sell, and what to ask. We will walk the screens in that order, try six real messages, switch your WhatsApp on, and finish where
+              all of it is stored.
             </p>
             <ol className="mt-5 grid gap-1.5 sm:grid-cols-2">
               {STEPS.map((s) => (

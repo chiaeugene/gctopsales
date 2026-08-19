@@ -53,6 +53,11 @@ model StoreProfile {
   // whole month's budget.
   dailyReplyCap Int?
 
+  // How many times the guided tour has auto-opened for this agent. Agents get
+  // it twice, then it stays out of the way (still replayable with ?tour=1).
+  // Admins are exempt and see it every login.
+  tourSeenCount Int @default(0)
+
   // ONBOARDING: NOT_STARTED | INTERVIEW | TRAINING | COMPLETED
   onboardingStatus String @default("NOT_STARTED")
 

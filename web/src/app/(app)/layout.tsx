@@ -21,7 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { profile: { select: { agentName: true } } },
+    include: { profile: { select: { agentName: true, tourSeenCount: true } } },
   });
   if (!user) redirect("/login");
 
@@ -47,7 +47,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {/* Suspense because the tour reads the query string (?tour=1 replays it),
             and useSearchParams needs a boundary if a page is ever prerendered. */}
         <Suspense fallback={null}>
-          <GuidedTour agentName={(user.profile?.agentName ?? user.name ?? "").split(" ")[0]} />
+          <GuidedTour
+            agentName={(user.profile?.agentName ?? user.name ?? "").split(" ")[0]}
+            isAdmin={hasAdminRights(user)}
+            seenCount={user.profile?.tourSeenCount ?? 0}
+          />
         </Suspense>
       </div>
     </I18nProvider>

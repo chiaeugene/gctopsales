@@ -120,7 +120,7 @@ export default function ProductsPage() {
           pre-filled list is fixed. It is theirs: prices, wording, photos, all of
           it. Saying so here is the difference between an agent selling in their
           own voice and one who never touches the defaults. */}
-      <Card className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40 space-y-1.5">
+      <Card data-tour="products-yours" className="!border-[var(--accent)]/25 !bg-[var(--accent-soft)]/40 space-y-1.5">
         <h2 className="font-semibold text-sm">This catalogue is yours to change</h2>
         <p className="text-sm text-black/55">
           What you see here was copied in to get you started, and it is an example, not a rule. Every price,
