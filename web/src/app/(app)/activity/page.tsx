@@ -19,25 +19,39 @@ type Row = {
   email: string;
   leaderName: string | null;
   isAdmin: boolean;
-  lastLogin: string | null;
+  lastSeen: string | null;
+  everSignedIn: boolean;
   setupStarted: boolean;
+  setupDone: boolean;
   trainingCount: number;
   paymentReady: boolean;
   whatsappConnected: boolean;
   connectFailures: number;
   practiceReplies: number;
   liveReplies: number;
+  lastReplyAt: string | null;
 };
 type Event = { id: string; at: string; type: string; summary: string; ok: boolean; who: string };
 
+// Every stage is derived from something that still exists in the database, so a
+// row is true no matter when the person did it.
 const STAGES = [
-  { key: "lastLogin", label: "Signed in" },
+  { key: "everSignedIn", label: "Signed in" },
   { key: "setupStarted", label: "Set up" },
   { key: "trainingCount", label: "Trained" },
+  { key: "practiceReplies", label: "Practised" },
   { key: "paymentReady", label: "Bank details" },
   { key: "whatsappConnected", label: "WhatsApp" },
   { key: "liveReplies", label: "Real customer" },
 ] as const;
+
+/** How far down the list they got — the honest one-line answer per person. */
+function furthest(r: Row): string {
+  for (let i = STAGES.length - 1; i >= 0; i--) {
+    if (reached(r, STAGES[i].key)) return STAGES[i].label;
+  }
+  return "Not started";
+}
 
 function reached(r: Row, key: (typeof STAGES)[number]["key"]): boolean {
   const v = r[key];
@@ -78,7 +92,7 @@ export default function ActivityPage() {
   const agents = funnel.filter((r) => !r.isAdmin);
   const connected = agents.filter((r) => r.whatsappConnected).length;
   const selling = agents.filter((r) => r.liveReplies > 0).length;
-  const neverLoggedIn = agents.filter((r) => !r.lastLogin);
+  const neverLoggedIn = agents.filter((r) => !r.everSignedIn);
   const stuckOnConnect = agents.filter((r) => r.connectFailures > 0 && !r.whatsappConnected);
 
   return (
@@ -134,7 +148,7 @@ export default function ActivityPage() {
                     {s.label}
                   </th>
                 ))}
-                <th className="px-4 py-3 whitespace-nowrap">Last seen</th>
+                <th className="px-4 py-3 whitespace-nowrap">Got to / last seen</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/[0.05]">
@@ -158,6 +172,9 @@ export default function ActivityPage() {
                             {s.key === "trainingCount" && (
                               <span className="text-xs tabular-nums">{r.trainingCount}</span>
                             )}
+                            {s.key === "practiceReplies" && (
+                              <span className="text-xs tabular-nums">{r.practiceReplies}</span>
+                            )}
                             {s.key === "liveReplies" && <span className="text-xs tabular-nums">{r.liveReplies}</span>}
                           </span>
                         ) : failed ? (
@@ -171,8 +188,11 @@ export default function ActivityPage() {
                       </td>
                     );
                   })}
-                  <td className="px-4 py-3 text-xs text-black/45 whitespace-nowrap">
-                    {r.lastLogin ? ago(r.lastLogin) : "never"}
+                  <td className="px-4 py-3 text-xs whitespace-nowrap">
+                    <div className="font-medium text-black/60">{furthest(r)}</div>
+                    <div className="text-black/40">
+                      {r.lastSeen ? ago(r.lastSeen) : r.everSignedIn ? "before tracking" : "never opened"}
+                    </div>
                   </td>
                 </tr>
               ))}

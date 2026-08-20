@@ -27,30 +27,54 @@ export async function GET(req: Request) {
       orderBy: { createdAt: "asc" },
     });
 
-    const [events, lastLogins, liveReplies, practiceReplies, connectFails] = await Promise.all([
+    // Conversation counts come from the CONVERSATIONS THEMSELVES, not the event
+    // log. "Where did they get to" has to be true for everything that happened
+    // before logging existed, and a reply that exists in the database is better
+    // evidence than a log line about it anyway.
+    const [events, conversations, connectFails] = await Promise.all([
       prisma.activityEvent.findMany({ orderBy: { createdAt: "desc" }, take: limit }),
-      prisma.activityEvent.groupBy({
-        by: ["profileId"],
-        where: { type: "login", ok: true },
-        _max: { createdAt: true },
+      prisma.conversation.findMany({
+        select: {
+          profileId: true,
+          kind: true,
+          updatedAt: true,
+          _count: { select: { messages: { where: { role: "GC" } } } },
+        },
       }),
-      prisma.activityEvent.groupBy({ by: ["profileId"], where: { type: "live_reply" }, _count: true }),
-      prisma.activityEvent.groupBy({ by: ["profileId"], where: { type: "practice_reply" }, _count: true }),
       prisma.activityEvent.groupBy({ by: ["profileId"], where: { type: "connect_failed" }, _count: true }),
     ]);
 
-    const by = <T extends { profileId: string | null }>(rows: T[]) =>
-      new Map(rows.filter((r) => r.profileId).map((r) => [r.profileId as string, r]));
-    const loginMap = by(lastLogins);
-    const liveMap = by(liveReplies);
-    const practiceMap = by(practiceReplies);
-    const failMap = by(connectFails);
+    // Practice and real, per profile, plus when their bot last actually worked.
+    const tally = new Map<string, { live: number; practice: number; lastReplyAt: Date | null }>();
+    for (const c of conversations) {
+      const row = tally.get(c.profileId) ?? { live: 0, practice: 0, lastReplyAt: null };
+      const replies = c._count.messages;
+      if (c.kind === "PLAYGROUND") row.practice += replies;
+      else row.live += replies;
+      if (replies > 0 && (!row.lastReplyAt || c.updatedAt > row.lastReplyAt)) row.lastReplyAt = c.updatedAt;
+      tally.set(c.profileId, row);
+    }
+
+    const failMap = new Map(
+      connectFails.filter((r) => r.profileId).map((r) => [r.profileId as string, r._count as unknown as number])
+    );
 
     const funnel = profiles.map((p) => {
       const f = parseJson<Record<string, string>>(p.fulfillmentBrain, {});
       const paid = Boolean(
         f.paymentBank?.trim() && f.paymentAccountName?.trim() && f.paymentAccountNumber?.trim()
       );
+      const t = tally.get(p.id) ?? { live: 0, practice: 0, lastReplyAt: null };
+      // Signing in leaves traces beyond the login log: the tour counter only
+      // increments from inside the app, and so does everything else here. Any of
+      // them proves they got in, whenever that was.
+      const everSignedIn =
+        Boolean(p.lastSeenAt) ||
+        p.tourSeenCount > 0 ||
+        p.onboardingStatus !== "NOT_STARTED" ||
+        p._count.trainingExamples > 0 ||
+        p._count.channels > 0 ||
+        t.practice + t.live > 0;
       return {
         profileId: p.id,
         name: p.agentName ?? p.user.email,
@@ -58,15 +82,17 @@ export async function GET(req: Request) {
         leaderName: p.leaderName,
         isAdmin: p.user.role === "ADMIN",
         enrolledAt: p.user.createdAt,
-        lastLogin: loginMap.get(p.id)?._max?.createdAt ?? null,
-        // Talking to the setup interview at all is the signal, not finishing it.
+        lastSeen: p.lastSeenAt,
+        everSignedIn,
         setupStarted: p.onboardingStatus !== "NOT_STARTED",
+        setupDone: p.onboardingStatus === "COMPLETED",
         trainingCount: p._count.trainingExamples,
         paymentReady: paid,
         whatsappConnected: p._count.channels > 0,
-        connectFailures: (failMap.get(p.id) as { _count?: number } | undefined)?._count ?? 0,
-        practiceReplies: (practiceMap.get(p.id) as { _count?: number } | undefined)?._count ?? 0,
-        liveReplies: (liveMap.get(p.id) as { _count?: number } | undefined)?._count ?? 0,
+        connectFailures: failMap.get(p.id) ?? 0,
+        practiceReplies: t.practice,
+        liveReplies: t.live,
+        lastReplyAt: t.lastReplyAt,
       };
     });
 

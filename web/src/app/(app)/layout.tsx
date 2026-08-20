@@ -21,9 +21,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { profile: { select: { agentName: true, tourSeenCount: true } } },
+    include: { profile: { select: { agentName: true, tourSeenCount: true, lastSeenAt: true } } },
   });
   if (!user) redirect("/login");
+
+  // Fire-and-forget presence. Throttled to ten minutes because a write on every
+  // page load would be a lot of traffic for a number nobody reads to the minute.
+  if (user.profile) {
+    const stale = !user.profile.lastSeenAt || Date.now() - user.profile.lastSeenAt.getTime() > 10 * 60 * 1000;
+    if (stale) {
+      prisma.storeProfile
+        .update({ where: { userId: user.id }, data: { lastSeenAt: new Date() } })
+        .catch(() => {});
+    }
+  }
 
   const lang = normalizeLang((await cookies()).get(LANG_COOKIE)?.value);
 

@@ -53,6 +53,11 @@ model StoreProfile {
   // whole month's budget.
   dailyReplyCap Int?
 
+  // Last time this agent had the app open. Written from the app shell rather than
+  // inferred from the event log, so "last seen" is true even for people who
+  // signed in before logging existed and have not signed in since.
+  lastSeenAt DateTime?
+
   // How many times the guided tour has auto-opened for this agent. Agents get
   // it twice, then it stays out of the way (still replayable with ?tour=1).
   // Admins are exempt and see it every login.
