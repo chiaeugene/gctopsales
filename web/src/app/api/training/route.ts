@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import { roleplayCustomerTurn, synthesizeStyleProfile } from "@/lib/training/roleplay";
 import { SCENARIOS, getScenario } from "@/lib/training/scenarios";
 import type { ChatMessage } from "@/lib/ai/llm";
@@ -84,6 +85,12 @@ export async function POST(req: Request) {
         data: { conversationId: convo.id, role: "AGENT", content: agentMessage },
       });
       if (lastCustomerMsg) {
+        logActivity({
+          profileId: profile.id,
+          actor: profile.agentName ?? profile.id,
+          type: "training_saved",
+          summary: `Taught GC a reply (${body.data.scenarioKey})`,
+        });
         await prisma.trainingExample.create({
           data: {
             profileId: profile.id,

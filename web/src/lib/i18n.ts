@@ -46,6 +46,7 @@ const dict: Record<string, Entry> = {
   "nav.settings": { en: "Settings", zh: "设置" },
   "nav.signOut": { en: "Sign out", zh: "退出" },
   "nav.roleAdmin": { en: "Admin", zh: "管理员" },
+  "nav.activity": { en: "Activity", zh: "使用记录" },
   "nav.roleAgent": { en: "Agent", zh: "代理" },
   "nav.tagline": { en: "Sales team workspace", zh: "销售团队工作台" },
 

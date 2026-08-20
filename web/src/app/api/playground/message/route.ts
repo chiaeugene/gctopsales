@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
+import { logActivity } from "@/lib/activity";
 import { prisma } from "@/lib/prisma";
 import { generateGcReply, recordExchange, refreshOrderSummary, scheduleFollowUp } from "@/lib/ai/engine";
 import { parseJson } from "@/lib/json";
@@ -46,6 +47,12 @@ export async function POST(req: Request) {
       attachmentIds,
     });
     await scheduleFollowUp(profile, updated, { customerSpoke: true });
+    logActivity({
+      profileId: profile.id,
+      actor: profile.agentName ?? profile.id,
+      type: "practice_reply",
+      summary: "Practised a chat in the Workspace",
+    });
     refreshOrderSummary(profile, updated, order.conversation.id).catch(() => {});
 
     const fresh = await prisma.order.findUnique({ where: { id: order.id } });

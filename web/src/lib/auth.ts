@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 
 // Real multi-user credentials auth (unlike Mandy's single-passcode phase):
 // this platform hosts many agent accounts plus a super-admin, so every user
@@ -57,10 +58,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) {
           recordFailedLogin(email);
+          logActivity({ actor: email, type: "login", summary: "Wrong passcode", ok: false });
           return null;
         }
 
         failedLogins.delete(email);
+        const profile = await prisma.storeProfile.findUnique({ where: { userId: user.id }, select: { id: true } });
+        logActivity({ profileId: profile?.id, actor: email, type: "login", summary: "Signed in" });
         return { id: user.id, email: user.email, name: user.name };
       },
     }),

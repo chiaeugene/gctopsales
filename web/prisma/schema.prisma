@@ -541,3 +541,23 @@ model AgentSignup {
 
   @@index([status])
 }
+
+// What each enrolled agent actually did. Written fire-and-forget from the places
+// that matter, never in a transaction with real work, because losing a log line
+// must never cost a sale.
+model ActivityEvent {
+  id        String   @id @default(cuid())
+  profileId String?  // null for events before a profile is resolved (failed login)
+  actor     String   // email, so the feed reads without a join
+  // login | tour_opened | setup_message | setup_done | training_saved |
+  // payment_saved | connect_started | connect_ok | connect_failed |
+  // health_check | practice_reply | live_reply | live_inbound | reset | menu_saved
+  type      String
+  summary   String   // one human-readable line, already written for the feed
+  ok        Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([profileId, type])
+  @@index([type, createdAt])
+}

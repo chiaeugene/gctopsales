@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import { parseJson, toJson } from "@/lib/json";
 import {
   IdentityBrainSchema,
@@ -109,6 +110,20 @@ export async function PUT(req: Request) {
     if (body.data.maxFollowUps !== undefined) data.maxFollowUps = body.data.maxFollowUps;
 
     await prisma.storeProfile.update({ where: { id: profile.id }, data });
+
+    // Bank details are the one setting that decides whether GC can close a sale
+    // by itself, so it is worth seeing the moment it happens.
+    if (data.fulfillmentBrain) {
+      const f = body.data.fulfillmentBrain as Record<string, string> | undefined;
+      const complete = Boolean(f?.paymentBank?.trim() && f?.paymentAccountName?.trim() && f?.paymentAccountNumber?.trim());
+      logActivity({
+        profileId: profile.id,
+        actor: profile.agentName ?? profile.id,
+        type: "payment_saved",
+        summary: complete ? `Payment details complete (${f?.paymentBank})` : "Saved fulfilment settings, bank details still incomplete",
+        ok: complete,
+      });
+    }
     return { ok: true };
   });
 }

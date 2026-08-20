@@ -1,6 +1,7 @@
 import { handle } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { runHealthChecks } from "@/lib/health";
+import { logActivity } from "@/lib/activity";
 
 /**
  * "Will the bot reply?" answered on demand, for the signed-in agent's own account.
@@ -20,6 +21,15 @@ export async function GET() {
 export async function POST() {
   return handle(async () => {
     const profile = await requireProfile();
-    return runHealthChecks(profile, { pingLlm: true });
+    const result = await runHealthChecks(profile, { pingLlm: true });
+    const failed = result.checks.filter((c) => c.status === "fail");
+    logActivity({
+      profileId: profile.id,
+      actor: profile.agentName ?? profile.id,
+      type: "health_check",
+      summary: failed.length ? `Check failed: ${failed.map((c) => c.label).join(", ")}` : "Full check all green",
+      ok: failed.length === 0,
+    });
+    return result;
   });
 }

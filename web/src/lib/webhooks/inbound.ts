@@ -1,6 +1,7 @@
 import type { Conversation, Order, StoreProfile } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { describeUpstreamError } from "@/lib/ai/llm";
+import { logActivity } from "@/lib/activity";
 import {
   generateGcReply,
   recordExchange,
@@ -138,6 +139,13 @@ export async function handleInboundMessage(opts: {
     }
     throw err;
   }
+
+  logActivity({
+    profileId: profile.id,
+    actor: profile.agentName ?? profile.id,
+    type: "live_reply",
+    summary: `GC answered a real ${source} customer`,
+  });
 
   await recordExchange({ conversationId, customerMessage: null, output, attachmentIds });
   await scheduleFollowUp(profile, updatedOrder, { customerSpoke: true });

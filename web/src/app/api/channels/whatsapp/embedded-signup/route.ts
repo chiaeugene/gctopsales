@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import {
   exchangeCodeForToken,
   subscribeWabaWebhook,
@@ -27,6 +28,13 @@ export async function POST(req: Request) {
     if (!body.success) throw new ApiError(400, "Invalid embedded signup payload");
     const { code, wabaId, phoneNumberId } = body.data;
 
+    logActivity({
+      profileId: profile.id,
+      actor: profile.agentName ?? profile.id,
+      type: "connect_started",
+      summary: "Started connecting WhatsApp",
+    });
+
     let accessToken: string;
     let registration: { ok: boolean; detail?: string };
     try {
@@ -38,6 +46,15 @@ export async function POST(req: Request) {
       registration = await registerPhoneNumber(phoneNumberId, accessToken);
       if (!registration.ok) console.error("[embedded-signup] register failed:", registration.detail);
     } catch (err) {
+      // A failed connect is the single most useful thing in the log: it is the
+      // step most likely to strand somebody, and they rarely report it.
+      logActivity({
+        profileId: profile.id,
+        actor: profile.agentName ?? profile.id,
+        type: "connect_failed",
+        summary: err instanceof Error ? err.message : "WhatsApp connect failed",
+        ok: false,
+      });
       if (err instanceof MetaOAuthError) throw new ApiError(502, err.message);
       throw err;
     }
@@ -64,6 +81,14 @@ export async function POST(req: Request) {
             displayName: displayName ?? undefined,
           },
         });
+
+    logActivity({
+      profileId: profile.id,
+      actor: profile.agentName ?? profile.id,
+      type: "connect_ok",
+      summary: `WhatsApp connected: ${displayName ?? phoneNumberId}${registration.ok ? "" : " (number not registered yet)"}`,
+      ok: registration.ok,
+    });
 
     return {
       id: connection.id,

@@ -98,7 +98,14 @@ export function Sidebar({
     isAdmin
       ? [
           ...groups.slice(0, 3),
-          { labelKey: "nav.group.team", items: [...groups[3].items, { href: "/admin", labelKey: "nav.admin", icon: AdminIcon } as NavItem] },
+          {
+            labelKey: "nav.group.team",
+            items: [
+              { href: "/activity", labelKey: "nav.activity", icon: ChartIcon } as NavItem,
+              ...groups[3].items,
+              { href: "/admin", labelKey: "nav.admin", icon: AdminIcon } as NavItem,
+            ],
+          },
         ]
       : groups.slice(0, 3)
   )
