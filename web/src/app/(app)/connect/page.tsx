@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
+import { useT } from "@/components/I18nProvider";
 import { Button } from "@/components/ui/Button";
 import { CheckIcon, AlertIcon } from "@/components/ui/icons";
 import { MetaConnectButtons, MESSENGER_IG_APPROVED } from "@/components/MetaConnectButtons";
@@ -22,6 +23,7 @@ const inputClass =
   "mt-1.5 w-full rounded-xl border border-black/10 px-3.5 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] transition-shadow";
 
 export default function ConnectPage() {
+  const { t } = useT();
   const [info, setInfo] = useState<Info | null>(null);
   const [tab, setTab] = useState<"WHATSAPP" | "MESSENGER" | "INSTAGRAM">("WHATSAPP");
   const [form, setForm] = useState({ externalId: "", accessToken: "", displayName: "", wabaId: "" });
@@ -128,6 +130,21 @@ export default function ConnectPage() {
           </p>
         </Card>
       )}
+
+      {/* Real feedback from the first batch: an agent stalled on Meta's business
+          step because Website is required and nothing says so. Everything here is
+          a thing that stops the flow dead, in the order it is met. */}
+      <Card className="space-y-2">
+        <h2 className="font-semibold text-sm">{t("connect.help.title")}</h2>
+        <ul className="space-y-1.5">
+          {["connect.help.a", "connect.help.b", "connect.help.c", "connect.help.d"].map((k) => (
+            <li key={k} className="flex gap-2.5 text-sm text-black/60">
+              <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--accent)]" />
+              <span>{t(k)}</span>
+            </li>
+          ))}
+        </ul>
+      </Card>
 
       <BotHealth />
 

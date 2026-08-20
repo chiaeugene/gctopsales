@@ -46,6 +46,23 @@ const dict: Record<string, Entry> = {
   "nav.settings": { en: "Settings", zh: "设置" },
   "nav.signOut": { en: "Sign out", zh: "退出" },
   "nav.roleAdmin": { en: "Admin", zh: "管理员" },
+  "connect.help.title": { en: "Before you press Connect", zh: "点 Connect 之前" },
+  "connect.help.a": {
+    en: "Log in with the Facebook account that OWNS your WhatsApp Business, not a personal account you only use to browse.",
+    zh: "用「拥有」你 WhatsApp Business 的那个 Facebook 账号登录，不要用你平时只是滑一滑的个人账号。",
+  },
+  "connect.help.b": {
+    en: "Use a phone number that is NOT already on the normal WhatsApp or WhatsApp Business app. Meta will not accept a number that is still in use elsewhere.",
+    zh: "要用一个「还没有」在普通 WhatsApp 或 WhatsApp Business App 上使用的号码。号码还在别处用着，Meta 不会接受。",
+  },
+  "connect.help.c": {
+    en: "Meta will ask for business information. The Website field is REQUIRED even though it does not look it — if Next is grey, that is almost always why. Your Instagram or Facebook page link works: https://instagram.com/yourname",
+    zh: "Meta 会要你填商业资料。Website（网站）这一栏是「必填」，虽然看起来不像 — Next 按钮变灰，几乎都是因为这个。填你的 Instagram 或 Facebook 主页链接就可以：https://instagram.com/yourname",
+  },
+  "connect.help.d": {
+    en: "If you already have a Facebook business portfolio, choose it instead of creating a new one. Creating a second one splits your assets and makes everything harder later.",
+    zh: "如果你本来就有 Facebook 商业帐户（business portfolio），请「选择」原本那个，不要新建。新建第二个会把资产分开，之后什么都更麻烦。",
+  },
   "nav.activity": { en: "Activity", zh: "使用记录" },
   "nav.roleAgent": { en: "Agent", zh: "代理" },
   "nav.tagline": { en: "Sales team workspace", zh: "销售团队工作台" },
