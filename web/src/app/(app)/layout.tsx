@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { hasAdminRights } from "@/lib/tenant";
 import { Sidebar } from "@/components/Sidebar";
 import { GuidedTour } from "@/components/GuidedTour";
+import { ActivityPing } from "@/components/ActivityPing";
 import { I18nProvider } from "@/components/I18nProvider";
 import { LANG_COOKIE, normalizeLang } from "@/lib/i18n";
 
@@ -57,6 +58,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             triggers: the page behind it changes, the tour does not restart. */}
         {/* Suspense because the tour reads the query string (?tour=1 replays it),
             and useSearchParams needs a boundary if a page is ever prerendered. */}
+        <ActivityPing />
         <Suspense fallback={null}>
           <GuidedTour
             agentName={(user.profile?.agentName ?? user.name ?? "").split(" ")[0]}

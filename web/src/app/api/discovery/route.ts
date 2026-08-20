@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import { parseJson, toJson } from "@/lib/json";
 import { DISCOVERY_MENU_SEEDS } from "@/lib/data/discovery-menus";
 
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
     const created = await prisma.discoveryMenu.create({
       data: { ...data, profileId: profile.id, sortOrder: count },
     });
+    logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "edit", summary: `Added a discovery menu: ${created.topic}` });
     return { ok: true, id: created.id };
   });
 }

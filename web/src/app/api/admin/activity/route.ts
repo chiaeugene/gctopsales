@@ -17,7 +17,9 @@ export async function GET(req: Request) {
   return handle(async () => {
     await requireAdmin();
     const url = new URL(req.url);
-    const limit = Math.min(Number(url.searchParams.get("limit") ?? 120), 400);
+    const limit = Math.min(Number(url.searchParams.get("limit") ?? 200), 500);
+    // Optional: narrow the feed to one person, for "what has SHE been doing".
+    const only = url.searchParams.get("profileId") || undefined;
 
     const profiles = await prisma.storeProfile.findMany({
       include: {
@@ -31,8 +33,12 @@ export async function GET(req: Request) {
     // log. "Where did they get to" has to be true for everything that happened
     // before logging existed, and a reply that exists in the database is better
     // evidence than a log line about it anyway.
-    const [events, conversations, connectFails] = await Promise.all([
-      prisma.activityEvent.findMany({ orderBy: { createdAt: "desc" }, take: limit }),
+    const [events, conversations, connectFails, recentPerProfile] = await Promise.all([
+      prisma.activityEvent.findMany({
+        where: only ? { profileId: only } : undefined,
+        orderBy: { createdAt: "desc" },
+        take: limit,
+      }),
       prisma.conversation.findMany({
         select: {
           profileId: true,
@@ -42,7 +48,21 @@ export async function GET(req: Request) {
         },
       }),
       prisma.activityEvent.groupBy({ by: ["profileId"], where: { type: "connect_failed" }, _count: true }),
+      // The single most recent thing each person did, for the funnel's last column.
+      prisma.activityEvent.findMany({
+        where: { profileId: { not: null } },
+        orderBy: { createdAt: "desc" },
+        take: 2000,
+        select: { profileId: true, summary: true, createdAt: true, ok: true },
+      }),
     ]);
+
+    // First row wins per profile, since the query is already newest-first.
+    const lastAction = new Map<string, { summary: string; at: Date; ok: boolean }>();
+    for (const e of recentPerProfile) {
+      if (!e.profileId || lastAction.has(e.profileId)) continue;
+      lastAction.set(e.profileId, { summary: e.summary, at: e.createdAt, ok: e.ok });
+    }
 
     // Practice and real, per profile, plus when their bot last actually worked.
     const tally = new Map<string, { live: number; practice: number; lastReplyAt: Date | null }>();
@@ -93,6 +113,7 @@ export async function GET(req: Request) {
         practiceReplies: t.practice,
         liveReplies: t.live,
         lastReplyAt: t.lastReplyAt,
+        lastAction: lastAction.get(p.id) ?? null,
       };
     });
 

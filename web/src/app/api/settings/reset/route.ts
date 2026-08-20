@@ -1,6 +1,7 @@
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile, PLATFORM_OWNER } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import { parseJson, toJson } from "@/lib/json";
 
 /**
@@ -52,6 +53,7 @@ export async function POST() {
       prisma.trainingExample.deleteMany({ where: { profileId: profile.id } }),
     ]);
 
+    logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "reset", summary: "Reset GC back to the team defaults" });
     return { ok: true };
   });
 }

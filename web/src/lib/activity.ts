@@ -25,7 +25,10 @@ export type ActivityType =
   | "practice_reply"
   | "live_inbound"
   | "live_reply"
-  | "reset";
+  | "reset"
+  | "edit"
+  | "takeover"
+  | "page";
 
 export function logActivity(opts: {
   profileId?: string | null;

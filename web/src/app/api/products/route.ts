@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import { serializeAttachment } from "@/lib/attachments";
 import { parseJson, toJson } from "@/lib/json";
 
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
       const existing = await prisma.product.findFirst({ where: { id: d.id, profileId: profile.id } });
       if (!existing) throw new ApiError(404, "Product not found");
       await prisma.product.update({ where: { id: existing.id }, data });
+      logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "edit", summary: `Edited product: ${data.name ?? existing.name}` });
       return { id: existing.id };
     }
 
@@ -90,6 +92,7 @@ export async function POST(req: Request) {
     const created = await prisma.product.create({
       data: { ...data, profileId: profile.id, sortOrder: count },
     });
+    logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "edit", summary: `Added a product: ${created.name}` });
     return { id: created.id };
   });
 }

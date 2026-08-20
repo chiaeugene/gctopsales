@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import { ATTACHMENT_MAX_BYTES, ATTACHMENT_MIME_TO_TYPE, MEDIA_ASSET_PREFIX } from "@/lib/attachments";
 import { normaliseForWhatsApp } from "@/lib/images";
 
@@ -114,6 +115,7 @@ export async function POST(req: Request) {
       },
       omit: { data: true },
     });
+    logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "edit", summary: `Uploaded to the library: ${created.label}` });
     return { ok: true, id: created.id };
   });
 }

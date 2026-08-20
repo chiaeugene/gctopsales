@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import { generateGcReply, recordExchange, scheduleFollowUp } from "@/lib/ai/engine";
 import { MONEY_STATES, type OrderStatus } from "@/lib/constants";
 import { sendWhatsAppText } from "@/lib/channels/whatsapp";
@@ -47,6 +48,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
         });
         await deliverToChannel(profile.id, order.source, order.externalContactId, body.data.message.trim());
       }
+      logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "takeover", summary: "Took a chat over from GC" });
       return { ok: true, needsHuman: true };
     }
 
@@ -75,6 +77,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       return { ok: true, needsHuman: false, reply: output.reply };
     }
 
+    logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "takeover", summary: "Handed a chat back to GC" });
     return { ok: true, needsHuman: false };
   });
 }

@@ -1,6 +1,7 @@
 import { handle } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 
 // The tour auto-opened for this agent — count it. Agents get two auto-openings;
 // the count lives server-side so clearing the browser or switching devices does
@@ -12,6 +13,7 @@ export async function POST() {
       where: { id: profile.id },
       data: { tourSeenCount: { increment: 1 } },
     });
+    logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "tour_opened", summary: "Opened the guided tour" });
     return { ok: true };
   });
 }

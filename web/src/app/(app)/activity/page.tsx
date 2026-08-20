@@ -30,6 +30,7 @@ type Row = {
   practiceReplies: number;
   liveReplies: number;
   lastReplyAt: string | null;
+  lastAction: { summary: string; at: string; ok: boolean } | null;
 };
 type Event = { id: string; at: string; type: string; summary: string; ok: boolean; who: string };
 
@@ -71,15 +72,18 @@ export default function ActivityPage() {
   const [funnel, setFunnel] = useState<Row[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loaded, setLoaded] = useState(false);
+  // Clicking a person filters the feed to them: "what has SHE been doing" is a
+  // different question from "what is happening", and both get asked.
+  const [only, setOnly] = useState<Row | null>(null);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/admin/activity");
+    const res = await fetch(`/api/admin/activity${only ? `?profileId=${only.profileId}` : ""}`);
     if (!res.ok) return;
     const json = await res.json();
     setFunnel(json.funnel ?? []);
     setEvents(json.events ?? []);
     setLoaded(true);
-  }, []);
+  }, [only]);
 
   useEffect(() => {
     load();
@@ -137,7 +141,10 @@ export default function ActivityPage() {
       )}
 
       <Card padding="none">
-        <div className="px-5 py-4 border-b border-black/[0.06] font-semibold text-[15px]">Where each person is</div>
+        <div className="px-5 py-4 border-b border-black/[0.06]">
+          <span className="font-semibold text-[15px]">Where each person is</span>
+          <span className="ml-2 text-xs text-black/40">click a row to see only their activity</span>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -148,12 +155,18 @@ export default function ActivityPage() {
                     {s.label}
                   </th>
                 ))}
-                <th className="px-4 py-3 whitespace-nowrap">Got to / last seen</th>
+                <th className="px-4 py-3">Got to / last did</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/[0.05]">
               {agents.map((r) => (
-                <tr key={r.profileId}>
+                <tr
+                  key={r.profileId}
+                  onClick={() => setOnly(only?.profileId === r.profileId ? null : r)}
+                  className={`cursor-pointer transition-colors ${
+                    only?.profileId === r.profileId ? "bg-[var(--accent-soft)]/50" : "hover:bg-black/[0.02]"
+                  }`}
+                >
                   <td className="px-4 py-3">
                     <div className="font-medium">{r.name}</div>
                     <div className="text-xs text-black/45">
@@ -188,11 +201,18 @@ export default function ActivityPage() {
                       </td>
                     );
                   })}
-                  <td className="px-4 py-3 text-xs whitespace-nowrap">
+                  <td className="px-4 py-3 text-xs">
                     <div className="font-medium text-black/60">{furthest(r)}</div>
-                    <div className="text-black/40">
-                      {r.lastSeen ? ago(r.lastSeen) : r.everSignedIn ? "before tracking" : "never opened"}
-                    </div>
+                    {r.lastAction ? (
+                      <div className={r.lastAction.ok ? "text-black/45" : "text-red-600"}>
+                        {r.lastAction.summary}
+                        <span className="text-black/30"> · {ago(r.lastAction.at)}</span>
+                      </div>
+                    ) : (
+                      <div className="text-black/40">
+                        {r.lastSeen ? ago(r.lastSeen) : r.everSignedIn ? "before tracking" : "never opened"}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -209,7 +229,16 @@ export default function ActivityPage() {
       </Card>
 
       <Card padding="none">
-        <div className="px-5 py-4 border-b border-black/[0.06] font-semibold text-[15px]">What just happened</div>
+        <div className="px-5 py-4 border-b border-black/[0.06] flex flex-wrap items-center justify-between gap-2">
+          <span className="font-semibold text-[15px]">
+            {only ? `What ${only.name} has been doing` : "What just happened"}
+          </span>
+          {only && (
+            <button onClick={() => setOnly(null)} className="text-xs text-[var(--accent-ink)] hover:underline">
+              Show everyone
+            </button>
+          )}
+        </div>
         <div className="max-h-[32rem] overflow-y-auto divide-y divide-black/[0.04]">
           {events.map((e) => (
             <div key={e.id} className="flex items-start gap-3 px-5 py-2.5 text-sm">

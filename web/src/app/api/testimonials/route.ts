@@ -2,6 +2,7 @@ import { z } from "zod";
 import { handle, ApiError } from "@/lib/api";
 import { requireProfile } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
+import { logActivity } from "@/lib/activity";
 import { TESTIMONIAL_PHOTO_PREFIX } from "@/lib/attachments";
 
 export async function GET() {
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
       return { id: existing.id };
     }
     const created = await prisma.testimonial.create({ data: { ...data, profileId: profile.id } });
+    logActivity({ profileId: profile.id, actor: profile.agentName ?? profile.id, type: "edit", summary: "Added a customer result" });
     return { id: created.id };
   });
 }
