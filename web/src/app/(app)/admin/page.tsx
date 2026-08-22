@@ -192,6 +192,8 @@ Leave empty to use the platform default. 0 stops GC replying entirely.`,
 
       <InviteLinkCard />
 
+      <AttachNumberCard users={users} />
+
       <SignupsCard onRegistered={load} />
 
       <SheetImportCard onRegistered={load} />
@@ -926,6 +928,113 @@ type DemoResult = {
   testedHesitation: boolean;
   problems: string[];
 };
+
+// Path B: every number lives under ONE verified business portfolio, so the admin
+// holds them all and agents have nothing of their own to connect. This attaches
+// one to whoever it belongs to, without the admin signing in as them.
+function AttachNumberCard({ users }: { users: TenantUser[] }) {
+  const [form, setForm] = useState({ userId: "", phoneNumberId: "", wabaId: "", accessToken: "" });
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function attach() {
+    setBusy(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch("/api/admin/attach-number", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || "Could not attach that number");
+        return;
+      }
+      setResult(
+        `${json.displayName ?? "Number"} is now on ${json.email}. ${
+          json.registered ? "Registered and ready." : "Not registered with the Cloud API yet — they should run the full check on Connect."
+        }`
+      );
+      setForm({ ...form, phoneNumberId: "", wabaId: "" });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const agents = users.filter((u) => u.profile);
+  const ready = form.userId && form.phoneNumberId && form.wabaId && form.accessToken;
+
+  return (
+    <Card className="space-y-3">
+      <div>
+        <h2 className="font-semibold">Attach a WhatsApp number to an agent</h2>
+        <p className="text-sm text-black/45">
+          For numbers that live under YOUR business portfolio rather than the agent&apos;s own. Add the number in
+          WhatsApp Manager first, then paste its phone number ID and WABA ID here with a system-user token. This writes
+          the same connection the Connect page would, straight onto their account, so they never have to paste a token.
+        </p>
+      </div>
+      {result && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">
+          <CheckIcon className="w-4 h-4 shrink-0" />
+          {result}
+        </div>
+      )}
+      {error && <div className="text-sm text-red-600">{error}</div>}
+      <div className="grid gap-3 md:grid-cols-2">
+        <label className="block text-xs">
+          <span className="text-black/45">Agent</span>
+          <select
+            value={form.userId}
+            onChange={(e) => setForm({ ...form, userId: e.target.value })}
+            className={inputClass}
+          >
+            <option value="">Choose an agent…</option>
+            {agents.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.name} · {u.email}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block text-xs">
+          <span className="text-black/45">Phone number ID</span>
+          <input
+            value={form.phoneNumberId}
+            onChange={(e) => setForm({ ...form, phoneNumberId: e.target.value })}
+            className={inputClass}
+            placeholder="From WhatsApp Manager, under the number"
+          />
+        </label>
+        <label className="block text-xs">
+          <span className="text-black/45">WhatsApp Business Account ID</span>
+          <input
+            value={form.wabaId}
+            onChange={(e) => setForm({ ...form, wabaId: e.target.value })}
+            className={inputClass}
+            placeholder="The WABA holding the number"
+          />
+        </label>
+        <label className="block text-xs">
+          <span className="text-black/45">System user token</span>
+          <input
+            type="password"
+            value={form.accessToken}
+            onChange={(e) => setForm({ ...form, accessToken: e.target.value })}
+            className={inputClass}
+            placeholder="Never shown again once saved"
+          />
+        </label>
+      </div>
+      <Button onClick={attach} disabled={busy || !ready}>
+        {busy ? "Attaching…" : "Attach to this agent"}
+      </Button>
+    </Card>
+  );
+}
 
 // Handing the app to a tester means handing over somebody else's practice chats
 // too. This clears the history without touching the catalogue, the results bank
