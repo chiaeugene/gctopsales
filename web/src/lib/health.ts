@@ -87,16 +87,26 @@ export async function runHealthChecks(profile: StoreProfile, opts?: { pingLlm?: 
           fix: "Reconnect WhatsApp on this page.",
         });
       } else {
+        // Meta hands out a +1 555 sandbox number to anyone who finishes Embedded
+        // Signup without adding their own. It connects, it passes every other
+        // check, and no customer on earth can message it — so it has to be called
+        // out here or it reads as success forever.
+        const display = json.display_phone_number ?? "";
+        const isTestNumber = /^\+?1\D*555/.test(display.trim());
         const quality = json.quality_rating && json.quality_rating !== "GREEN";
         checks.push({
           key: "token",
-          label: "WhatsApp still accepts your connection",
-          status: quality ? "warn" : "pass",
-          detail: `${json.verified_name ?? "Your number"} (${json.display_phone_number ?? whatsapp.externalId})` +
-            (json.quality_rating ? `, quality ${json.quality_rating.toLowerCase()}` : ""),
-          fix: quality
-            ? "Quality has dropped, usually from customers blocking or reporting. Send fewer unsolicited messages."
-            : undefined,
+          label: isTestNumber ? "Your number is a real one customers can reach" : "WhatsApp still accepts your connection",
+          status: isTestNumber ? "fail" : quality ? "warn" : "pass",
+          detail: isTestNumber
+            ? `Connected to ${display}, which is a Meta TEST number, not a real one. Customers cannot find it or message it.`
+            : `${json.verified_name ?? "Your number"} (${display || whatsapp.externalId})` +
+              (json.quality_rating ? `, quality ${json.quality_rating.toLowerCase()}` : ""),
+          fix: isTestNumber
+            ? "Reconnect on this page and add YOUR OWN business number when Meta asks for one."
+            : quality
+              ? "Quality has dropped, usually from customers blocking or reporting. Send fewer unsolicited messages."
+              : undefined,
         });
       }
     } catch {
