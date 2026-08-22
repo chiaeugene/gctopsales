@@ -186,7 +186,17 @@ function WhatsAppConnectCard({ sdkReady, onConnected }: { sdkReady: boolean; onC
         config_id: WA_CONFIG_ID,
         response_type: "code",
         override_default_response_type: true,
-        extras: { setup: {}, sessionInfoVersion: "3" },
+        extras: {
+          setup: {},
+          // COEXISTENCE. Without this, onboarding a number to the Cloud API takes
+          // it away from the WhatsApp Business app: the agent loses the app they
+          // already run their business from, and their history with it. With it,
+          // they keep the app, keep six months of history synced both ways, and GC
+          // answers on the same number through the API. That is the difference
+          // between a tool they adopt and a tool they refuse.
+          featureType: "whatsapp_business_app_onboarding",
+          sessionInfoVersion: "3",
+        },
       }
     );
   }

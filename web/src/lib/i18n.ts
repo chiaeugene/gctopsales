@@ -52,8 +52,8 @@ const dict: Record<string, Entry> = {
     zh: "用「拥有」你 WhatsApp Business 的那个 Facebook 账号登录，不要用你平时只是滑一滑的个人账号。",
   },
   "connect.help.b": {
-    en: "Use a phone number that is NOT already on the normal WhatsApp or WhatsApp Business app. Meta will not accept a number that is still in use elsewhere.",
-    zh: "要用一个「还没有」在普通 WhatsApp 或 WhatsApp Business App 上使用的号码。号码还在别处用着，Meta 不会接受。",
+    en: "You can use the SAME number you already run on the WhatsApp Business app. You keep the app, your chats stay, and GC answers on that number too. When Meta offers it, choose your existing WhatsApp Business number.",
+    zh: "可以用你「现在正在用」的 WhatsApp Business 号码。App 你继续用，聊天记录还在，GC 也会在同一个号码上帮你回复。Meta 让你选的时候，选你原本的 WhatsApp Business 号码。",
   },
   "connect.help.c": {
     en: "Meta will ask for business information. The Website field is REQUIRED even though it does not look it — if Next is grey, that is almost always why. Your Instagram or Facebook page link works: https://instagram.com/yourname",
