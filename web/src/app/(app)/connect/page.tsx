@@ -137,7 +137,7 @@ export default function ConnectPage() {
       <Card className="space-y-2">
         <h2 className="font-semibold text-sm">{t("connect.help.title")}</h2>
         <ul className="space-y-1.5">
-          {["connect.help.a", "connect.help.b", "connect.help.c", "connect.help.d"].map((k) => (
+          {["connect.help.a", "connect.help.b", "connect.help.e", "connect.help.c", "connect.help.d"].map((k) => (
             <li key={k} className="flex gap-2.5 text-sm text-black/60">
               <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[var(--accent)]" />
               <span>{t(k)}</span>

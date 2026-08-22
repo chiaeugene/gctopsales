@@ -59,6 +59,10 @@ const dict: Record<string, Entry> = {
     en: "Meta will ask for business information. The Website field is REQUIRED even though it does not look it — if Next is grey, that is almost always why. Your Instagram or Facebook page link works: https://instagram.com/yourname",
     zh: "Meta 会要你填商业资料。Website（网站）这一栏是「必填」，虽然看起来不像 — Next 按钮变灰，几乎都是因为这个。填你的 Instagram 或 Facebook 主页链接就可以：https://instagram.com/yourname",
   },
+  "connect.help.e": {
+    en: "Add YOUR OWN business number when Meta asks. If it says it has \"reserved a number for you\" starting +1 555, that is a test number: real customers cannot message it, so do not finish with that one.",
+    zh: "Meta 问你号码时，要加「你自己」的商业号码。如果它说已经帮你「保留了一个号码」，开头是 +1 555，那是测试号码：真实客户没办法联系它，不要用那个完成设置。",
+  },
   "connect.help.d": {
     en: "If you already have a Facebook business portfolio, choose it instead of creating a new one. Creating a second one splits your assets and makes everything harder later.",
     zh: "如果你本来就有 Facebook 商业帐户（business portfolio），请「选择」原本那个，不要新建。新建第二个会把资产分开，之后什么都更麻烦。",
