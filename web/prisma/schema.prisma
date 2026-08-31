@@ -127,6 +127,9 @@ model ChannelConnection {
 
   channel     String // WHATSAPP | MESSENGER | INSTAGRAM
   externalId  String // phone_number_id / page_id / ig_business_account_id
+  // WhatsApp only. Kept because the WABA, not the phone number, is what carries
+  // the owning business and therefore the verification that gates messaging.
+  wabaId      String?
   accessToken String // never returned by any API response
   displayName String? // e.g. the phone number or page name, for the settings UI
   isActive    Boolean @default(true)

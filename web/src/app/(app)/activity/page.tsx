@@ -31,6 +31,9 @@ type Row = {
   liveReplies: number;
   lastReplyAt: string | null;
   lastAction: { summary: string; at: string; ok: boolean } | null;
+  paidOrders: number;
+  milestones: string[];
+  latestMilestone: string | null;
 };
 type Event = { id: string; at: string; type: string; summary: string; ok: boolean; who: string };
 
@@ -119,6 +122,31 @@ export default function ActivityPage() {
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Wins first. A rollout that only ever shows what is broken reads as a
+          problem list, and the people doing well deserve to be visible too. */}
+      {loaded && agents.some((r) => r.latestMilestone) && (
+        <Card className="!border-emerald-200 !bg-emerald-50 space-y-1.5">
+          <h2 className="font-semibold text-sm text-emerald-900">Worth celebrating</h2>
+          <div className="space-y-1">
+            {agents
+              .filter((r) => r.latestMilestone)
+              .sort((a, b) => b.milestones.length - a.milestones.length)
+              .map((r) => (
+                <p key={r.profileId} className="text-sm text-emerald-900/85">
+                  <strong>{r.latestMilestone}</strong>
+                  {r.liveReplies > 0 && (
+                    <span className="text-emerald-900/55">
+                      {" "}
+                      · {r.liveReplies} real {r.liveReplies === 1 ? "reply" : "replies"}
+                      {r.paidOrders > 0 ? `, ${r.paidOrders} paid` : ""}
+                    </span>
+                  )}
+                </p>
+              ))}
+          </div>
+        </Card>
       )}
 
       {/* The two lists worth acting on today, named rather than left to be spotted. */}

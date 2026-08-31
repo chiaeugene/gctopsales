@@ -12,6 +12,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { HeroBanner } from "@/components/ui/HeroBanner";
 import { BotHealth } from "@/components/BotHealth";
+import { Milestones } from "@/components/Milestones";
 import { FlameIcon, SnowflakeIcon, AlertIcon, ChartIcon } from "@/components/ui/icons";
 
 export default async function DashboardPage() {
@@ -136,6 +137,8 @@ export default async function DashboardPage() {
 
       {/* Silent while healthy; speaks up the moment GC could not answer someone. */}
       <BotHealth compact />
+
+      <Milestones />
 
       {!onboardingDone && <OnboardingChecklist lang={lang} steps={onboardSteps} />}
 

@@ -70,13 +70,14 @@ export async function POST(req: Request) {
     const connection = existing
       ? await prisma.channelConnection.update({
           where: { id: existing.id },
-          data: { accessToken, displayName: displayName ?? existing.displayName, isActive: true },
+          data: { accessToken, wabaId, displayName: displayName ?? existing.displayName, isActive: true },
         })
       : await prisma.channelConnection.create({
           data: {
             profileId: profile.id,
             channel: "WHATSAPP",
             externalId: phoneNumberId,
+            wabaId,
             accessToken,
             displayName: displayName ?? undefined,
           },

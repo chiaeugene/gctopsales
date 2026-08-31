@@ -2,6 +2,7 @@ import { handle } from "@/lib/api";
 import { requireAdmin } from "@/lib/tenant";
 import { prisma } from "@/lib/prisma";
 import { parseJson } from "@/lib/json";
+import { milestonesFor, latestMilestone } from "@/lib/milestones";
 
 /**
  * Two views of the rollout, because they answer different questions.
@@ -33,7 +34,7 @@ export async function GET(req: Request) {
     // log. "Where did they get to" has to be true for everything that happened
     // before logging existed, and a reply that exists in the database is better
     // evidence than a log line about it anyway.
-    const [events, conversations, connectFails, recentPerProfile] = await Promise.all([
+    const [events, conversations, connectFails, paidOrders, recentPerProfile] = await Promise.all([
       prisma.activityEvent.findMany({
         where: only ? { profileId: only } : undefined,
         orderBy: { createdAt: "desc" },
@@ -48,6 +49,12 @@ export async function GET(req: Request) {
         },
       }),
       prisma.activityEvent.groupBy({ by: ["profileId"], where: { type: "connect_failed" }, _count: true }),
+      // Paid orders per agent, for the milestone that actually means money.
+      prisma.order.groupBy({
+        by: ["profileId"],
+        where: { paymentStatus: "CONFIRMED" },
+        _count: true,
+      }),
       // The single most recent thing each person did, for the funnel's last column.
       prisma.activityEvent.findMany({
         where: { profileId: { not: null } },
@@ -75,6 +82,7 @@ export async function GET(req: Request) {
       tally.set(c.profileId, row);
     }
 
+    const paidMap = new Map(paidOrders.map((r) => [r.profileId, r._count as unknown as number]));
     const failMap = new Map(
       connectFails.filter((r) => r.profileId).map((r) => [r.profileId as string, r._count as unknown as number])
     );
@@ -114,12 +122,32 @@ export async function GET(req: Request) {
         liveReplies: t.live,
         lastReplyAt: t.lastReplyAt,
         lastAction: lastAction.get(p.id) ?? null,
+        paidOrders: paidMap.get(p.id) ?? 0,
+      };
+    });
+
+    // Milestones are computed from the same numbers, so they can never disagree
+    // with the funnel the admin is looking at.
+    const withMilestones = funnel.map((f) => {
+      const input = {
+        name: f.name,
+        trainingCount: f.trainingCount,
+        practiceReplies: f.practiceReplies,
+        paymentReady: f.paymentReady,
+        whatsappConnected: f.whatsappConnected,
+        liveReplies: f.liveReplies,
+        paidOrders: f.paidOrders,
+      };
+      return {
+        ...f,
+        milestones: milestonesFor(input).filter((m) => m.reached).map((m) => m.key),
+        latestMilestone: latestMilestone(input)?.adminLine ?? null,
       };
     });
 
     const names = new Map(funnel.map((f) => [f.profileId, f.name]));
     return {
-      funnel,
+      funnel: withMilestones,
       events: events.map((e) => ({
         id: e.id,
         at: e.createdAt,

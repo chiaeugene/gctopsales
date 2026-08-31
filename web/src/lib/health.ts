@@ -120,6 +120,53 @@ export async function runHealthChecks(profile: StoreProfile, opts?: { pingLlm?: 
     }
   }
 
+  // ------------------------------ 2b. the business behind it is verified -------
+  // The failure that cost this rollout a day: a number connects, the token is
+  // valid, everything reads green, and Meta delivers nothing because the business
+  // that owns the WhatsApp account is unverified. Best-effort — if Meta does not
+  // return the fields, say nothing rather than invent a state.
+  if (whatsapp?.wabaId) {
+    try {
+      const res = await fetch(`${GRAPH}/${whatsapp.wabaId}?fields=owner_business_info,account_review_status`, {
+        headers: { Authorization: `Bearer ${whatsapp.accessToken}` },
+      });
+      const waba = (await res.json()) as {
+        account_review_status?: string;
+        owner_business_info?: { id?: string; name?: string };
+      };
+      const businessId = waba.owner_business_info?.id;
+      const businessName = waba.owner_business_info?.name ?? "the owning business";
+
+      let verification: string | undefined;
+      if (businessId) {
+        const bizRes = await fetch(`${GRAPH}/${businessId}?fields=verification_status,name`, {
+          headers: { Authorization: `Bearer ${whatsapp.accessToken}` },
+        });
+        const biz = (await bizRes.json()) as { verification_status?: string };
+        verification = biz.verification_status;
+      }
+
+      if (verification && verification !== "verified") {
+        checks.push({
+          key: "verification",
+          label: "Meta will actually deliver your messages",
+          status: "fail",
+          detail: `${businessName} is ${verification.replace(/_/g, " ")} with Meta. Until it is verified, Meta blocks messaging on this number no matter how well everything else is set up.`,
+          fix: "Your admin needs to move this number onto a verified business, or this business needs to complete Meta business verification.",
+        });
+      } else if (verification === "verified") {
+        checks.push({
+          key: "verification",
+          label: "Meta will actually deliver your messages",
+          status: "pass",
+          detail: `${businessName} is verified with Meta${waba.account_review_status ? `, account ${waba.account_review_status.toLowerCase()}` : ""}.`,
+        });
+      }
+    } catch {
+      // Never fail the panel over a check that is extra information.
+    }
+  }
+
   // -------------------------------------------------------- 3. GC can think ---
   if (!llmConfigured()) {
     checks.push({
