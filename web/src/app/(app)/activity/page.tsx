@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { CheckIcon, AlertIcon } from "@/components/ui/icons";
+import { Button } from "@/components/ui/Button";
+import { teamUpdateMessage, type Summary } from "@/lib/team-update";
 
 /**
  * The rollout watcher.
@@ -73,6 +75,8 @@ function ago(iso: string): string {
 
 export default function ActivityPage() {
   const [funnel, setFunnel] = useState<Row[]>([]);
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [copied, setCopied] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [loaded, setLoaded] = useState(false);
   // Clicking a person filters the feed to them: "what has SHE been doing" is a
@@ -84,6 +88,7 @@ export default function ActivityPage() {
     if (!res.ok) return;
     const json = await res.json();
     setFunnel(json.funnel ?? []);
+    if (json.summary) setSummary(json.summary);
     setEvents(json.events ?? []);
     setLoaded(true);
   }, [only]);
@@ -107,6 +112,19 @@ export default function ActivityPage() {
       <PageHeader
         title="Activity"
         subtitle="Who signed in, who set up, who connected WhatsApp, and who is answering real customers. Refreshes every 30 seconds."
+        action={
+          summary && (
+            <Button
+              onClick={async () => {
+                await navigator.clipboard.writeText(teamUpdateMessage(summary));
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+            >
+              {copied ? "Copied" : "Copy team update"}
+            </Button>
+          )
+        }
       />
 
       {loaded && agents.length > 0 && (

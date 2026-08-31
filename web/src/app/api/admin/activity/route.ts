@@ -146,8 +146,23 @@ export async function GET(req: Request) {
     });
 
     const names = new Map(funnel.map((f) => [f.profileId, f.name]));
+    // Rollup for the team-update draft: totals only, so the message can be
+    // regenerated the same way every time instead of hand-counted from the table.
+    const nonAdmin = withMilestones.filter((f) => !f.isAdmin);
+    const summary = {
+      enrolled: nonAdmin.length,
+      signedIn: nonAdmin.filter((f) => f.everSignedIn).length,
+      trained: nonAdmin.filter((f) => f.trainingCount > 0).length,
+      whatsappConnected: nonAdmin.filter((f) => f.whatsappConnected).length,
+      answeringCustomers: nonAdmin.filter((f) => f.liveReplies > 0).length,
+      totalLiveReplies: nonAdmin.reduce((n, f) => n + f.liveReplies, 0),
+      totalPracticeReplies: nonAdmin.reduce((n, f) => n + f.practiceReplies, 0),
+      totalPaidOrders: nonAdmin.reduce((n, f) => n + f.paidOrders, 0),
+    };
+
     return {
       funnel: withMilestones,
+      summary,
       events: events.map((e) => ({
         id: e.id,
         at: e.createdAt,
